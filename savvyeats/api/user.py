@@ -68,7 +68,7 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 		errors = {
 			"mobile_no_exists": ["An account with this mobile number already exists."]
 		}
-		frappe.response["message"] = send_error_response(message_en, message_ar, errors)
+		return send_error_response(message_en, message_ar, errors)
 
 	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
 	if not otp_verification:
@@ -96,13 +96,63 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 	user.flags.ignore_password_policy = True
 	user.insert()
 
+	api_secret = frappe.generate_hash(length=15)
+	if not user.api_key:
+		api_key = frappe.generate_hash(length=15)
+		user.api_key = api_key
+	user.api_secret = api_secret
+	user.save()
 	message_en = "OTP verified successfully."
 	message_ar = "تم التحقق من رمز التحقق بنجاح."
-	return send_success_response(message_en, message_ar)
+	data={
+		"api_key": api_key,
+		"api_secret": api_secret
+	}
+	return send_success_response(message_en, message_ar, data)
 
 
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def login(email: str, password: str):
+	try:
+		login_manager = frappe.auth.LoginManager()
+		login_manager.authenticate(user=email, pwd=password)
+		login_manager.post_login()
+		user = frappe.get_doc('User', frappe.session.user)
+		
+		api_secret = user.get_password("api_secret")
+		if not user.api_key or api_secret:
+			api_secret = frappe.generate_hash(length=15)
+			if not user.api_key:
+				api_key = frappe.generate_hash(length=15)
+				user.api_key = api_key
+			user.api_secret = api_secret
+			user.save()
 
 
+		message_en = "Login successful. Welcome back!"
+		message_ar = "تم تسجيل الدخول بنجاح. مرحبًا بعودتك!"
+		data={
+			"api_key": user.api_key,
+			"api_secret": api_secret
+		}
+		return send_success_response(message_en, message_ar, data)
+
+	except frappe.exceptions.SecurityException:
+		message_en = "Your account has been locked for security reasons. Please try again in 5 minutes."
+		message_ar = "تم قفل حسابك لأسباب أمنية. يرجى المحاولة مرة أخرى بعد 5 دقائق."
+		errors = {
+			"account_locked": ["Your account has been locked for security reasons. Please try again in 5 minutes."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	except frappe.exceptions.AuthenticationError:
+		message_en = "Authentication failed. Please check your credentials and try again."
+		message_ar = "فشل التحقق من الهوية. يرجى التحقق من بيانات الدخول والمحاولة مرة أخرى."
+		errors = {
+			"authenticate_failed": ["Authentication failed. Please check your credentials and try again."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+        
 def send_error_response(message_en, message_ar, errors, code=417):
 	return {
 		"status": "error",
