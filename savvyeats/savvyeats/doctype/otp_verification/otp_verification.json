@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:OTP-{######}",
+ "creation": "2025-07-31 12:02:49.351432",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "verification_type",
+  "expiry",
+  "column_break_aueu",
+  "email",
+  "mobile_no",
+  "otp"
+ ],
+ "fields": [
+  {
+   "default": "Mobile No",
+   "fieldname": "verification_type",
+   "fieldtype": "Select",
+   "label": "Verification Type",
+   "options": "Mobile No\nEmail",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.verification_type == 'Email';",
+   "fieldname": "email",
+   "fieldtype": "Data",
+   "label": "Email",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.verification_type == 'Mobile No';",
+   "fieldname": "mobile_no",
+   "fieldtype": "Data",
+   "label": "Mobile No",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_aueu",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "otp",
+   "fieldtype": "Int",
+   "label": "OTP",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "expiry",
+   "fieldtype": "Datetime",
+   "label": "Expiry",
+   "read_only": 1
+  }
+ ],
+ "in_create": 1,
+ "links": [],
+ "modified": "2025-07-31 12:11:21.111231",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "OTP Verification",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

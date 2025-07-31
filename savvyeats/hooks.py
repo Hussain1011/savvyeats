@@ -148,23 +148,11 @@ app_license = "mit"
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-# 	"all": [
-# 		"savvyeats.tasks.all"
-# 	],
-# 	"daily": [
-# 		"savvyeats.tasks.daily"
-# 	],
-# 	"hourly": [
-# 		"savvyeats.tasks.hourly"
-# 	],
-# 	"weekly": [
-# 		"savvyeats.tasks.weekly"
-# 	],
-# 	"monthly": [
-# 		"savvyeats.tasks.monthly"
-# 	],
-# }
+scheduler_events = {
+	"hourly": [
+		"savvyeats.background_jobs.remove_expired_otp"
+	]
+}
 
 # Testing
 # -------
