@@ -118,22 +118,21 @@ def login(email: str, password: str):
 		login_manager.authenticate(user=email, pwd=password)
 		login_manager.post_login()
 		user = frappe.get_doc('User', frappe.session.user)
-		
 		api_secret = user.get_password("api_secret")
-		if not user.api_key or api_secret:
-			api_secret = frappe.generate_hash(length=15)
+		if not user.api_key:
 			if not user.api_key:
 				api_key = frappe.generate_hash(length=15)
 				user.api_key = api_key
-			user.api_secret = api_secret
+				api_secret = frappe.generate_hash(length=15)
+				user.api_secret = api_secret
 			user.save()
-
 
 		message_en = "Login successful. Welcome back!"
 		message_ar = "تم تسجيل الدخول بنجاح. مرحبًا بعودتك!"
 		data={
 			"api_key": user.api_key,
-			"api_secret": api_secret
+			"api_secret": api_secret,
+			"doc": user
 		}
 		return send_success_response(message_en, message_ar, data)
 
