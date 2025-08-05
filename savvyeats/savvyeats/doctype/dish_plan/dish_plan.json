@@ -1,0 +1,125 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:plan_name",
+ "creation": "2025-08-04 12:06:51.443156",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "plan_name",
+  "plan_description",
+  "column_break_xatb",
+  "week_plan",
+  "meals",
+  "section_break_gezu",
+  "min_calories",
+  "column_break_zlhp",
+  "max_calories",
+  "section_break_opyl",
+  "background_image",
+  "column_break_eoen",
+  "dish_image"
+ ],
+ "fields": [
+  {
+   "fieldname": "plan_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Plan Name",
+   "reqd": 1,
+   "translatable": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "plan_description",
+   "fieldtype": "Small Text",
+   "label": "Plan Description",
+   "reqd": 1,
+   "translatable": 1
+  },
+  {
+   "fieldname": "section_break_gezu",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "min_calories",
+   "fieldtype": "Float",
+   "label": "Min Calories",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_zlhp",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "max_calories",
+   "fieldtype": "Float",
+   "label": "Max Calories",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_opyl",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "background_image",
+   "fieldtype": "Attach Image",
+   "label": "Background Image"
+  },
+  {
+   "fieldname": "column_break_eoen",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "dish_image",
+   "fieldtype": "Attach Image",
+   "label": "Dish Image"
+  },
+  {
+   "fieldname": "week_plan",
+   "fieldtype": "Link",
+   "label": "Week Plan",
+   "options": "Week Plan",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xatb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "meals",
+   "fieldtype": "Table MultiSelect",
+   "label": "Meals",
+   "options": "Dish Plan Meals",
+   "reqd": 1
+  }
+ ],
+ "image_field": "dish_image",
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-04 14:16:28.108767",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Dish Plan",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
