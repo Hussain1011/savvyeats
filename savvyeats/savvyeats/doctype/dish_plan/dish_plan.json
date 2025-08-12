@@ -6,10 +6,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "enabled",
+  "section_break_dlwc",
   "plan_name",
   "plan_description",
   "column_break_xatb",
-  "week_plan",
+  "week_plans",
   "meals",
   "section_break_gezu",
   "min_calories",
@@ -78,13 +80,6 @@
    "label": "Dish Image"
   },
   {
-   "fieldname": "week_plan",
-   "fieldtype": "Link",
-   "label": "Week Plan",
-   "options": "Week Plan",
-   "reqd": 1
-  },
-  {
    "fieldname": "column_break_xatb",
    "fieldtype": "Column Break"
   },
@@ -94,12 +89,30 @@
    "label": "Meals",
    "options": "Dish Plan Meals",
    "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_dlwc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "week_plans",
+   "fieldtype": "Table MultiSelect",
+   "label": "Week Plans",
+   "options": "Dish Plan Week Plans",
+   "reqd": 1
   }
  ],
  "image_field": "dish_image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 14:16:28.108767",
+ "modified": "2025-08-12 13:21:41.522517",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",

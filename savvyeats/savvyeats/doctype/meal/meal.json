@@ -6,7 +6,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "enabled",
+  "section_break_boip",
   "meal_name",
+  "mandatory",
+  "column_break_axfn",
+  "section_break_isgc",
   "quotes"
  ],
  "fields": [
@@ -24,11 +29,36 @@
    "fieldtype": "Table",
    "label": "Quotes",
    "options": "Meal Quotes"
+  },
+  {
+   "default": "0",
+   "fieldname": "mandatory",
+   "fieldtype": "Check",
+   "label": "Mandatory Meal"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "search_index": 1
+  },
+  {
+   "fieldname": "column_break_axfn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_isgc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "section_break_boip",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 12:20:34.142200",
+ "modified": "2025-08-12 12:34:31.752828",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Meal",

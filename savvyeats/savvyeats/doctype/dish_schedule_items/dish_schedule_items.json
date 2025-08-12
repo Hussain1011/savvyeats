@@ -1,0 +1,62 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-10 12:58:19.618225",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "dish_plan",
+  "meal",
+  "item_code",
+  "item_name"
+ ],
+ "fields": [
+  {
+   "columns": 6,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "meal",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Meal",
+   "options": "Meal",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "dish_plan",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Dish Plan",
+   "options": "Dish Plan",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-08-10 13:08:10.709494",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Dish Schedule Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

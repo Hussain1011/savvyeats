@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-08-10 12:50:28.415882",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "date",
+  "title",
+  "naming_series",
+  "section_break_zloc",
+  "items",
+  "section_break_hzxy",
+  "html"
+ ],
+ "fields": [
+  {
+   "fieldname": "date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_zloc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "items",
+   "fieldtype": "Table",
+   "label": "Items",
+   "options": "Dish Schedule Items"
+  },
+  {
+   "default": "DS-.MM.-.YYYY",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "DS-.MM.-.YYYY"
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Title"
+  },
+  {
+   "fieldname": "section_break_hzxy",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "html",
+   "fieldtype": "HTML"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-08-10 13:48:46.569887",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Dish Schedule",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}

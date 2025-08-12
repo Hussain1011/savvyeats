@@ -249,20 +249,21 @@ def fetch_dish():
 
 		if d["client_name"] in duplicates and len(duplicates[d["client_name"]]) > 1:
 			name = "{0} - {1}".format(d["client_name"], dish_plan_attached)
-		try:
-			doc = frappe.get_doc("BOM", {"item": name})
-			for b in doc.items:
-				item = frappe.get_doc("Item", b.item_code)
-				if item.item_category == "Sub Recipe":
-					try:
-						b.bom_no = frappe.get_doc("BOM", {"item": b.item_code}).name
-					except Exception as e:
-						pass
-		except Exception as e:
-			pass
-		# doc = frappe.get_doc("Item", name)
-		# doc.image = "/files/Dish.png"
-		# print(doc.item_code)
+		# try:
+		# 	doc = frappe.get_doc("BOM", {"item": name})
+		# 	for b in doc.items:
+		# 		item = frappe.get_doc("Item", b.item_code)
+		# 		if item.item_category == "Sub Recipe":
+		# 			try:
+		# 				b.bom_no = frappe.get_doc("BOM", {"item": b.item_code}).name
+		# 			except Exception as e:
+		# 				pass
+		# except Exception as e:
+		# 	pass
+		doc = frappe.get_doc("Item", name)
+		if data["dishImage"]:
+			image = data["dishImage"].replace("savvy_eats_testing", "savvy_eats")
+			doc.image = image
 
 		# if "allergens" in data:
 		# 	for i in data["allergens"]:
@@ -278,9 +279,8 @@ def fetch_dish():
 	# 		r.value = i["value"]
 
 		try:
-			doc.flags.ignore_validate = True
+			#doc.flags.ignore_validate = True
 			doc.save()
-
 		except Exception as e:
 			print("error")
 			print(doc.name)

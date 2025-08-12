@@ -6,6 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "enabled",
+  "section_break_slcj",
   "delivery_time_slot_name",
   "from_time",
   "column_break_gqeu",
@@ -39,11 +41,22 @@
   {
    "fieldname": "column_break_gqeu",
    "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_slcj",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 15:31:03.263591",
+ "modified": "2025-08-12 12:34:05.101960",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Delivery Time Slot",

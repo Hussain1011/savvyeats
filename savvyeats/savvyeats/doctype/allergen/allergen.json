@@ -6,6 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "enabled",
+  "section_break_hbvb",
   "allergen"
  ],
  "fields": [
@@ -16,11 +18,22 @@
    "label": "Allergen",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled",
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_hbvb",
+   "fieldtype": "Section Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 14:31:24.274019",
+ "modified": "2025-08-12 12:33:57.548266",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Allergen",

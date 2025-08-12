@@ -1,6 +1,6 @@
 {
  "charts": [],
- "content": "[{\"id\":\"wER1EMbPJp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">SavvyEats</span>\",\"col\":12}},{\"id\":\"IX2QEqMPkv\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"1UwlqP0pnB\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
+ "content": "[{\"id\":\"wER1EMbPJp\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">SavvyEats</span>\",\"col\":12}},{\"id\":\"IX2QEqMPkv\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"kMDV3yVDV8\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Dish Schedule\",\"col\":3}},{\"id\":\"F7QAaAa0-x\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Subscriptions\",\"col\":3}},{\"id\":\"LhWBiKlHAl\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Deliveries\",\"col\":3}},{\"id\":\"SpsjYCNh5D\",\"type\":\"spacer\",\"data\":{\"col\":12}},{\"id\":\"1UwlqP0pnB\",\"type\":\"card\",\"data\":{\"card_name\":\"Setup\",\"col\":4}}]",
  "creation": "2025-08-04 14:43:32.700635",
  "custom_blocks": [],
  "docstatus": 0,
@@ -17,7 +17,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Setup",
-   "link_count": 6,
+   "link_count": 7,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -81,9 +81,19 @@
    "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Dishes",
+   "link_count": 0,
+   "link_to": "Item",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-08-05 15:46:45.245553",
+ "modified": "2025-08-11 15:57:30.305625",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "SavvyEats",
@@ -94,6 +104,31 @@
  "quick_lists": [],
  "roles": [],
  "sequence_id": 2.0,
- "shortcuts": [],
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Dish Schedule",
+   "link_to": "Dish Schedule",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Subscriptions",
+   "link_to": "Sales Order",
+   "stats_filter": "[]",
+   "type": "DocType"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Deliveries",
+   "link_to": "Delivery Note",
+   "stats_filter": "[]",
+   "type": "DocType"
+  }
+ ],
  "title": "SavvyEats"
 }
