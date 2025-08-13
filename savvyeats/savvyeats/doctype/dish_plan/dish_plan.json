@@ -19,6 +19,7 @@
   "max_calories",
   "section_break_opyl",
   "background_image",
+  "details_background_image",
   "column_break_eoen",
   "dish_image"
  ],
@@ -107,12 +108,17 @@
    "label": "Week Plans",
    "options": "Dish Plan Week Plans",
    "reqd": 1
+  },
+  {
+   "fieldname": "details_background_image",
+   "fieldtype": "Attach Image",
+   "label": "Details Background Image"
   }
  ],
  "image_field": "dish_image",
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-12 13:21:41.522517",
+ "modified": "2025-08-13 12:16:18.563735",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",
