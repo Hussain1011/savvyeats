@@ -1,0 +1,812 @@
+[
+  {
+    "item_code": "Chicken Marination - Batch",
+    "item_name": "SR0001",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Lemon Juice - Batch",
+    "item_name": "SR0002",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Balsamic dressing - Batch",
+    "item_name": "SR0003",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mustard dressing - Batch",
+    "item_name": "SR0004",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Citrus dressing - Batch",
+    "item_name": "SR0005",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Curry yougurt dressing - Batch",
+    "item_name": "SR0006",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Caesar dressing - Batch",
+    "item_name": "SR0007",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Red vinegar dressing - Batch",
+    "item_name": "SR0008",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Asian dressing - Batch",
+    "item_name": "SR0009",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pesto sauce - Batch",
+    "item_name": "SR0010",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Tomato sauce - Batch",
+    "item_name": "SR0011",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked White Quinoa - Batch",
+    "item_name": "SR0012",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Risotto - Batch",
+    "item_name": "SR0013",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Lentil - Batch",
+    "item_name": "SR0014",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Brown rice - Batch",
+    "item_name": "SR0015",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Brown spaghetti cooked - Batch",
+    "item_name": "SR0016",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Fettutcini Pasta cooked - Batch",
+    "item_name": "SR0017",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Penne Pasta cooked - Batch",
+    "item_name": "SR0018",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Roasted Potato cooked - Batch",
+    "item_name": "SR0019",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Beef tenderloin - Batch",
+    "item_name": "SR0020",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Sea bream Filet - Batch",
+    "item_name": "SR0021",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Red snapper Filet - Batch",
+    "item_name": "SR0022",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Salmon Filet - Batch",
+    "item_name": "SR0023",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Shrimp - Batch",
+    "item_name": "SR0024",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Orange Juice - Batch",
+    "item_name": "SR0026",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mix Capsicum - Batch",
+    "item_name": "SR0027",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Red Quinoa - Batch",
+    "item_name": "SR0028",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Black Quinoa - Batch",
+    "item_name": "SR0029",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "White Fish - Batch",
+    "item_name": "SR0030",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "White Barley - Batch",
+    "item_name": "SR0031",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Sea Bass - Batch",
+    "item_name": "SR0032",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Orzo Pasta - Batch",
+    "item_name": "SR0033",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mince lean meat",
+    "item_name": "SR0034",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Sable Cookie - 1 piece",
+    "item_name": "SR0035",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Baked Omelet Muffin",
+    "item_name": "SR0036",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Lorraine's Quinoa Cupcake",
+    "item_name": "SR0037",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Zuuchini and oats Fritatte",
+    "item_name": "SR0038",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Cooked White Rice - Batch",
+    "item_name": "SR0039",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mashed Potato",
+    "item_name": "SR0040",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Sweet Potato",
+    "item_name": "SR0041",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Noodles",
+    "item_name": "SR0042",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Edamame Puree",
+    "item_name": "SR0043",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Risotto Rice",
+    "item_name": "SR0044",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Boiled baby potato",
+    "item_name": "SR0045",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pesto Mashed Potato",
+    "item_name": "SR0046",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Flawless Zucchini Muffins",
+    "item_name": "SR0047",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Carrots , Raisins and Walnut Cake",
+    "item_name": "SR0048",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Apple Cake",
+    "item_name": "SR0049",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Peanut Butter Chickpeas Cookies",
+    "item_name": "SR0050",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Banana Oats Muffins ",
+    "item_name": "SR0051",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Orange Berries Oats",
+    "item_name": "SR0052",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Chewy Granola",
+    "item_name": "SR0053",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Citronelle Muffin",
+    "item_name": "SR0054",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Cinnamon Coffee Cake",
+    "item_name": "SR0055",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Sweet Potato Avocado Brownie Bites",
+    "item_name": "SR0056",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Pumpkin cookies",
+    "item_name": "SR0057",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Protein Rice Cake treats",
+    "item_name": "SR0058",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Choco Oats Bar",
+    "item_name": "SR0059",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Avo choco mousse",
+    "item_name": "SR0060",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "EATS Bread with EATS Hummus",
+    "item_name": "SR0061",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Hummus Bi Tahini",
+    "item_name": "SR0062",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Almond Cacao Crunsh Bliss Ball",
+    "item_name": "SR0063",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pistachio Energy Balls",
+    "item_name": "SR0064",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Tahini Cookie Truffle",
+    "item_name": "SR0065",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Date Cake",
+    "item_name": "SR0066",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Strawberry choco oat dough",
+    "item_name": "SR0067",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Strawberry choco oats filling",
+    "item_name": "SR0068",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mexican Egg Muffin",
+    "item_name": "SR0069",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Chicken Pie - Dough",
+    "item_name": "SR0070",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Crispy chicken",
+    "item_name": "SR0071",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Demi Glace Sauce",
+    "item_name": "SR0072",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Broccoli & Mushroom Egg Muffin",
+    "item_name": "SR0036",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Lemon Dressing - Batch",
+    "item_name": "SR0073",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mocha Oats",
+    "item_name": "SR0074",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cooked Freekeh",
+    "item_name": "SR0075",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Lasagna Cooked",
+    "item_name": "SR0076",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Teryaki sauce",
+    "item_name": "SR0077",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Burger Patty",
+    "item_name": "SR0079",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pickle Mustard Mayo",
+    "item_name": "SR0080",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Gram burger sauce",
+    "item_name": "SR0081",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Breaded Chicken",
+    "item_name": "SR0082",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Croissant",
+    "item_name": "SR0083",
+    "uom": "PCs"
+  },
+  {
+    "item_code": "Creme Brule",
+    "item_name": "SR0084",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Custard cream",
+    "item_name": "SR0085",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Vanilla choco chips",
+    "item_name": "SR0086",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cacao Icing ",
+    "item_name": "SR0087",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pistachio icing",
+    "item_name": "SR0088",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Peanuts icing",
+    "item_name": "SR0089",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pistachio Vanilla",
+    "item_name": "SR0090",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Peanut Butter Paste",
+    "item_name": "SR0091",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Creme Brule Filling",
+    "item_name": "SR0092",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Blueberry Filling",
+    "item_name": "SR0093",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Peanut butter protein balls ",
+    "item_name": "SR0094",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pistachio Vegan Bar",
+    "item_name": "SR0095",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Lemon Thyme Chicken",
+    "item_name": "SR0096",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Cilantro Yogurt dressing ",
+    "item_name": "SR0097",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Chicken Escalope",
+    "item_name": "SR0098",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Creamy Mushroom Sauce",
+    "item_name": "SR0099",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pepper Sauce",
+    "item_name": "SR0100",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Brownie Cake - GRAMS",
+    "item_name": "SR0101",
+    "uom": "Pcs"
+  },
+  {
+    "item_code": "Green Salad Dressing",
+    "item_name": "SR0102",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pizza Base - GRAMS",
+    "item_name": "SR0103",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Zaatar Sumac Oil",
+    "item_name": "SR0104",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Balsamic Dressing GRAMS",
+    "item_name": "SR0105",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mushroom Soup",
+    "item_name": "SR0106",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Lentil Soup",
+    "item_name": "SR0107",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Roasted Pumpkin",
+    "item_name": "SR0108",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Pumpkin Soup",
+    "item_name": "SR0109",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Sauce for shrimp fried rice",
+    "item_name": "SR0110",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Mexican Deeping Sauce",
+    "item_name": "SR0111",
+    "uom": "Gr"
+  },
+  {
+    "item_code": "Marble Cake",
+    "item_name": "SR0112",
+    "uom": "pcs"
+  },
+  {
+    "item_code": "Carrot Cake",
+    "item_name": "SR0113",
+    "uom": "pcs"
+  },
+  {
+    "item_code": "Carrot Cake for TAM - Kc",
+    "item_name": "SR0114",
+    "uom": "pcs"
+  },
+  {
+    "item_code": "Mascarpone Rasberries",
+    "item_name": "SR0115",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Apricot Balls",
+    "item_name": "SR0116",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Zucchi-gna",
+    "item_name": "SR0117",
+    "uom": "gr"
+  },
+  {
+    "item_code": "American Rice",
+    "item_name": "SR0118",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Oriental Rice",
+    "item_name": "SR0119",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Tomato Rice",
+    "item_name": "SR0120",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Burger Patty Savvy",
+    "item_name": "SR0121",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Cocktel Dressing",
+    "item_name": "SR0122",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Falafel - Batch",
+    "item_name": "SR0123",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Apple Cider Vinegare Dressing",
+    "item_name": "SR0124",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Lime Chili Flax Dressing",
+    "item_name": "SR0125",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Chicken Skewers",
+    "item_name": "SR0126",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Ranch Dressing ",
+    "item_name": "SR0127",
+    "uom": "gr"
+  },
+  {
+    "item_code": "SAVVY Brownie",
+    "item_name": "SR0128",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Honey Sea Salt Vanilla Bar",
+    "item_name": "SR0129",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Lemony Coconut Energy Ballls",
+    "item_name": "SR0130",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Protein Granola Bar",
+    "item_name": "SR0131",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Soufflee",
+    "item_name": "SR0132",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Rosto Beef",
+    "item_name": "SR0133",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Potato Gratin",
+    "item_name": "SR0134",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Demi Glaze Mustard Sauce",
+    "item_name": "SR0135",
+    "uom": "gr"
+  },
+  {
+    "item_code": "BBQ sauce SAVVY",
+    "item_name": "SR0136",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Bechamel Sauce",
+    "item_name": "SR0137",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Macaroni Pasta",
+    "item_name": "SR0138",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Macaroni & Bechamel Sauce",
+    "item_name": "SR0139",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Chicken Rosto With Egg",
+    "item_name": "SR0140",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Roasted Sweet Potato cooked ",
+    "item_name": "SR0141",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Mexican Bolognese Sauce",
+    "item_name": "SR0142",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Rice For Paella",
+    "item_name": "SR0143",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Sauce for paella",
+    "item_name": "SR0144",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Creamy lemony sauce - Tacos",
+    "item_name": "SR0145",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Burger Salad ",
+    "item_name": "SR0146",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Sour Cream",
+    "item_name": "SR0147",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Blueberry Compote",
+    "item_name": "SR0148",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Chicken Pie -  Filling",
+    "item_name": "SR0149",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Beef Tenderloin - South Africa Chilled ",
+    "item_name": "SR0150",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Sauce Shakshuka ",
+    "item_name": "SR0151",
+    "uom": "gr"
+  },
+  {
+    "item_code": "White Rice With Raisin And Pistachio",
+    "item_name": "SR0152",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Oriental Spice Chicken ",
+    "item_name": "SR0153",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Quinoa Tabbouleh",
+    "item_name": "SR0154",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Tahini Yogurt Sauce",
+    "item_name": "SR0155",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Kibbeh",
+    "item_name": "SR0156",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Cabbage Salad ",
+    "item_name": "SR0157",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Mint Lemon Oil",
+    "item_name": "SR0158",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Fattouch",
+    "item_name": "SR0159",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Fattouch - Dressing",
+    "item_name": "SR0160",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Chicken for Freekeh",
+    "item_name": "SR0161",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Striploin Beef - Batch",
+    "item_name": "SR0162",
+    "uom": "gr"
+  },
+  {
+    "item_code": "Couscous - Batch",
+    "item_name": "SR0163",
+    "uom": "gr"
+  }
+]

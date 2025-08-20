@@ -10,8 +10,9 @@
   "section_break_slcj",
   "delivery_time_slot_name",
   "from_time",
+  "to_time",
   "column_break_gqeu",
-  "to_time"
+  "sorting_order"
  ],
  "fields": [
   {
@@ -52,11 +53,17 @@
   {
    "fieldname": "section_break_slcj",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sorting_order",
+   "fieldtype": "Int",
+   "label": "Sorting Order",
+   "non_negative": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-12 12:34:05.101960",
+ "modified": "2025-08-17 15:13:18.022018",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Delivery Time Slot",
@@ -79,5 +86,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

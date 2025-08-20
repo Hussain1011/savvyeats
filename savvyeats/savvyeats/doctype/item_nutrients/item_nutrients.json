@@ -8,7 +8,8 @@
  "field_order": [
   "nutrient",
   "uom",
-  "value"
+  "value",
+  "per_gram"
  ],
  "fields": [
   {
@@ -31,18 +32,25 @@
    "read_only": 1
   },
   {
-   "columns": 4,
+   "columns": 2,
    "fieldname": "value",
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Value",
    "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "per_gram",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Per Gram"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-04 15:40:08.378757",
+ "modified": "2025-08-13 13:19:58.355071",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Item Nutrients",

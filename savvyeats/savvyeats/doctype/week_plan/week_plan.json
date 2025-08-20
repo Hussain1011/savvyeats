@@ -25,7 +25,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-04 13:43:30.398600",
+ "modified": "2025-08-17 15:13:58.912926",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Week Plan",
@@ -47,5 +47,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

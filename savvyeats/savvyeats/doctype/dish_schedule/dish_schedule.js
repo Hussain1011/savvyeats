@@ -7,6 +7,12 @@ frappe.ui.form.on("Dish Schedule", {
 			frm.trigger("add_dish");
 		}).addClass("btn-primary");
 
+        if(!frm.doc.__islocal){
+            frm.add_custom_button(__("Publish"), function(){
+                frm.trigger("publish_schedule");
+            }).addClass("btn-warning");
+        }
+
 
 		frm.set_query("item_code", "items", function(doc, cdt, cdn) {
 			var cdoc = locals[cdt][cdn];
@@ -23,17 +29,26 @@ frappe.ui.form.on("Dish Schedule", {
 		});
 		render_meal_groups(frm);
 	},
+
+
+    publish_schedule: function(frm){
+        frappe.call({
+            method: "savvyeats.savvyeats.doctype.dish_schedule.dish_schedule.publish_dish_schedule",
+            args: {
+                dish_schedule_id:frm.doc.name
+            },
+            freeze: true,
+            callback: function(r){
+                frm.reload_doc();
+            }
+        });
+    },
+
+
 	add_dish: function(frm) {
 		let d = new frappe.ui.Dialog({
             title: 'Select Dish',
             fields: [
-                {
-                    fieldname: 'dish_plan',
-                    label: 'Dish Plan',
-                    fieldtype: 'Link',
-                    options: 'Dish Plan',
-                    reqd: 1
-                },
                 {
                     fieldname: 'meal',
                     label: 'Meal',
@@ -43,31 +58,47 @@ frappe.ui.form.on("Dish Schedule", {
                 },
                 {
                     fieldname: 'item',
-                    label: 'Item',
-                    fieldtype: 'Link',
-                    options: 'Item',
+                    label: 'Items',
+                    fieldtype: 'MultiSelectList',
                     reqd: 1,
-                    get_query: () => {
-						if (!d.get_value("dish_plan")){
-							frappe.throw(__("Select Dish Plan First"))
-						}
-                        return {
-                            filters: [["Item","item_category", "=", "Dish"], ["Item Dish Plans","dish_plan", "=", d.get_value("dish_plan")]]
-                        };
+                    description: __("First Selected Item is the Default Item."),
+                    get_data: function (txt) {
+                        return frappe.db.get_link_options('Item', txt, {
+                            item_category: 'Dish',
+                            has_variants: 1
+                        });
                     }
                 }
             ],
             primary_action_label: 'Add',
             primary_action(values) {
-                if (!values.dish_plan || !values.meal || !values.item) {
+                if (!values.meal || !values.item || values.item.length === 0) {
                     frappe.msgprint(__('Please fill all mandatory fields.'));
                     return;
                 }
-                frm.add_child("items", {"dish_plan":values.dish_plan, "meal": values.meal, "item_code": values.item})
+
+                const selections = Array.isArray(values.item)
+                    ? values.item.map(x => (typeof x === 'string' ? x : x.value))
+                    : String(values.item).split(',').map(s => s.trim()).filter(Boolean);
+
+                frm.call({
+                    method: "add_items", 
+                    doc: frm.doc,
+                    args: {
+                        meal: values.meal,
+                        items: selections
+                    },
+                    freeze: true,
+                    callback: function(r){
+                        frm.reload_doc();
+                    }
+                });
+
                 frm.refresh_fields();
                 d.hide();
             }
         });
+
 
         d.show();
 	}

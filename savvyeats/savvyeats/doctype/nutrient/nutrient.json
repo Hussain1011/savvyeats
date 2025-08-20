@@ -7,7 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "nutrient",
-  "uom"
+  "uom",
+  "column_break_mikt",
+  "sorting_order"
  ],
  "fields": [
   {
@@ -26,11 +28,21 @@
    "label": "UOM",
    "options": "UOM",
    "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mikt",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sorting_order",
+   "fieldtype": "Int",
+   "label": "Sorting Order",
+   "non_negative": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-06 14:31:15.535725",
+ "modified": "2025-08-17 15:14:23.794902",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Nutrient",
@@ -53,5 +65,6 @@
  "quick_entry": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

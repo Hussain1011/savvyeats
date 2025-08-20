@@ -9,11 +9,12 @@
   "dish_plan",
   "meal",
   "item_code",
-  "item_name"
+  "item_name",
+  "default"
  ],
  "fields": [
   {
-   "columns": 6,
+   "columns": 5,
    "fieldname": "item_code",
    "fieldtype": "Link",
    "in_list_view": 1,
@@ -45,12 +46,20 @@
    "label": "Dish Plan",
    "options": "Dish Plan",
    "reqd": 1
+  },
+  {
+   "columns": 1,
+   "default": "0",
+   "fieldname": "default",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Default"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-10 13:08:10.709494",
+ "modified": "2025-08-17 10:10:55.110708",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Schedule Items",

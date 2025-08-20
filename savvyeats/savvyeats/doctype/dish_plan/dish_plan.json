@@ -10,9 +10,10 @@
   "section_break_dlwc",
   "plan_name",
   "plan_description",
+  "sorting_order",
   "column_break_xatb",
+  "default_pricing_plan",
   "week_plans",
-  "meals",
   "section_break_gezu",
   "min_calories",
   "column_break_zlhp",
@@ -85,13 +86,6 @@
    "fieldtype": "Column Break"
   },
   {
-   "fieldname": "meals",
-   "fieldtype": "Table MultiSelect",
-   "label": "Meals",
-   "options": "Dish Plan Meals",
-   "reqd": 1
-  },
-  {
    "default": "0",
    "fieldname": "enabled",
    "fieldtype": "Check",
@@ -113,12 +107,30 @@
    "fieldname": "details_background_image",
    "fieldtype": "Attach Image",
    "label": "Details Background Image"
+  },
+  {
+   "fieldname": "sorting_order",
+   "fieldtype": "Int",
+   "label": "Sorting Order",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "default_pricing_plan",
+   "fieldtype": "Link",
+   "label": "Default Pricing Plan",
+   "options": "Dish Plan Pricing"
   }
  ],
  "image_field": "dish_image",
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-08-13 12:16:18.563735",
+ "links": [
+  {
+   "group": "Pricing",
+   "link_doctype": "Dish Plan Pricing",
+   "link_fieldname": "dish_plan"
+  }
+ ],
+ "modified": "2025-08-17 15:38:05.893581",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",
@@ -140,5 +152,6 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "track_changes": 1
 }

@@ -8,15 +8,27 @@ def get_app_settings():
 
 @frappe.whitelist(methods=["GET"])
 def get_setup_data():
-	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1})
-	allergens = frappe.get_all("Allergen", filters={"enabled": 1})
-	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"])
+	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1}, order_by="sorting_order asc")
+	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
+	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"], order_by="sorting_order asc")
 	data = {"allergens": allergens, "delivery_time_slots": delivery_time_slots, "dish_plans": []}
+
+	def get_pricing(dish_plan_pricing):
+		if not dish_plan_pricing:
+			return {}
+		a = frappe.get_cached_doc("Dish Plan Pricing", dish_plan_pricing, ignore_permmission=True).as_dict()
+		for d in a.meals:
+			d.doc = frappe.get_cached_doc("Meal", d.meal, ignore_permmission=True)
+		return a
 
 	for ds in dish_plans:
 		dish_plan = frappe.get_cached_doc("Dish Plan", ds.name, ignore_permmission=True).as_dict()
-		for m in dish_plan.meals:
-			m.doc = frappe.get_cached_doc("Meal", m.meal, ignore_permmission=True)
+
+		dish_plan.default_pricing_plan_doc = get_pricing(dish_plan.default_pricing_plan)
+		pricings = frappe.get_all("Dish Plan Pricing", filters={"enabled": 1, "dish_plan": dish_plan.name})
+		dish_plan.pricings = []
+		for d in pricings:
+			dish_plan.pricings.append(get_pricing(d.name))
 		for wp in dish_plan.week_plans:
 			week_plan = frappe.get_cached_doc("Week Plan", wp.week_plan, ignore_permmission=True)
 			wp.doc = week_plan

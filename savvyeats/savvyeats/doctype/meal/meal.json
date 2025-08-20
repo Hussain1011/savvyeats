@@ -11,6 +11,7 @@
   "meal_name",
   "mandatory",
   "column_break_axfn",
+  "sorting_order",
   "section_break_isgc",
   "quotes"
  ],
@@ -54,11 +55,16 @@
   {
    "fieldname": "section_break_boip",
    "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "sorting_order",
+   "fieldtype": "Int",
+   "label": "Sorting Order"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-12 12:34:31.752828",
+ "modified": "2025-08-17 12:02:29.340050",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Meal",
