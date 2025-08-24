@@ -6,6 +6,12 @@ def get_app_settings():
 	doc = frappe.get_cached_doc("App Settings", "App Settings", ignore_permmission=True)
 	return send_success_response("", "",doc)
 
+
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+def get_customer_support_details():
+	doc = frappe.get_cached_doc("Customer Support", "Customer Support", ignore_permmission=True)
+	return send_success_response("", "",doc)
+
 @frappe.whitelist(methods=["GET"])
 def get_setup_data():
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1}, order_by="sorting_order asc")

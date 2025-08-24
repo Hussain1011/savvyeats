@@ -208,13 +208,15 @@ def add_items(order_id, items):
 
 @frappe.whitelist(methods=["GET"])
 def get_addresses():
-	addresses = frappe.get_all("Address", filters=[["Dynamic Link", "link_doctype", "=", "User"], ["Dynamic Link", "link_name", "=", frappe.session.user]], fields=["*"])
+	addresses = frappe.get_all("Address", filters=[["Dynamic Link", "link_doctype", "=", "User"], ["Dynamic Link", "link_name", "=", frappe.session.user]], fields=[])
+	for d in addresses:
+		d.doc = frappe.get_doc("Address", d.name)
 
 	return send_success_response("", "", addresses)
 
 
 @frappe.whitelist(methods=["POST"])
-def update_address(address_id, data):
+def update_address(order_id, address_id, data):
 	doc = frappe.get_doc("Address", address_id)
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}

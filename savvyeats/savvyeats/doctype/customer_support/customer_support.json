@@ -1,0 +1,64 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-24 16:45:51.002432",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "support_phone",
+  "column_break_bdlr",
+  "support_email",
+  "section_break_bstj",
+  "faqs"
+ ],
+ "fields": [
+  {
+   "fieldname": "support_phone",
+   "fieldtype": "Phone",
+   "label": "Support Phone"
+  },
+  {
+   "fieldname": "column_break_bdlr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "support_email",
+   "fieldtype": "Data",
+   "label": "Support Email",
+   "options": "Email"
+  },
+  {
+   "fieldname": "section_break_bstj",
+   "fieldtype": "Section Break",
+   "label": "FAQ's"
+  },
+  {
+   "fieldname": "faqs",
+   "fieldtype": "Table",
+   "options": "Custom Support FAQ"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2025-08-24 16:48:22.666148",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Customer Support",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

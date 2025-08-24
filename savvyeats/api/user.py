@@ -111,6 +111,102 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 	return send_success_response(message_en, message_ar, data)
 
 
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def forget_send_otp(mobile_no: str):
+	user = frappe.db.get("User", {"mobile_no": mobile_no})
+
+	if not user:
+		message_en = "User with this Phone number does not exist."
+		message_ar = "المستخدم بهذا رقم الهاتف غير موجود."
+
+		errors = {
+			"not_found": ["User with this Phone number does not exist."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	if frappe.db.get_creation_count("OTP Verification", 60) > 300:
+		message_en = "Too many OTP verification attempts were made recently, so the verification is temporarily disabled. Please try again in an hour."
+		message_ar = "تم إيقاف التحقق مؤقتًا بسبب كثرة محاولات إدخال رمز التحقق. يرجى المحاولة مرة أخرى خلال ساعة."
+
+		errors = {
+			"otp_limit": ["Too many OTP verification attempts were made recently, so the verification is temporarily disabled. Please try again in an hour."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	otp = random.randint(100000, 999999)
+	otp_verification = frappe.get_doc(
+		{
+			"doctype": "OTP Verification",
+			"mobile_no": mobile_no,
+			"verification_type": "Mobile No",
+			"otp": 123456,
+			"expiry": add_to_date(None, minutes=5)
+		}
+	)
+	otp_verification.flags.ignore_permissions = True
+	otp_verification.insert()
+	message_en = "A one-time password (OTP) has been successfully sent to your mobile number via SMS."
+	message_ar = "تم إرسال كلمة المرور لمرة واحدة (OTP) إلى رقم هاتفك المحمول عبر الرسائل النصية بنجاح."
+	return send_success_response(message_en, message_ar)
+
+
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def forget_verify_otp(otp: int, mobile_no: str):
+	user = frappe.db.get("User", {"mobile_no": mobile_no})
+
+	if not user:
+		message_en = "User with this Phone number does not exist."
+		message_ar = "المستخدم بهذا رقم الهاتف غير موجود."
+
+		errors = {
+			"not_found": ["User with this Phone number does not exist."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
+	if not otp_verification:
+		message_en = "The OTP is invalid or has expired. Please request a new one."
+		message_ar = "رمز التحقق غير صالح أو منتهي الصلاحية. يرجى طلب رمز جديد."
+		errors = {
+			"otp_error": ["The OTP is invalid or has expired. Please request a new one."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	message_en = "OTP verified successfully."
+	message_ar = "تم التحقق من رمز التحقق بنجاح."
+	data={}
+	return send_success_response(message_en, message_ar, data)
+
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def update_password(otp: int, mobile_no: str):
+	user = frappe.db.get("User", {"mobile_no": mobile_no})
+
+	if not user:
+		message_en = "User with this Phone number does not exist."
+		message_ar = "المستخدم بهذا رقم الهاتف غير موجود."
+
+		errors = {
+			"not_found": ["User with this Phone number does not exist."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
+	if not otp_verification:
+		message_en = "The OTP is invalid or has expired. Please request a new one."
+		message_ar = "رمز التحقق غير صالح أو منتهي الصلاحية. يرجى طلب رمز جديد."
+		errors = {
+			"otp_error": ["The OTP is invalid or has expired. Please request a new one."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	message_en = "OTP verified successfully."
+	message_ar = "تم التحقق من رمز التحقق بنجاح."
+	data={}
+	return send_success_response(message_en, message_ar, data)
+
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def login(email: str, password: str):
 	try:
@@ -151,6 +247,25 @@ def login(email: str, password: str):
 			"authenticate_failed": ["Authentication failed. Please check your credentials and try again."]
 		}
 		return send_error_response(message_en, message_ar, errors)
+
+@frappe.whitelist(methods=["POST"], allow_guest=True)
+def update_details(data):
+	allowed_fields = {"first_name", "gender", "phone", "birth_date", "hear_about_us", "referred_by", "general_notifications", "security_alerts", "weekly_progress_summary", "goal_achievment", "milestone_celebration", "health_tips_and_article", "subscription_and_alerts", "social_and_community", "do_not_disturb", "special_offers"}
+	clean_data = {k: v for k, v in data.items() if k in allowed_fields}
+
+	user = frappe.get_doc("User", frappe.session.user)
+	user.flags.ignore_validate = True
+	user.flags.ignore_permissions = True
+	user.flags.ignore_mandatory = True
+	user.update(clean_data)
+	user.save()
+
+	frappe.db.commit()
+
+	message_en = "User Information updated successfully."
+	message_ar = "تم تحديث معلومات الاتصال بنجاح."
+
+	return send_success_response(message_en, message_ar, {})
         
 def send_error_response(message_en, message_ar, errors, code=417):
 	return {
