@@ -231,6 +231,7 @@ def update_address(address_id, data):
 	doc.flags.ignore_permissions = True
 	doc.flags.ignore_mandatory = True
 	doc.update(clean_data)
+	doc.address_line1 = "Zone {0}, Street No {1}, Building No {2}, Unit No {3}".format(doc.zone, doc.street_no, doc.building_no, doc.unit_no)
 	doc.save()
 	frappe.db.commit()
 	message_en = "Address updated successfully."
@@ -246,10 +247,10 @@ def add_address(data):
 	doc.update(clean_data)
 	doc.links = []
 	doc.append("links",{"link_doctype": "User", "link_name": frappe.session.user})
+	doc.address_line1 = "Zone {0}, Street No {1}, Building No {2}, Unit No {3}".format(doc.zone, doc.street_no, doc.building_no, doc.unit_no)
 	doc.flags.ignore_validate = True
 	doc.flags.ignore_permissions = True
 	doc.flags.ignore_mandatory = True
-	
 	doc.save()
 	frappe.db.commit()
 
