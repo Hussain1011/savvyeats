@@ -12,7 +12,7 @@ def get_customer_support_details():
 	doc = frappe.get_cached_doc("Customer Support", "Customer Support", ignore_permmission=True)
 	return send_success_response("", "",doc)
 
-@frappe.whitelist(methods=["GET"])
+@frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_setup_data():
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
