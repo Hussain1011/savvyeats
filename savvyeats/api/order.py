@@ -3,6 +3,7 @@ from frappe import _
 from frappe.utils import getdate
 from savvyeats.api.user import send_error_response, send_success_response
 import json
+from savvyeats.custom.sales_order_savvyeats import sales_order_delivery
 
 @frappe.whitelist(methods=["GET"])
 def get_draft_order(new=False):
@@ -131,6 +132,8 @@ def update_draft_order(order_id, data):
 	if "allergens" in clean_data:
 		order.allergens = []
 
+	sales_order_delivery(order)
+
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
@@ -212,41 +215,42 @@ def get_addresses():
 
 @frappe.whitelist(methods=["POST"])
 def update_address(address_id, data):
-	address = frappe.get_doc("Address", address_id)
+	doc = frappe.get_doc("Address", address_id)
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
 	if "delivery_days" in clean_data:
-		address.delivery_days = []
-	address.update(clean_data)
-	address.flags.ignore_validate = True
-	address.flags.ignore_permissions = True
-	address.flags.ignore_mandatory = True
-	address.update(clean_data)
-	address.save()
+		doc.delivery_days = []
+	doc.update(clean_data)
+	doc.flags.ignore_validate = True
+	doc.flags.ignore_permissions = True
+	doc.flags.ignore_mandatory = True
+	doc.update(clean_data)
+	doc.save()
 	frappe.db.commit()
-	message_en_update = "Address updated successfully."
-	message_ar_update = "تم تحديث العنوان بنجاح."
-	return send_success_response(message_en, message_ar, address)
+	message_en = "Address updated successfully."
+	message_ar = "تم تحديث العنوان بنجاح."
+	return send_success_response(message_en, message_ar, doc)
 
 
 @frappe.whitelist(methods=["POST"])
 def add_address(data):
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
-	address = frappe.get_doc("Address", data)
-	address.links = []
-	address.links.append({"link_doctype": "User", "link_name": frappe.session.user})
-
-	address.flags.ignore_validate = True
-	address.flags.ignore_permissions = True
-	address.flags.ignore_mandatory = True
-	address.save()
+	doc = frappe.new_doc("Address")
+	doc.update(clean_data)
+	doc.links = []
+	doc.append("links",{"link_doctype": "User", "link_name": frappe.session.user})
+	doc.flags.ignore_validate = True
+	doc.flags.ignore_permissions = True
+	doc.flags.ignore_mandatory = True
+	
+	doc.save()
 	frappe.db.commit()
 
-	message_en_create = "Address created successfully."
-	message_ar_create = "تم إنشاء العنوان بنجاح."
+	message_en = "Address created successfully."
+	message_ar = "تم إنشاء العنوان بنجاح."
 
-	return send_success_response(message_en, message_ar, order)
+	return send_success_response(message_en, message_ar, doc)
 
 
 @frappe.whitelist(methods=["POST"])
@@ -298,7 +302,7 @@ def submit_order(order_id):
 			"access_denied": ["Access denied. This order does not belong to your account."]
 		}
 		return send_error_response(message_en, message_ar, errors)
-		
+
 	order.flags.ignore_permissions = True
 	order.submit()
 	frappe.db.commit()

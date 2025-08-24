@@ -8,6 +8,9 @@ WEEKDAY_MAP = {
 }
 
 def validate(self, method):
+	sales_order_delivery(self)
+
+def sales_order_delivery(self):
 	if self.period_type and self.period_count and self.start_date:
 		if self.period_type.lower() == "week":
 			self.end_date = add_to_date(self.start_date, weeks=self.period_count)
@@ -24,7 +27,6 @@ def validate(self, method):
 		self.delivery_dates = []
 		for d in dates:
 			self.append("delivery_dates", {"delivery_date": d, "day": d.strftime("%A"), "status": "Pending"})
-
 
 def delivery_schedule(start_date, end_date, planned_days, inclusive=True):
 	if not (start_date and end_date and planned_days):
