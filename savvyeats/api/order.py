@@ -96,6 +96,7 @@ def _reset_sales_order_in_place(order):
 	order.items = []
 	order.meals = []
 	order.taxes = []
+	order.addresses = []
 	order.week_plan = ""
 	order.delivery_time_slot = ""
 	order.start_date = ""
