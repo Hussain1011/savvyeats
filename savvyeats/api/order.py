@@ -132,6 +132,9 @@ def update_draft_order(order_id, data):
 	if "allergens" in clean_data:
 		order.allergens = []
 
+	if "addresses" in clean_data:
+		order.addresses = []
+
 	sales_order_delivery(order)
 
 	order.flags.ignore_validate = True
@@ -216,7 +219,7 @@ def get_addresses():
 
 
 @frappe.whitelist(methods=["POST"])
-def update_address(order_id, address_id, data):
+def update_address(address_id, data):
 	doc = frappe.get_doc("Address", address_id)
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
