@@ -31,13 +31,13 @@ def send_otp(email: str, mobile_no: str):
 			"singup_limit": ["Too many users signed up recently, so the registration is temporarily disabled. Please try again in an hour."]
 		}
 		return send_error_response(message_en, message_ar, errors)
-	otp = random.randint(100000, 999999)
+
 	otp_verification = frappe.get_doc(
 		{
 			"doctype": "OTP Verification",
 			"mobile_no": mobile_no,
 			"verification_type": "Mobile No",
-			"otp": 123456,
+			"otp": get_otp(),
 			"expiry": add_to_date(None, minutes=5)
 		}
 	)
@@ -140,7 +140,7 @@ def forget_send_otp(mobile_no: str):
 			"doctype": "OTP Verification",
 			"mobile_no": mobile_no,
 			"verification_type": "Mobile No",
-			"otp": 123456,
+			"otp": get_otp(),
 			"expiry": add_to_date(None, minutes=5)
 		}
 	)
@@ -181,9 +181,8 @@ def forget_verify_otp(otp: int, mobile_no: str):
 
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
-def update_password(otp: int, mobile_no: str):
+def update_password(otp: int, mobile_no: str, password):
 	user = frappe.db.get("User", {"mobile_no": mobile_no})
-
 	if not user:
 		message_en = "User with this Phone number does not exist."
 		message_ar = "المستخدم بهذا رقم الهاتف غير موجود."
@@ -195,15 +194,31 @@ def update_password(otp: int, mobile_no: str):
 
 	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
 	if not otp_verification:
-		message_en = "The OTP is invalid or has expired. Please request a new one."
-		message_ar = "رمز التحقق غير صالح أو منتهي الصلاحية. يرجى طلب رمز جديد."
+		message_en = "The password update link has expired. Please request a new one."
+		message_ar = "رابط تحديث كلمة المرور منتهي الصلاحية. يرجى طلب رابط جديد."
+
 		errors = {
-			"otp_error": ["The OTP is invalid or has expired. Please request a new one."]
+			"expired": ["The OTP is invalid or has expired. Please request a new one."]
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	message_en = "OTP verified successfully."
-	message_ar = "تم التحقق من رمز التحقق بنجاح."
+	doc = frappe.get_doc("User", frappe.session.user)
+	doc.new_password = password
+	doc.flags.ignore_permissions = True
+	try:
+		doc.save()
+	except Exception as e:
+		message_en = "This password is too common. Please choose a more secure one."
+		message_ar = "هذه كلمة مرور شائعة جدًا. يرجى اختيار كلمة مرور أكثر أمانًا."
+
+		errors = {
+			"common": ["This password is too common. Please choose a more secure one."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	message_en = "Password updated successfully."
+	message_ar = "تم تحديث كلمة المرور بنجاح."
+
 	data={}
 	return send_success_response(message_en, message_ar, data)
 
@@ -247,6 +262,11 @@ def login(email: str, password: str):
 			"authenticate_failed": ["Authentication failed. Please check your credentials and try again."]
 		}
 		return send_error_response(message_en, message_ar, errors)
+
+def get_otp():
+	otp = random.randint(100000, 999999)
+	otp = 123456
+	return otp
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def update_details(data):

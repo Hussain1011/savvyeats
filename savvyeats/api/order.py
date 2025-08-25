@@ -124,7 +124,7 @@ def update_draft_order(order_id, data):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	protected_keys = {"name", "doctype", "owner", "customer"}
+	protected_keys = {"name", "doctype", "owner", "customer", "items"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
 
 	if "meals" in clean_data:
@@ -150,6 +150,42 @@ def update_draft_order(order_id, data):
 
 	return send_success_response(message_en, message_ar, order)
 
+
+@frappe.whitelist(methods=["POST"])
+def validate_draft_order(order_id, data):
+	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+	if order.owner != frappe.session.user:
+		message_en = "Access denied. This order does not belong to your account."
+		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
+
+		errors = {
+			"access_denied": ["Access denied. This order does not belong to your account."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	protected_keys = {"name", "doctype", "owner", "customer", "items"}
+	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
+
+	if "meals" in clean_data:
+		order.meals = []
+
+	if "allergens" in clean_data:
+		order.allergens = []
+
+	if "addresses" in clean_data:
+		order.addresses = []
+
+	sales_order_delivery(order)
+
+	order.flags.ignore_permissions = True
+	order.update(clean_data)
+	order.save()
+	frappe.db.commit()
+
+	message_en = "Order updated successfully."
+	message_ar = "تم تحديث الطلب بنجاح."
+
+	return send_success_response(message_en, message_ar, order)
 
 @frappe.whitelist(methods=["POST"])
 def add_items(order_id, items):
@@ -258,6 +294,32 @@ def add_address(data):
 	message_ar = "تم إنشاء العنوان بنجاح."
 
 	return send_success_response(message_en, message_ar, doc)
+
+
+@frappe.whitelist(methods=["POST"])
+def remove_address(address_id):
+	address = frappe.get_all("Address", filters=[["Dynamic Link", "link_doctype", "=", "User"], ["Dynamic Link", "link_name", "=", frappe.session.user], ["Address", "name", "=", address_id]], fields=[])
+	if not address:
+		message_en = "Address not found or does not belong to your account."
+		message_ar = "العنوان غير موجود أو لا يخص حسابك."
+
+		errors = {
+			"access_denied": ["Address not found or does not belong to your account."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	doc = frappe.get_doc("Address", address_id)
+	doc.links = []
+	doc.flags.ignore_permissions = True
+	doc.save()
+	frappe.db.commit()
+
+	message_en = "Address removed successfully."
+	message_ar = "تم حذف العنوان بنجاح."
+
+	return send_success_response(message_en, message_ar, doc)
+
+
 
 
 @frappe.whitelist(methods=["POST"])

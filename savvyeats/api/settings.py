@@ -6,6 +6,12 @@ def get_app_settings():
 	doc = frappe.get_cached_doc("App Settings", "App Settings", ignore_permmission=True)
 	return send_success_response("", "",doc)
 
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+def get_about_savvy():
+	doc = frappe.get_cached_doc("Web Page", "about-savvy", ignore_permmission=True)
+
+	return send_success_response("", "",doc.main_section_html)
+
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_customer_support_details():
