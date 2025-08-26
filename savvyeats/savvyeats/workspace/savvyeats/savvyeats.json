@@ -93,7 +93,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-08-11 15:57:30.305625",
+ "modified": "2025-08-26 12:01:03.191206",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "SavvyEats",
@@ -122,11 +122,12 @@
    "type": "DocType"
   },
   {
-   "color": "Grey",
+   "color": "Red",
    "doc_view": "List",
+   "format": "{} Today",
    "label": "Deliveries",
    "link_to": "Delivery Note",
-   "stats_filter": "[]",
+   "stats_filter": "[[\"Delivery Note\",\"posting_date\",\"Timespan\",\"today\",false]]",
    "type": "DocType"
   }
  ],

@@ -8,7 +8,8 @@
  "field_order": [
   "day",
   "delivery_date",
-  "status"
+  "status",
+  "address"
  ],
  "fields": [
   {
@@ -32,14 +33,20 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nScheduled\nDelivered",
+   "options": "Pending\nOn Hold\nScheduled\nDelivered",
    "reqd": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-11 15:09:17.404481",
+ "modified": "2025-08-26 14:18:35.825555",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Sales Order Delivery Days",

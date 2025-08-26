@@ -12,6 +12,18 @@ def get_about_savvy():
 
 	return send_success_response("", "",doc.main_section_html)
 
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+def get_terms_and_conditions():
+	doc = frappe.get_cached_doc("Web Page", "terms-and-conditions", ignore_permmission=True)
+
+	return send_success_response("", "",doc.main_section_html)
+
+@frappe.whitelist(methods=["GET"], allow_guest=True)
+def get_privacy_policy():
+	doc = frappe.get_cached_doc("Web Page", "terms-and-conditions", ignore_permmission=True)
+
+	return send_success_response("", "",doc.main_section_html)
+
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_customer_support_details():

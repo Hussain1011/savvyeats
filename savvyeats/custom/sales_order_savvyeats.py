@@ -27,6 +27,8 @@ def sales_order_delivery(self):
 		self.delivery_dates = []
 		for d in dates:
 			self.append("delivery_dates", {"delivery_date": d, "day": d.strftime("%A"), "status": "Pending"})
+	if self.pause_start_date and self.pause_end_date:
+		pass
 
 def delivery_schedule(start_date, end_date, planned_days, inclusive=True):
 	if not (start_date and end_date and planned_days):
