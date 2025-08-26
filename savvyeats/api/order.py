@@ -222,8 +222,9 @@ def add_items(order_id, items):
 			d.meal = data["meal"]
 			d.delivery_date = getdate(data["delivery_date"])
 			d.note = data["note"]
-			d.qty = 1
+			d.qty = int(data["qty"]) if data["qty"] and int(data["qty"]) > 1 else 1
 			d.rate = pricing_plan_meals[d.meal]
+			d.extra_portion = 1 if data["extra_portion"] and d.qty > 1 else 0
 			del item_dict[key]
 
 	for i,v in item_dict.items():
