@@ -1,7 +1,8 @@
 import frappe
 from savvyeats.api.user import send_error_response, send_success_response
-from frappe.utils import getdate,get_date_str
+from frappe.utils import getdate, get_date_str
 import json
+from erpnext.stock.get_item_details import get_item_price
 
 @frappe.whitelist(methods=["GET"])
 def get_plan_items(order_id):
@@ -36,7 +37,23 @@ def get_plan_items(order_id):
 
 	return send_success_response("", "", data)
 
+@frappe.whitelist(methods=["GET"])
+def get_add_ons():
+	addons = frappe.get_all("Item", filters={"disabled": 0, "item_category": "Add-on"})
+	selling_price_list = frappe.db.get_value("Selling Settings", None, "selling_price_list")
+	args = {
+		"price_list": selling_price_list,
+		"transaction_date": getdate()
+	}
 
+	for d in addons:
+		d.doc = frappe.get_cached_doc("Item", d.name)
+		args["uom"] = d.doc.stock_uom
+		price = get_item_price(args, d.name)
+		if price:
+			d.rate = price[0][1]
+
+	return send_success_response("", "", addons)
 
 
 

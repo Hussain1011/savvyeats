@@ -200,7 +200,7 @@ def add_items(order_id, items):
 		return send_error_response(message_en, message_ar, errors)
 
 	if not order.dish_plan_pricing:
-		order.dish_plan_pricing = frappe.db.get_value("Dish Plan", order.dish_plan, "dish_plan_pricing")
+		order.dish_plan_pricing = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
 	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
 
 	pricing_plan_meals = {}
@@ -218,6 +218,7 @@ def add_items(order_id, items):
 		key = (d.meal or "", getdate(d.delivery_date) or "")
 		if key in item_dict:
 			data = item_dict[key]
+			print(data)
 			d.item_code = data["item_code"]
 			d.meal = data["meal"]
 			d.delivery_date = getdate(data["delivery_date"])
