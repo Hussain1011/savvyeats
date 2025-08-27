@@ -218,7 +218,6 @@ def add_items(order_id, items):
 		key = (d.meal or "", getdate(d.delivery_date) or "")
 		if key in item_dict:
 			data = item_dict[key]
-			print(data)
 			d.item_code = data["item_code"]
 			d.meal = data["meal"]
 			d.delivery_date = getdate(data["delivery_date"])

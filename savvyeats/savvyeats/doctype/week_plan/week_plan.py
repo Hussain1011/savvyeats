@@ -9,6 +9,7 @@ from frappe import _
 class WeekPlan(Document):
 	def validate(self):
 		self.validate_duplicates()
+		self.clear_cache()
 
 	def validate_duplicates(self):
 		days = []
@@ -16,4 +17,7 @@ class WeekPlan(Document):
 			if d.day in days:
 				frappe.throw(_("Duplicate Entry for Day: <b>{0}</b>".format(d.day)))
 			days.append(d.day)
+
+	def on_update(self):
+		frappe.get_cached_doc(self.doctype, self.name)
 			
