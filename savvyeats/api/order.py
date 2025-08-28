@@ -219,7 +219,7 @@ def add_items(order_id, items):
 		if key in item_dict:
 			data = item_dict[key]
 			d.item_code = data["item_code"]
-			d.meal = data["meal"]
+			d.meal = data["meal"] if data["meal"] else ""
 			d.delivery_date = getdate(data["delivery_date"])
 			d.note = data["note"]
 			d.qty = int(data["qty"]) if data["qty"] and int(data["qty"]) > 1 else 1
@@ -230,11 +230,12 @@ def add_items(order_id, items):
 	for i,v in item_dict.items():
 		row = order.append("items")
 		row.item_code = v["item_code"]
-		row.meal = v["meal"]
+		row.meal = v["meal"] if v["meal"] else ""
 		row.delivery_date = getdate(v["delivery_date"])
 		row.note = v["note"]
 		row.qty = 1
-		row.rate = pricing_plan_meals[v["meal"]]
+		if v["meal"]:
+			row.rate = pricing_plan_meals[v["meal"]]
 
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
