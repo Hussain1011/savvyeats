@@ -1,0 +1,79 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:gateway",
+ "creation": "2025-09-02 10:51:00.057292",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "gateway",
+  "gateway_account",
+  "column_break_vzjo",
+  "gateway_settings",
+  "gateway_controller"
+ ],
+ "fields": [
+  {
+   "fieldname": "gateway",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Gateway ",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "gateway_settings",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Gateway Settings",
+   "link_filters": "[[\"DocType\",\"module\",\"=\",\"Payment Integration\"]]",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gateway_controller",
+   "fieldtype": "Dynamic Link",
+   "in_list_view": 1,
+   "label": "Gateway Controller",
+   "options": "gateway_settings",
+   "reqd": 1
+  },
+  {
+   "fieldname": "gateway_account",
+   "fieldtype": "Link",
+   "label": "Gateway Account",
+   "link_filters": "[[\"Account\",\"is_group\",\"=\",0]]",
+   "options": "Account",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_vzjo",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-02 11:29:53.212223",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "Payment Gateway",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

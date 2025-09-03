@@ -1,13 +1,42 @@
-// Client Script for "Sales Order"
-
 frappe.ui.form.on('Sales Order', {
   refresh(frm) {
     if (!frm.is_new()) {
       frm.add_custom_button('Plan Meals', () => open_meal_dialog(frm)).addClass("btn-primary");
+      frm.add_custom_button('Update Owner', function(){
+        frm.trigger("update_owner");
+      }).addClass("btn-primary");
+
     }
+  },
+  update_owner: function(frm){
+    const d = new frappe.ui.Dialog({
+      title: 'Update Owner',
+      fields: [{
+              "fieldtype": "Link",
+              "fieldname": "owner",
+              "label": __("Owner"),
+              "options": "User",
+              "reqd": 1
+            }],
+      primary_action_label: 'Update',
+      primary_action(values) {
+        frappe.call({
+          method: "savvyeats.custom.sales_order_savvyeats.update_owner",
+          args: {
+            sales_order: frm.doc.name,
+            owner: values.owner
+          },
+          freeze: true,
+          callback: function(r){
+            frm.reload_doc();
+            d.hide();
+          }
+        })
+      }
+    });
+    d.show();
   }
 });
-
 function open_meal_dialog(frm) {
   if (!Array.isArray(frm.doc.meals) || frm.doc.meals.length === 0) {
     frappe.msgprint(__('Please add rows to the "meals" child table first.'));

@@ -1,6 +1,8 @@
 import frappe
 from frappe.utils import getdate, add_to_date, date_diff
 from datetime import timedelta
+from frappe import _
+from savvyeats.api.user import send_error_response, send_success_response
 
 WEEKDAY_MAP = {
 	"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3,
@@ -9,6 +11,10 @@ WEEKDAY_MAP = {
 
 def validate(self, method):
 	sales_order_delivery(self)
+
+@frappe.whitelist()
+def update_owner(sales_order, owner):
+	frappe.db.set_value("Sales Order",sales_order, "owner", owner, update_modified=False)
 
 def sales_order_delivery(self):
 	if self.period_type and self.period_count and self.start_date:
@@ -27,8 +33,60 @@ def sales_order_delivery(self):
 		self.delivery_dates = []
 		for d in dates:
 			self.append("delivery_dates", {"delivery_date": d, "day": d.strftime("%A"), "status": "Pending"})
+	
 	if self.pause_start_date and self.pause_end_date:
 		pass
+
+
+def validate_addresses(self, throw=True):
+	if not self.addresses:
+		if throw:
+			frappe.throw(_("Addresses are mandatory to Proceed"))
+		else:
+			message_en = "Addresses are mandatory to proceed."
+			message_ar = "العناوين إلزامية للمتابعة."
+
+			errors = {
+				"error": ["Addresses are mandatory to proceed."]
+			}
+			return send_error_response(message_en, message_ar, errors)
+
+	days = {"Monday": None, "Tuesday": None, "Wednesday": None, "Thursday": None, "Friday": None, "Saturday": None, "Sunday": None}
+
+	for d in self.addresses:
+		address = frappe.get_doc("Address", d.address, ignore_permmission=True)
+		for day in address.delivery_days:
+			if days[day.day]:
+				error = _("Day <b>{0}</b> Already in Address <b>{1}</b>".format(day, days[day.day]))
+				if throw:
+					frappe.throw(error)
+				else:
+					message_en = "Duplicate day detected across addresses."
+					message_ar = "تم اكتشاف يوم مكرر بين العناوين."
+
+					errors = {
+						"error": ["Duplicate day detected across addresses."]
+					}
+					return send_error_response(message_en, message_ar, errors)
+
+			days[day.day] = address.name
+
+	for d in self.delivery_dates:
+		if not days[d.day]:
+			error = _("No Address Found for Day <b>{0}</b>".format(d.day))
+			if throw:
+				frappe.throw(error)
+			else:
+				message_en = "Select an address for all days before proceeding."
+				message_ar = "حدد عنوانًا لجميع الأيام قبل المتابعة."
+
+				errors = {
+					"error": ["Select an address for all days before proceeding."]
+				}
+				return send_error_response(message_en, message_ar, errors)
+
+	return send_success_response("", "", self)
+
 
 def delivery_schedule(start_date, end_date, planned_days, inclusive=True):
 	if not (start_date and end_date and planned_days):

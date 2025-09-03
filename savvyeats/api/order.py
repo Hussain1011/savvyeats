@@ -1,9 +1,9 @@
 import frappe
 from frappe import _
-from frappe.utils import getdate
+from frappe.utils import getdate, today
 from savvyeats.api.user import send_error_response, send_success_response
 import json
-from savvyeats.custom.sales_order_savvyeats import sales_order_delivery
+from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
 
 @frappe.whitelist(methods=["GET"])
 def get_draft_order(new=False):
@@ -124,7 +124,7 @@ def update_draft_order(order_id, data):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	protected_keys = {"name", "doctype", "owner", "customer", "items"}
+	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
 
 	if "meals" in clean_data:
@@ -163,7 +163,7 @@ def validate_draft_order(order_id, data):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	protected_keys = {"name", "doctype", "owner", "customer", "items"}
+	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
 
 	if "meals" in clean_data:
@@ -186,6 +186,75 @@ def validate_draft_order(order_id, data):
 	message_ar = "تم تحديث الطلب بنجاح."
 
 	return send_success_response(message_en, message_ar, order)
+
+
+@frappe.whitelist(methods=["POST"])
+def apply_voucher_code(order_id, voucher_code):
+	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+	if order.owner != frappe.session.user:
+		message_en = "Access denied. This order does not belong to your account."
+		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
+
+		errors = {
+			"access_denied": ["Access denied. This order does not belong to your account."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	if not frappe.db.exists("Coupon Code", voucher_code):
+		message_en = "Invalid or missing voucher code."
+		message_ar = "رمز القسيمة غير صالح أو مفقود."
+
+		errors = {
+			"not_found": ["Invalid or missing voucher code."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	coupon = frappe.get_doc("Coupon Code", voucher_code)
+
+	if coupon.valid_from:
+		if coupon.valid_from > getdate(today()):
+			message_en = "Coupon code validity has not started."
+			message_ar = "رمز القسيمة غير صالح أو مفقود."
+
+			errors = {
+				"validity_issue": ["Coupon code validity has not started."]
+			}
+			return send_error_response(message_en, message_ar, errors)
+	elif coupon.valid_upto:
+		if coupon.valid_upto < getdate(today()):
+			message_en = "The coupon code has expired."
+			message_ar = "انتهت صلاحية رمز القسيمة."
+
+			errors = {
+				"expired": ["The coupon code has expired."]
+			}
+			return send_error_response(message_en, message_ar, errors)
+	elif coupon.used >= coupon.maximum_use:
+		message_en = "This coupon is no longer valid."
+		message_ar = "لم تعد هذه القسيمة صالحة."
+
+		errors = {
+			"expired": ["This coupon is no longer valid."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+
+	try:
+		order.flags.ignore_permissions = True
+		order.coupon_code = coupon.name
+		order.save()
+		frappe.db.commit()
+		message_en = "Order updated successfully."
+		message_ar = "تم تحديث الطلب بنجاح."
+		return send_success_response(message_en, message_ar, order)
+	except Exception as e:
+		message_en = "This coupon is no longer valid."
+		message_ar = "لم تعد هذه القسيمة صالحة."
+
+		errors = {
+			"expired": ["This coupon is no longer valid."]
+		}
+		return send_error_response(message_en, message_ar, errors)
 
 @frappe.whitelist(methods=["POST"])
 def add_items(order_id, items):
@@ -223,7 +292,10 @@ def add_items(order_id, items):
 			d.delivery_date = getdate(data["delivery_date"])
 			d.note = data["note"]
 			d.qty = int(data["qty"]) if data["qty"] and int(data["qty"]) > 1 else 1
-			d.rate = pricing_plan_meals[d.meal]
+			if d.meal:
+				d.rate = pricing_plan_meals[d.meal]
+			else:
+				d.rate = None
 			d.extra_portion = 1 if data["extra_portion"] and d.qty > 1 else 0
 			del item_dict[key]
 
@@ -233,7 +305,9 @@ def add_items(order_id, items):
 		row.meal = v["meal"] if v["meal"] else ""
 		row.delivery_date = getdate(v["delivery_date"])
 		row.note = v["note"]
-		row.qty = 1
+		row.qty = int(v["qty"]) if v["qty"] and int(v["qty"]) > 1 else 1
+		row.extra_portion = 1 if v["extra_portion"] and row.qty > 1 else 0
+
 		if v["meal"]:
 			row.rate = pricing_plan_meals[v["meal"]]
 
@@ -277,7 +351,6 @@ def update_address(address_id, data):
 	return send_success_response(message_en, message_ar, doc)
 
 
-@frappe.whitelist(methods=["POST"])
 def add_address(data):
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
@@ -322,7 +395,19 @@ def remove_address(address_id):
 	return send_success_response(message_en, message_ar, doc)
 
 
+@frappe.whitelist(methods=["GET"])
+def verify_addresses(order_id):
+	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+	if order.owner != frappe.session.user:
+		message_en = "Access denied. This order does not belong to your account."
+		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
 
+		errors = {
+			"access_denied": ["Access denied. This order does not belong to your account."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	return validate_addresses(order, throw=False)
 
 @frappe.whitelist(methods=["POST"])
 def update_contact_information(order_id, data):
@@ -361,6 +446,24 @@ def update_contact_information(order_id, data):
 	message_ar = "تم تحديث معلومات الاتصال بنجاح."
 
 	return send_success_response(message_en, message_ar, {})
+
+@frappe.whitelist(methods=["GET"])
+def get_invoice_print(order_id, lang="en"):
+	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+	if order.owner != frappe.session.user:
+		message_en = "Access denied. This order does not belong to your account."
+		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
+
+		errors = {
+			"access_denied": ["Access denied. This order does not belong to your account."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	ss = frappe.get_cached_doc("SavvyEats Settings", "SavvyEats Settings", ignore_permmission=True)
+
+	url = "/api/method/frappe.utils.print_format.download_pdf?doctype=Sales%20Order&name={0}&format={1}&no_letterhead=1&letterhead=No%20Letterhead&settings=%7B%7D&_lang={2}".format(order.name, ss.invoice_print_format, lang)
+
+	return send_success_response("", "", {"url": url})
 
 @frappe.whitelist(methods=["POST"])
 def submit_order(order_id):

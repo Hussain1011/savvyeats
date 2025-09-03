@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Checkout — {{ order.name or "Order" }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  {%- block style %}
+    {% if colocated_css -%}
+      <style>{{ colocated_css }}</style>
+    {%- endif %}
+  {%- endblock -%}
+
+  {{ include_style('website.bundle.css') }}
+  <style>
+    :root{
+      --bg: #0f1221;
+      --card: #151934;
+      --card-2: #10142b;
+      --muted: #8c93b2;
+      --text: #e7eaf7;
+      --accent: #6c7cff;
+      --accent-2: #4bd0ff;
+      --ring: 0 0 0 3px rgba(108,124,255,.25);
+      --ok: #27c498;
+      --shadow: 0 10px 30px rgba(0,0,0,.35), 0 2px 8px rgba(0,0,0,.25);
+      --radius-lg: 18px;
+      --radius-sm: 12px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f8ff; --card:#ffffff; --card-2:#f3f5ff; --muted:#606b8a; --text:#0b1020;
+        --shadow: 0 8px 24px rgba(16,27,78,.12), 0 2px 8px rgba(16,27,78,.08);
+      }
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; background: radial-gradient(1200px 500px at 70% -10%, rgba(108,124,255,.20), transparent 60%),
+                 radial-gradient(900px 400px at -10% 0%, rgba(75,208,255,.18), transparent 55%),
+                 var(--bg);
+      color:var(--text); font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      min-height:100vh; display:grid; place-items:center; padding:24px;
+    }
+    .wrap{
+      width: min(920px, 100%);
+    }
+    .card{
+      background: linear-gradient(180deg, var(--card), var(--card-2));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .header{
+      padding: 28px 28px 10px;
+    }
+    .title{
+      margin:0 0 6px; font-weight:700; letter-spacing:.2px;
+      font-size: clamp(20px, 3vw, 28px);
+    }
+    .sub{
+      margin:0; color:var(--muted); font-size:14px;
+    }
+    .content{
+      padding: 8px 24px 24px;
+      display:grid; gap:18px;
+    }
+    .summary{
+      display:grid; grid-template-columns: 1fr 1fr; gap:16px;
+    }
+    @media (max-width:640px){ .summary{ grid-template-columns: 1fr; } }
+
+    .field{
+      background: rgba(255,255,255,.03);
+      border:1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius-sm);
+      padding:14px 14px 10px;
+    }
+    .label{
+      display:block; font-size:12px; color:var(--muted); margin-bottom:6px;
+      letter-spacing:.3px; text-transform:uppercase;
+    }
+    .input{
+      width:100%; background:transparent; color:var(--text);
+      border:none; outline:none; font-size:16px; font-weight:600;
+    }
+    .input[readonly]{ opacity:.9 }
+
+    .footer{
+      display:flex; gap:12px; justify-content:flex-end; padding:0 24px 24px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      appearance:none; border:none; cursor:pointer; font-weight:700; letter-spacing:.2px;
+      border-radius: 12px; padding:12px 16px; font-size:15px;
+      transition:.2s ease; display:inline-flex; align-items:center; gap:10px;
+    }
+    .btn.secondary{
+      background: transparent; color: var(--muted);
+      border:1px solid rgba(255,255,255,.12);
+    }
+    .btn.primary{
+      color:#fff;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 20px rgba(108,124,255,.35);
+    }
+    .btn:disabled{
+      opacity:.6; cursor:not-allowed; box-shadow:none;
+    }
+    .hint{
+      color:var(--muted); font-size:12px; margin-top:2px;
+    }
+  </style>
+
+  <style>
+  /* Make methods a vertical list */
+  .methods{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:14px;
+    margin-top:8px;
+  }
+
+  /* Button row with clear border + layout: icon | label | description */
+  .method{
+    appearance:none;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 18px;
+    width:100%;
+    border-radius:16px;
+    border:1.5px solid var(--border, rgba(0,0,0,.12));
+    background: var(--card, #fff);
+    color: var(--text, #0b1020);
+    cursor:pointer;
+    transition: .18s ease;
+    box-shadow: 0 2px 8px rgba(17,24,39,.06);
+  }
+  .method:hover{
+    transform: translateY(-1px);
+    border-color: var(--accent, #6c7cff);
+    box-shadow: 0 0 0 4px rgba(108,124,255,.15), 0 10px 24px rgba(16,24,40,.10);
+  }
+  .method:focus-visible{
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(108,124,255,.25), 0 10px 24px rgba(16,24,40,.10);
+    border-color: var(--accent, #6c7cff);
+  }
+  .method.selected,
+  .method[aria-pressed="true"]{
+    border-color: var(--accent, #6c7cff);
+    background: linear-gradient(180deg, rgba(108,124,255,.10), rgba(108,124,255,.06));
+    box-shadow: 0 0 0 4px rgba(108,124,255,.18), 0 10px 24px rgba(16,24,40,.12);
+  }
+
+  /* Icon on the left */
+  .method .icon{
+    flex: 0 0 42px;
+    width:42px; height:42px;
+    display:grid; place-items:center;
+    border-radius:12px;
+    margin-inline-end:10px;
+    background: linear-gradient(135deg, var(--accent, #6c7cff), #51d0ff);
+    color:#fff; font-weight:900; font-size:18px;
+    box-shadow: 0 8px 18px rgba(81,208,255,.35);
+  }
+
+  /* Name/label in the middle (second span in your markup) */
+  .method > span:nth-of-type(2){
+    font-weight:800;
+    font-size:16px;
+    letter-spacing:.2px;
+  }
+
+  /* Description on the right (your existing .tag) */
+  .method .tag{
+    margin-inline-start:auto;    /* push to right */
+    font-size:12px;
+    color: var(--muted, #637089);
+    background: rgba(2, 6, 23, .04);
+    border: 1px solid var(--border, rgba(0,0,0,.10));
+    padding:6px 10px;
+    border-radius:999px;
+    white-space:nowrap;
+  }
+
+  /* Compact on small screens */
+  @media (max-width:520px){
+    .method{ padding:14px 14px }
+    .method .icon{ flex-basis:36px; width:36px; height:36px; border-radius:10px }
+    .method > span:nth-of-type(2){ font-size:15px }
+    .method .tag{ font-size:11px; padding:5px 8px }
+  }
+</style>
+
+  <script>
+    window.frappe = {};
+    frappe.ready_events = [];
+    frappe.ready = function(fn) {
+      frappe.ready_events.push(fn);
+    }
+    window.dev_server = {{ dev_server }};
+    window.socketio_port = {{ (frappe.socketio_port or 9000) }};
+    window.show_language_picker = {{ show_language_picker or 'false' }};
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <form class="card" method="post">
+      <div class="header">
+        <h1 class="title">Choose a payment method</h1>
+        <p class="sub">Secure checkout for order <strong>{{ order.name or "—" }}</strong></p>
+      </div>
+
+      <div class="content">
+        <!-- Order summary -->
+        <div class="summary">
+          <div class="field">
+            <label class="label" for="order_id">Order ID</label>
+            <input id="order_id" name="order_id" class="input" readonly
+                   value="{{ order.name or reference or '' }}" />
+          </div>
+          <div class="field">
+            <label class="label" for="total_amount">Total Amount</label>
+            <input id="total_amount" name="total_amount" class="input" readonly
+                   value="{{ amount_formatted }}" />
+            <div class="hint">Taxes & fees included where applicable</div>
+          </div>
+        </div>
+
+        <!-- Payment methods -->
+        <input type="hidden" name="payment_method" id="payment_method" value="" />
+        <div class="methods" role="group" aria-label="Payment methods">
+          <button type="button" class="method" data-value="credit_card" aria-pressed="false">
+            <span class="icon">💳</span>
+            <span>Credit Card</span>
+            <span class="tag">Visa / Mastercard</span>
+          </button>
+
+          <button type="button" class="method" data-value="debit_card" aria-pressed="false">
+            <span class="icon">💳</span>
+            <span>Debit Card</span>
+            <span class="tag">Bank Debit</span>
+          </button>
+
+          <button type="button" class="method" data-value="apple_pay" aria-pressed="false">
+            <span class="icon"></span>
+            <span>Apple&nbsp;Pay</span>
+            <span class="tag">Fast checkout</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button type="button" class="btn secondary" onclick="history.back()">Back</button>
+        <button type="button" class="btn primary" id="pay_btn" disabled>
+          Continue
+        </button>
+      </div>
+    </form>
+  </div>
+  {% block base_scripts %}
+  <!-- js should be loaded in body! -->
+  <script>
+    frappe.boot = {{ boot }}
+    // for backward compatibility of some libs
+    frappe.sys_defaults = frappe.boot.sysdefaults;
+    frappe.csrf_token = "{{ csrf_token }}";
+  </script>
+  {{ include_script('frappe-web.bundle.js') }}
+  {% endblock %}
+
+  {%- for link in web_include_js %}
+  {{ include_script(link) }}
+  {%- endfor -%}
+  <script>
+    (function () {
+      const methodButtons = Array.from(document.querySelectorAll(".method"));
+      const hidden = document.getElementById("payment_method");
+      const payBtn = document.getElementById("pay_btn");
+
+      function select(value, btn) {
+        methodButtons.forEach(b => {
+          const is = b === btn;
+          b.classList.toggle("selected", is);
+          b.setAttribute("aria-pressed", is ? "true" : "false");
+        });
+        hidden.value = value;
+        payBtn.disabled = !value;
+      }
+      $("#pay_btn").on("click", function(){
+        frappe.call({
+          method: "savvyeats.www.pay.get_payment_url",
+          args: {
+            "order_id": "{{ order.name }}",
+            "payment_method": document.getElementById("payment_method")
+          },
+          freeze: true,
+          callback: function(r){
+            window.location.href = r.message;
+          }
+        });
+      });
+
+      methodButtons.forEach(btn => {
+        btn.addEventListener("click", () => select(btn.dataset.value, btn));
+        btn.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -69,6 +69,11 @@ doctype_list_js = {
 # 	"Role": "home_page"
 # }
 
+website_route_rules = [
+    {"from_route": "/pay/<order_id>", "to_route": "pay"},
+    {"from_route": "/payment-response/<order_id>", "to_route": "payment-response"},
+]
+
 # Generators
 # ----------
 

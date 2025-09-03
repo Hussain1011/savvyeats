@@ -1,0 +1,260 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-02 11:04:24.710205",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "enabled",
+  "section_break_y13a",
+  "merchant_id",
+  "profile_id",
+  "org_id",
+  "column_break_uozo",
+  "api_key_id",
+  "api_secret_key",
+  "section_break_wbhi",
+  "environment",
+  "column_break_yqtr",
+  "api_base_url",
+  "timeout_seconds",
+  "section_break_qqcw",
+  "auto_capture",
+  "capture_delay_minutes",
+  "section_break_do1d",
+  "enable_3ds",
+  "challenge_preference",
+  "risk_enabled",
+  "reject_on_cvv_fail",
+  "reject_on_avs_fail",
+  "section_break_jzic",
+  "webhook_enabled",
+  "webhook_endpoint_url",
+  "webhook_signature_secret",
+  "webhook_ip_whitelist",
+  "webhook_last_seen_at",
+  "webhook_status",
+  "section_break_5j3c",
+  "statement_descriptor",
+  "allowed_card_brands",
+  "debug_logging",
+  "section_break_g5mg",
+  "public_key_pem",
+  "private_key_pem",
+  "key_passphrase"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_y13a",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "merchant_id",
+   "fieldtype": "Data",
+   "label": "Merchant ID"
+  },
+  {
+   "fieldname": "profile_id",
+   "fieldtype": "Data",
+   "label": "Profile ID"
+  },
+  {
+   "fieldname": "org_id",
+   "fieldtype": "Data",
+   "label": "Org ID"
+  },
+  {
+   "fieldname": "column_break_uozo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "api_key_id",
+   "fieldtype": "Data",
+   "label": "Api Key ID"
+  },
+  {
+   "fieldname": "api_secret_key",
+   "fieldtype": "Password",
+   "label": "Api Secret Key"
+  },
+  {
+   "fieldname": "section_break_wbhi",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "Sandbox",
+   "fieldname": "environment",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Environment",
+   "options": "Sandbox\nProduction",
+   "reqd": 1
+  },
+  {
+   "fieldname": "api_base_url",
+   "fieldtype": "Data",
+   "label": "Base URL"
+  },
+  {
+   "fieldname": "timeout_seconds",
+   "fieldtype": "Int",
+   "label": "Timeout Seconds"
+  },
+  {
+   "fieldname": "section_break_qqcw",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "auto_capture",
+   "fieldtype": "Check",
+   "label": "Auto Capture"
+  },
+  {
+   "fieldname": "capture_delay_minutes",
+   "fieldtype": "Int",
+   "label": "Capture Delay Minutes"
+  },
+  {
+   "fieldname": "section_break_do1d",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_3ds",
+   "fieldtype": "Check",
+   "label": "Enable 3Ds"
+  },
+  {
+   "fieldname": "challenge_preference",
+   "fieldtype": "Select",
+   "label": "Challenge Preference"
+  },
+  {
+   "default": "0",
+   "fieldname": "risk_enabled",
+   "fieldtype": "Check",
+   "label": "Risk Enabled"
+  },
+  {
+   "default": "0",
+   "fieldname": "reject_on_cvv_fail",
+   "fieldtype": "Check",
+   "label": "Reject On Cvv Fail"
+  },
+  {
+   "default": "0",
+   "fieldname": "reject_on_avs_fail",
+   "fieldtype": "Check",
+   "label": "Reject On Avs Fail"
+  },
+  {
+   "fieldname": "section_break_jzic",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "webhook_enabled",
+   "fieldtype": "Check",
+   "label": "Webhook Enabled"
+  },
+  {
+   "fieldname": "webhook_endpoint_url",
+   "fieldtype": "Data",
+   "label": "Webhook Endpoint Url"
+  },
+  {
+   "fieldname": "webhook_signature_secret",
+   "fieldtype": "Password",
+   "label": "Webhook Signature Secret"
+  },
+  {
+   "fieldname": "webhook_ip_whitelist",
+   "fieldtype": "Small Text",
+   "label": "Webhook Ip Whitelist"
+  },
+  {
+   "fieldname": "webhook_last_seen_at",
+   "fieldtype": "Datetime",
+   "label": "Webhook Last Seen At"
+  },
+  {
+   "fieldname": "webhook_status",
+   "fieldtype": "Select",
+   "label": "Webhook Status"
+  },
+  {
+   "fieldname": "section_break_5j3c",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "statement_descriptor",
+   "fieldtype": "Data",
+   "label": "Statement Descriptor"
+  },
+  {
+   "fieldname": "allowed_card_brands",
+   "fieldtype": "Small Text",
+   "label": "Allowed Card Brands"
+  },
+  {
+   "default": "0",
+   "fieldname": "debug_logging",
+   "fieldtype": "Check",
+   "label": "Debug Logging"
+  },
+  {
+   "fieldname": "section_break_g5mg",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "public_key_pem",
+   "fieldtype": "Code",
+   "label": "Public Key Pem"
+  },
+  {
+   "fieldname": "private_key_pem",
+   "fieldtype": "Password",
+   "label": "Private Key Pem"
+  },
+  {
+   "fieldname": "key_passphrase",
+   "fieldtype": "Password",
+   "label": "Key Passphrase"
+  },
+  {
+   "fieldname": "column_break_yqtr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-02 11:25:10.380070",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "Cybersource",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
