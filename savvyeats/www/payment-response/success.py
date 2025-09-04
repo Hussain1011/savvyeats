@@ -21,11 +21,7 @@ def get_context(context):
 	context.total_amount = order.get("rounded_total")
 	context.currency = "QAR"
 	context.success = True
-	if context.success:
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/payment-response/success/{0}".format(order.name)
-		raise frappe.Redirect
-	else:
+	if not context.success:
 		frappe.local.response["type"] = "redirect"
 		frappe.local.response["location"] = "/payment-response/failure/{0}".format(order.name)
 		raise frappe.Redirect

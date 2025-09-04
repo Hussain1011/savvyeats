@@ -12,6 +12,9 @@ WEEKDAY_MAP = {
 def validate(self, method):
 	sales_order_delivery(self)
 
+def before_submit(self, method):
+	validate_addresses(self)
+
 @frappe.whitelist()
 def update_owner(sales_order, owner):
 	frappe.db.set_value("Sales Order",sales_order, "owner", owner, update_modified=False)
@@ -84,6 +87,7 @@ def validate_addresses(self, throw=True):
 					"error": ["Select an address for all days before proceeding."]
 				}
 				return send_error_response(message_en, message_ar, errors)
+		d.address = days[d.day]
 
 	return send_success_response("", "", self)
 

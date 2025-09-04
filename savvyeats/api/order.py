@@ -5,6 +5,27 @@ from savvyeats.api.user import send_error_response, send_success_response
 import json
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
 
+def validate_sales_order(order_id):
+	try:
+		order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+		if order.owner != frappe.session.user:
+			message_en = "Access denied. This order does not belong to your account."
+			message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
+
+			errors = {
+				"access_denied": ["Access denied. This order does not belong to your account."]
+			}
+			return send_error_response(message_en, message_ar, errors)
+	except Exception as e:
+		message_en = "Order not found."
+		message_ar = "لم يتم العثور على الطلب."
+		errors = {
+			"not_found": ["Order not found."]
+		}
+		return send_error_response(message_en, message_ar, errors)
+
+	return order
+
 @frappe.whitelist(methods=["GET"])
 def get_draft_order(new=False):
 	customer = frappe.get_all("Customer", filters={"user": frappe.session.user})
@@ -114,15 +135,9 @@ def _reset_sales_order_in_place(order):
 
 @frappe.whitelist(methods=["POST"])
 def update_draft_order(order_id, data):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
@@ -153,15 +168,9 @@ def update_draft_order(order_id, data):
 
 @frappe.whitelist(methods=["POST"])
 def validate_draft_order(order_id, data):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
@@ -190,15 +199,9 @@ def validate_draft_order(order_id, data):
 
 @frappe.whitelist(methods=["POST"])
 def apply_voucher_code(order_id, voucher_code):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	if not frappe.db.exists("Coupon Code", voucher_code):
 		message_en = "Invalid or missing voucher code."
@@ -209,7 +212,7 @@ def apply_voucher_code(order_id, voucher_code):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	coupon = frappe.get_doc("Coupon Code", voucher_code)
+	coupon = frappe.get_doc("Coupon Code", voucher_code )
 
 	if coupon.valid_from:
 		if coupon.valid_from > getdate(today()):
@@ -258,15 +261,9 @@ def apply_voucher_code(order_id, voucher_code):
 
 @frappe.whitelist(methods=["POST"])
 def add_items(order_id, items):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	if not order.dish_plan_pricing:
 		order.dish_plan_pricing = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
@@ -397,29 +394,17 @@ def remove_address(address_id):
 
 @frappe.whitelist(methods=["GET"])
 def verify_addresses(order_id):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	return validate_addresses(order, throw=False)
 
 @frappe.whitelist(methods=["POST"])
 def update_contact_information(order_id, data):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	allowed_fields = {"first_name", "gender", "phone", "birth_date", "hear_about_us", "referred_by"}
 	clean_data = {k: v for k, v in data.items() if k in allowed_fields}

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>{{ title or ("Payment Result – " ~ order_id) }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    /* Light, high-contrast palette */
+    :root{
+      --bg: #eef2ff;            /* page background */
+      --bg-grad1: rgba(59,130,246,.10);
+      --bg-grad2: rgba(99,102,241,.10);
+
+      --card: #ffffff;          /* surface */
+      --text: #0b1020;          /* main text */
+      --muted: #495a7a;         /* secondary text */
+      --border: #e2e8ff;        /* borders */
+
+      --ok: #16a34a;            /* success green */
+      --err: #dc2626;           /* error red */
+      --accent: #3b82f6;        /* brand accent */
+
+      --shadow: 0 10px 30px rgba(37, 60, 133, .12);
+      --radius: 20px;
+      --ring: 0 0 0 4px rgba(59,130,246,.20);
+      --chip: #f5f7ff;
+      --panel: #f8faff;
+    }
+
+    *{ box-sizing:border-box }
+    body{
+      margin:0;
+      background:
+        radial-gradient(900px 380px at 85% -10%, var(--bg-grad1), transparent 60%),
+        radial-gradient(700px 300px at -10% 0%, var(--bg-grad2), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      font: 15px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial;
+      min-height:100vh; display:grid; place-items:center; padding:28px;
+    }
+
+    .card{
+      width:min(820px, 100%);
+      background: linear-gradient(180deg, #fff, #fcfdff);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    .head{ padding:28px 28px 10px }
+    .title{
+      margin:0; font-size:clamp(22px, 3.2vw, 30px); font-weight:800; letter-spacing:.2px;
+      display:flex; align-items:center; gap:12px;
+      color:var(--text);
+    }
+    .badge{
+      display:inline-grid; place-items:center; width:38px; height:38px; border-radius:12px;
+      color:#fff; font-size:20px; font-weight:900; box-shadow: 0 8px 16px rgba(0,0,0,.10);
+    }
+    .badge.ok{ background: linear-gradient(135deg, var(--ok), #22c55e) }
+    .badge.err{ background: linear-gradient(135deg, var(--err), #ef4444) }
+    .sub{ margin:8px 0 0; color:var(--muted); font-size:14px }
+
+    .body{ padding:12px 28px 24px; display:grid; gap:18px }
+    .row{ display:flex; gap:16px; flex-wrap:wrap }
+    .pill{
+      background: var(--chip);
+      border:1px solid var(--border);
+      color: var(--text);
+      padding:10px 14px; border-radius:999px; font-weight:700; letter-spacing:.2px;
+    }
+
+    .panel{
+      background: var(--panel);
+      border:1px solid var(--border);
+      border-radius:14px; padding:14px 16px;
+    }
+    .label{
+      font-size:12px; color:var(--muted);
+      text-transform:uppercase; letter-spacing:.3px
+    }
+    .value{ font-weight:800; margin-top:4px; color:var(--text) }
+
+    .actions{ display:flex; gap:12px; justify-content:flex-end; flex-wrap:wrap; padding:0 28px 26px }
+    .btn{
+      appearance:none; border:1px solid var(--border); cursor:pointer;
+      font-weight:800; letter-spacing:.3px; padding:12px 16px; border-radius:12px;
+      transition:.2s ease; font-size:15px; display:inline-flex; align-items:center; gap:10px;
+      background:#fff; color:var(--text);
+    }
+    .btn.primary{
+      border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), #60a5fa);
+      color:#fff; box-shadow: 0 10px 24px rgba(59,130,246,.25);
+    }
+    .btn:hover{ transform:translateY(-1px); box-shadow: var(--ring), var(--shadow) }
+    .hint{ color:var(--muted); font-size:12px }
+  </style>
+</head>
+<body>
+  <main class="card" role="region" aria-label="Payment result">
+      <header class="head">
+        <h1 class="title">
+          <span class="badge err">!</span>
+          Payment error
+        </h1>
+        <p class="sub">We couldn’t complete your payment for order <strong>{{ order_id }}</strong>.</p>
+      </header>
+
+      <section class="body">
+        {% if error_message %}
+          <div class="panel" role="alert">
+            <div class="label">Reason</div>
+            <div class="value">{{ error_message }}</div>
+            <div class="hint">You can try a different method or review your details.</div>
+          </div>
+        {% endif %}
+        <div class="row">
+          <span class="pill">Order: {{ order_id }}</span>
+          {% if total_amount and currency %}<span class="pill">Total: {{ total_amount }} {{ currency }}</span>{% endif %}
+        </div>
+      </section>
+
+      <div class="actions">
+        <a class="btn" href="{{ retry_url }}">Back to payment</a>
+        <button class="btn primary" onclick="location.href='{{ retry_url }}'">Try again</button>
+      </div>
+
+      <script>
+        if (window.opener) {
+          try { window.opener.postMessage({ type: "payment_result", status: "error", order_id: "{{ order_id }}" }, "*"); } catch(e) {}
+        }
+      </script>
+  </main>
+</body>
+</html>

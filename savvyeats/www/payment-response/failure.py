@@ -25,9 +25,5 @@ def get_context(context):
 		frappe.local.response["type"] = "redirect"
 		frappe.local.response["location"] = "/payment-response/success/{0}".format(order.name)
 		raise frappe.Redirect
-	else:
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/payment-response/failure/{0}".format(order.name)
-		raise frappe.Redirect
 	context.retry_url = "/pay/{0}".format(order.name)
 	return context

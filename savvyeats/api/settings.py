@@ -34,8 +34,9 @@ def get_customer_support_details():
 def get_setup_data():
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
+	improved_suggestions = frappe.get_all("Improved Suggestions", filters={"enabled": 1}, order_by="improved_suggestion asc")
 	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"], order_by="sorting_order asc")
-	data = {"allergens": allergens, "delivery_time_slots": delivery_time_slots, "dish_plans": []}
+	data = {"allergens": allergens, "delivery_time_slots": delivery_time_slots, "dish_plans": [], "improved_suggestions": improved_suggestions}
 
 	def get_pricing(dish_plan_pricing):
 		if not dish_plan_pricing:

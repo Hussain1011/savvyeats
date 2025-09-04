@@ -1,7 +1,5 @@
 import frappe
 
-import frappe
-
 def get_customers_for_user(user: str):
 	contact = frappe.db.get_value("Contact", {"user": user}, "name")
 	customers = []

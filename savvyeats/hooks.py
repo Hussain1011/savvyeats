@@ -72,6 +72,9 @@ doctype_list_js = {
 website_route_rules = [
     {"from_route": "/pay/<order_id>", "to_route": "pay"},
     {"from_route": "/payment-response/<order_id>", "to_route": "payment-response"},
+    {"from_route": "/payment-response/success/<order_id>", "to_route": "payment-response/success"},
+    {"from_route": "/payment-response/failure/<order_id>", "to_route": "payment-response/failure"},
+    {"from_route": "/payment-response/error/<order_id>", "to_route": "payment-response/error"},
 ]
 
 # Generators
@@ -152,7 +155,14 @@ doc_events = {
 		"validate": "savvyeats.custom.address_savvyeats.validate"
 	},
 	"Sales Order": {
-		"validate": "savvyeats.custom.sales_order_savvyeats.validate"
+		"validate": "savvyeats.custom.sales_order_savvyeats.validate",
+		"before_submit": "savvyeats.custom.sales_order_savvyeats.before_submit"
+	},
+	"Delivery Note": {
+		"validate": "savvyeats.custom.delivery_note_savvyeats.validate",
+		"after_insert": "savvyeats.custom.delivery_note_savvyeats.after_insert",
+		"on_submit": "savvyeats.custom.delivery_note_savvyeats.on_submit",
+		"on_cancel": "savvyeats.custom.delivery_note_savvyeats.on_cancel",
 	}
 }
 

@@ -8,18 +8,14 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 	get_payment_entry,
 )
 
+from savvyeats.api.order import validate_sales_order
+
 
 @frappe.whitelist()
 def get_payment_link(order_id):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	if order.docstatus != 0:
 		message_en = "Order already paid or cancelled."
@@ -29,24 +25,20 @@ def get_payment_link(order_id):
 			"error": ["Order already paid or cancelled."]
 		}
 		return send_error_response(message_en, message_ar, errors)
+	data = {"url": "/pay/{0}".format(order.name), "payment_status": 0}
+	if order.rounded_total == 0:
+		data["payment_status"] = 1
 
-	url = "/pay/{0}".format(order.name)
-	return send_success_response("", "", {"url": url})
+	return send_success_response("", "", data)
 
 
 
 
 @frappe.whitelist()
 def verify_payment(order_id):
-	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-	if order.owner != frappe.session.user:
-		message_en = "Access denied. This order does not belong to your account."
-		message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
-
-		errors = {
-			"access_denied": ["Access denied. This order does not belong to your account."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
 
 	if order.docstatus != 0:
 		message_en = "Order already paid or cancelled."
@@ -56,6 +48,14 @@ def verify_payment(order_id):
 			"error": ["Order already paid or cancelled."]
 		}
 		return send_error_response(message_en, message_ar, errors)
+
+
+	if order.rounded_total == 0:
+		message_en = "Payment verified successfully."
+		message_ar = "تم التحقق من الدفع بنجاح."
+
+		return send_success_response(message_en, message_ar, order)
+
 
 	payment = True
 
@@ -120,7 +120,6 @@ def verify_payment(order_id):
 
 @frappe.whitelist()
 def process_payment(order_id):
-	#logic for payment capturing and processing
 	payment_processed = True
 	if not payment_processed:
 		message_en = "Payment Not Processed"
