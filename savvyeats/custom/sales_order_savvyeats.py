@@ -1,8 +1,9 @@
 import frappe
-from frappe.utils import getdate, add_to_date, date_diff
+from frappe.utils import getdate, add_to_date, date_diff, nowdate
 from datetime import timedelta
 from frappe import _
 from savvyeats.api.user import send_error_response, send_success_response
+import json
 
 WEEKDAY_MAP = {
 	"Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3,
@@ -114,4 +115,49 @@ def delivery_schedule(start_date, end_date, planned_days, inclusive=True):
 			dates.append(cur)
 		cur += timedelta(days=1)
 	return dates, len(dates)
+
+
+@frappe.whitelist()
+def get_delivery_dates(doc):
+	if isinstance(doc, str):
+		doc = json.loads(doc)
+	if doc:
+		doc = frappe.get_doc(doc)
+	sales_order_delivery(doc)
+	return doc
+
+
+@frappe.whitelist()
+@frappe.validate_and_sanitize_search_inputs
+def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=False):
+	return frappe.db.sql("""
+		SELECT 
+			t1.item_code, 
+			t1.item_name, 
+			t1.meal, 
+		CASE 
+			WHEN t1.default = 1 THEN 'Default' 
+			ELSE ''
+			END AS default_label
+		FROM `tabDish Schedule Items` AS t1
+		INNER JOIN `tabDish Schedule` AS t2
+			ON t1.parent = t2.name
+		WHERE t2.status = 'Published'
+			AND t1.meal = %(meal)s
+			AND t2.date = %(date)s
+			AND t1.dish_plan = %(dish_plan)s
+		ORDER BY
+			IF(LOCATE(%(_txt)s, t1.item_code), LOCATE(%(_txt)s, t1.item_code), 99999),
+			IF(LOCATE(%(_txt)s, t1.item_name), LOCATE(%(_txt)s, t1.item_name), 99999),
+			t1.default DESC
+	""", {
+		"meal": filters["meal"],
+		"date": filters["available_on"],
+		"dish_plan": filters["dish_plan"],
+		"txt": "%%%s%%" % txt,
+		"_txt": txt.replace("%", ""),
+	},
+	as_dict=as_dict)
+
+
 
