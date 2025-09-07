@@ -54,8 +54,8 @@ def after_insert(self, method):
 	for d in order.delivery_dates:
 		if getdate(self.posting_date) == getdate(d.delivery_date):
 			address = d.address
-			
-	frappe.db.set_value(self.doctype, self.name, "shipping_address_name", address)
-	frappe.db.set_value(self.doctype, self.name, "customer_address", address)
-	frappe.db.set_value(self.doctype, self.name, "subscription", order.name)
+
+	frappe.db.set_value(self.doctype, self.name, "shipping_address_name", address, update_modified=False)
+	frappe.db.set_value(self.doctype, self.name, "customer_address", address, update_modified=False)
+	frappe.db.set_value(self.doctype, self.name, "subscription", order.name, update_modified=False)
 	

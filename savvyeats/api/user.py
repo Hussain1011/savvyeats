@@ -238,12 +238,15 @@ def login(email: str, password: str):
 				user.api_secret = api_secret
 			user.save()
 
+		customer = frappe.db.get_value("Customer", {"user": frappe.session.user})
+
 		message_en = "Login successful. Welcome back!"
 		message_ar = "تم تسجيل الدخول بنجاح. مرحبًا بعودتك!"
 		data={
 			"api_key": user.api_key,
 			"api_secret": api_secret,
-			"doc": user
+			"doc": user,
+			"new": False if customer else True
 		}
 		return send_success_response(message_en, message_ar, data)
 

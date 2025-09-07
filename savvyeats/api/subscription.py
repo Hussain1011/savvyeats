@@ -17,6 +17,9 @@ def get_current_subscription():
 @frappe.whitelist(methods=["GET"])
 def get_deliveries(limit_start=0):
 	customer = frappe.get_all("Customer", filters={"user": frappe.session.user})
+	if not customer:
+		return send_success_response("", "", {})
+		
 	deliveries = frappe.get_all("Delivery Note", filters={"docstatus": 1, "customer": customer[0].name}, limit_page_length=10, limit_start=limit_start)
 	if not deliveries:
 		return send_success_response("", "", {})
