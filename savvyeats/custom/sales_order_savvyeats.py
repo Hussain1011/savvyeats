@@ -127,6 +127,16 @@ def get_delivery_dates(doc):
 	return doc
 
 
+def add_items_to_order(doc):
+	if isinstance(doc, str):
+		doc = json.loads(doc)
+	if doc:
+		doc = frappe.get_doc(doc)
+
+	pricing = frappe.get_doc("Dish Plan Pricing", doc.dish_plan_pricing)
+	
+
+
 @frappe.whitelist()
 @frappe.validate_and_sanitize_search_inputs
 def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=False):

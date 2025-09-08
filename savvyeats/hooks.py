@@ -142,9 +142,9 @@ website_route_rules = [
 # ---------------
 # Override standard doctype classes
 
-# override_doctype_class = {
-# 	"ToDo": "custom_app.overrides.CustomToDo"
-# }
+override_doctype_class = {
+	"Delivery Trip": "savvyeats.overrides.delivery_trip_savvyeats.DeliveryTripOverride"
+}
 
 # Document Events
 # ---------------

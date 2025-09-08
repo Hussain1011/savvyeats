@@ -181,19 +181,32 @@ function open_meal_dialog(frm) {
         }
       });
 
-      rows.forEach(r => {
-        const child = frm.add_child('items');
-        frappe.model.set_value(child.doctype, child.name, 'item_code', r.item_code);
-        frappe.model.set_value(child.doctype, child.name, 'qty', r.qty || 1);
-        frappe.model.set_value(child.doctype, child.name, 'delivery_date', values.delivery_date);
-        frappe.model.set_value(child.doctype, child.name, 'rate', meal_prices[r.meal]);
-        frappe.model.set_value(child.doctype, child.name, "meal", r.meal);
-        frappe.model.set_value(child.doctype, child.name, "extra_portion", r.extra_portion ? 1 : 0);
-        frappe.model.set_value(child.doctype, child.name, "note", r.note);
+      frappe.call({
+        method: "savvyeats.custom.sales_order_savvyeats.add_items_to_order",
+        args: {
+          delivery_date: values.delivery_date,
+          items: rows
+        },
+        freeze: true,
+        callback: function(r){
+          frm.refresh_field('items');
+          d.hide();
+        }
       });
 
-      frm.refresh_field('items');
-      d.hide();
+      // rows.forEach(r => {
+      //   const child = frm.add_child('items');
+      //   frappe.model.set_value(child.doctype, child.name, 'item_code', r.item_code);
+      //   frappe.model.set_value(child.doctype, child.name, 'qty', r.qty || 1);
+      //   frappe.model.set_value(child.doctype, child.name, 'delivery_date', values.delivery_date);
+      //   frappe.model.set_value(child.doctype, child.name, 'rate', meal_prices[r.meal]);
+      //   frappe.model.set_value(child.doctype, child.name, "meal", r.meal);
+      //   frappe.model.set_value(child.doctype, child.name, "extra_portion", r.extra_portion ? 1 : 0);
+      //   frappe.model.set_value(child.doctype, child.name, "note", r.note);
+      // });
+
+      // frm.refresh_field('items');
+      // d.hide();
     }
   });
 
