@@ -347,7 +347,7 @@ def update_address(address_id, data):
 	message_ar = "تم تحديث العنوان بنجاح."
 	return send_success_response(message_en, message_ar, doc)
 
-
+@frappe.whitelist(methods=["POST"])
 def add_address(data):
 	protected_keys = {"name", "doctype", "owner", "links"}
 	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
