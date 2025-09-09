@@ -26,8 +26,15 @@ def get_payment_link(order_id):
 		}
 		return send_error_response(message_en, message_ar, errors)
 	data = {"url": "/pay/{0}".format(order.name), "payment_status": 0}
+	order.flags.ignore_permissions = True
 	if order.rounded_total == 0:
 		data["payment_status"] = 1
+		order.before_submit()
+		order.submit()
+	else:
+		order.before_submit()
+		order.save()
+	frappe.db.commit()
 
 	return send_success_response("", "", data)
 
