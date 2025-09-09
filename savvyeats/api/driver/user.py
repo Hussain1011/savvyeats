@@ -10,7 +10,6 @@ def login(email: str, password: str):
 		login_manager.authenticate(user=email, pwd=password)
 		login_manager.post_login()
 		user = frappe.get_doc('User', frappe.session.user)
-		api_secret = user.get_password("api_secret")
 		if not user.api_key:
 			if not user.api_key:
 				api_key = frappe.generate_hash(length=15)
@@ -18,6 +17,8 @@ def login(email: str, password: str):
 				api_secret = frappe.generate_hash(length=15)
 				user.api_secret = api_secret
 			user.save()
+
+		api_secret = user.get_password("api_secret")
 
 		employee = frappe.db.get_value("Employee", {"user_id": frappe.session.user})
 		if not employee:

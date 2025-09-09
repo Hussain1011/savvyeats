@@ -7,8 +7,10 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 	get_company_defaults,
 	get_payment_entry,
 )
+
 from savvyeats.api.order import validate_sales_order
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
+
 
 @frappe.whitelist()
 def get_payment_link(order_id):
@@ -25,15 +27,8 @@ def get_payment_link(order_id):
 		}
 		return send_error_response(message_en, message_ar, errors)
 	data = {"url": "/pay/{0}".format(order.name), "payment_status": 0}
-	order.flags.ignore_permissions = True
 	if order.rounded_total == 0:
 		data["payment_status"] = 1
-		validate_addresses(order)
-		order.submit()
-	else:
-		validate_addresses(order)
-		order.save()
-	frappe.db.commit()
 
 	return send_success_response("", "", data)
 
@@ -55,13 +50,16 @@ def verify_payment(order_id):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
+	order = validate_addresses(order)
 
 	if order.rounded_total == 0:
 		message_en = "Payment verified successfully."
 		message_ar = "تم التحقق من الدفع بنجاح."
+		order.flags.ignore_permissions = True
+		order.submit()
+		frappe.db.commit()
 
 		return send_success_response(message_en, message_ar, order)
-
 
 	payment = True
 

@@ -90,6 +90,9 @@ def validate_addresses(self, throw=True):
 				return send_error_response(message_en, message_ar, errors)
 		d.address = days[d.day]
 
+	if throw:
+		return self
+
 	return send_success_response("", "", self)
 
 
