@@ -11,11 +11,10 @@ def login(email: str, password: str):
 		login_manager.post_login()
 		user = frappe.get_doc('User', frappe.session.user)
 		if not user.api_key:
-			if not user.api_key:
-				api_key = frappe.generate_hash(length=15)
-				user.api_key = api_key
-				api_secret = frappe.generate_hash(length=15)
-				user.api_secret = api_secret
+			api_key = frappe.generate_hash(length=15)
+			user.api_key = api_key
+			api_secret = frappe.generate_hash(length=15)
+			user.api_secret = api_secret
 			user.save()
 
 		api_secret = user.get_password("api_secret")

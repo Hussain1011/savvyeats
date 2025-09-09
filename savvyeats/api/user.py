@@ -229,14 +229,14 @@ def login(email: str, password: str):
 		login_manager.authenticate(user=email, pwd=password)
 		login_manager.post_login()
 		user = frappe.get_doc('User', frappe.session.user)
-		api_secret = user.get_password("api_secret")
 		if not user.api_key:
-			if not user.api_key:
-				api_key = frappe.generate_hash(length=15)
-				user.api_key = api_key
-				api_secret = frappe.generate_hash(length=15)
-				user.api_secret = api_secret
+			api_key = frappe.generate_hash(length=15)
+			user.api_key = api_key
+			api_secret = frappe.generate_hash(length=15)
+			user.api_secret = api_secret
 			user.save()
+
+		api_secret = user.get_password("api_secret")
 
 		customer = frappe.db.get_value("Customer", {"user": frappe.session.user})
 
