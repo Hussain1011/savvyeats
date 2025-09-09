@@ -33,6 +33,14 @@ def validate(self, method):
 	self.subscription = sales_order
 	order = frappe.get_doc("Sales Order", self.subscription)
 	self.dish_plan = order.dish_plan
+	address = None
+	for d in order.delivery_dates:
+		if getdate(self.posting_date) == getdate(d.delivery_date):
+			address = d.address
+
+	self.shipping_address_name = address
+	self.customer_address = address
+
 
 
 def on_submit(self, method):
