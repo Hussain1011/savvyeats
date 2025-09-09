@@ -8,8 +8,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 	get_payment_entry,
 )
 
-from savvyeats.api.order import validate_sales_order
-
+from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
 
 @frappe.whitelist()
 def get_payment_link(order_id):
@@ -29,10 +28,10 @@ def get_payment_link(order_id):
 	order.flags.ignore_permissions = True
 	if order.rounded_total == 0:
 		data["payment_status"] = 1
-		order.before_submit()
+		validate_addresses(order)
 		order.submit()
 	else:
-		order.before_submit()
+		validate_addresses(order)
 		order.save()
 	frappe.db.commit()
 
