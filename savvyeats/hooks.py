@@ -157,7 +157,7 @@ doc_events = {
 	"Sales Order": {
 		"validate": "savvyeats.custom.sales_order_savvyeats.validate",
 		"before_submit": "savvyeats.custom.sales_order_savvyeats.before_submit",
-		"on_update_after_submit": "savvyeats.custom.sales_order_savvyeats.before_submit"
+		"before_update_after_submit": "savvyeats.custom.sales_order_savvyeats.before_submit"
 	},
 	"Delivery Note": {
 		"validate": "savvyeats.custom.delivery_note_savvyeats.validate",
