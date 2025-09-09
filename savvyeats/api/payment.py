@@ -7,7 +7,7 @@ from erpnext.accounts.doctype.payment_entry.payment_entry import (
 	get_company_defaults,
 	get_payment_entry,
 )
-
+from savvyeats.api.order import validate_sales_order
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
 
 @frappe.whitelist()
