@@ -24,9 +24,9 @@ class Cybersource(Document):
 
 			if doc.doctype == "Sales Order":
 				if doc.advance_paid == doc.rounded_total:
-				frappe.local.response["type"] = "redirect"
-				frappe.local.response["location"] = "/payment-response/error/{0}".format(doc.name)
-				raise frappe.Redirect
+					frappe.local.response["type"] = "redirect"
+					frappe.local.response["location"] = "/payment-response/error/{0}".format(doc.name)
+					raise frappe.Redirect
 
 
 		currency = doc.currency
