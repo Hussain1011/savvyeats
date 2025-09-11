@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:qpay_name",
+ "creation": "2025-09-11 10:37:03.495192",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "qpay_name",
+  "secret_key",
+  "bank_id",
+  "currency_code",
+  "merchant_id",
+  "column_break_jdva",
+  "payment_url",
+  "response_url",
+  "inquiry_url",
+  "refund_url",
+  "redirect_url"
+ ],
+ "fields": [
+  {
+   "fieldname": "secret_key",
+   "fieldtype": "Data",
+   "label": "Secret Key"
+  },
+  {
+   "fieldname": "bank_id",
+   "fieldtype": "Data",
+   "label": "Bank ID"
+  },
+  {
+   "fieldname": "currency_code",
+   "fieldtype": "Data",
+   "label": "Currency Code"
+  },
+  {
+   "fieldname": "merchant_id",
+   "fieldtype": "Data",
+   "label": "Merchant ID"
+  },
+  {
+   "fieldname": "column_break_jdva",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_url",
+   "fieldtype": "Data",
+   "label": "Payment URL"
+  },
+  {
+   "fieldname": "response_url",
+   "fieldtype": "Data",
+   "label": "Response URL"
+  },
+  {
+   "fieldname": "inquiry_url",
+   "fieldtype": "Data",
+   "label": "Inquiry URL"
+  },
+  {
+   "fieldname": "refund_url",
+   "fieldtype": "Data",
+   "label": "Refund URL"
+  },
+  {
+   "fieldname": "redirect_url",
+   "fieldtype": "Data",
+   "label": "Redirect URL"
+  },
+  {
+   "fieldname": "qpay_name",
+   "fieldtype": "Data",
+   "label": "QPay Name",
+   "unique": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-11 10:42:21.964737",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "QPay",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

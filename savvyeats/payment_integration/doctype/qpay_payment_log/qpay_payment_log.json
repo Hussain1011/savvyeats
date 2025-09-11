@@ -1,0 +1,86 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:QPL-{DD}{MM}{YYYY}-{#####}",
+ "creation": "2025-09-11 11:07:15.406717",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "payment_gateway",
+  "gateway_settings",
+  "gateway_controller",
+  "column_break_dbln",
+  "reference_doctype",
+  "reference_docname"
+ ],
+ "fields": [
+  {
+   "fieldname": "payment_gateway",
+   "fieldtype": "Link",
+   "label": "Payment Gateway",
+   "options": "Payment Gateway",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_settings",
+   "fetch_if_empty": 1,
+   "fieldname": "gateway_settings",
+   "fieldtype": "Link",
+   "label": "Gateway Settings",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_controller",
+   "fieldname": "gateway_controller",
+   "fieldtype": "Dynamic Link",
+   "label": "Gateway Controller",
+   "options": "gateway_settings"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference Doctype",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Docname",
+   "options": "reference_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_dbln",
+   "fieldtype": "Column Break"
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-11 11:13:08.003073",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "QPay Payment Log",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "read_only": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

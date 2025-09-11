@@ -71,6 +71,8 @@ doctype_list_js = {
 
 website_route_rules = [
     {"from_route": "/pay/<order_id>", "to_route": "pay"},
+    {"from_route": "/redirect/cybersource/<gateway>/<order_id>", "to_route": "redirect/cybersource"},
+    {"from_route": "/redirect/qpay/<gateway>/<order_id>", "to_route": "redirect/qpay"},
     {"from_route": "/payment-response/<order_id>", "to_route": "payment-response"},
     {"from_route": "/payment-response/success/<order_id>", "to_route": "payment-response/success"},
     {"from_route": "/payment-response/failure/<order_id>", "to_route": "payment-response/failure"},

@@ -1,0 +1,454 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2025-09-01 18:03:21.237460",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "date_time",
+  "column_break_2",
+  "time",
+  "column_break_4",
+  "payment_log_type",
+  "debit_txn_type",
+  "payment_response_log",
+  "section_break_ssmb",
+  "payment_gateway",
+  "column_break_gvqr",
+  "gateway_settings",
+  "column_break_nwct",
+  "gateway_controller",
+  "section_break_6",
+  "column_break_8",
+  "document_type",
+  "reference_doc",
+  "req_amount",
+  "req_reference_number",
+  "column_break_11",
+  "decision",
+  "reason_code",
+  "message",
+  "other_details_section",
+  "signed_date_time",
+  "req_transaction_type",
+  "req_customer_ip_address",
+  "column_break_10",
+  "req_transaction_uuid",
+  "transaction_id",
+  "req_payment_token",
+  "column_break_19",
+  "req_card_number",
+  "req_card_expiry_date",
+  "card_type",
+  "card_type_name",
+  "auth_amount",
+  "debit_card_transaction_details_section",
+  "qpay_date_time",
+  "column_break_49",
+  "qpay_txn_pun",
+  "qpay_confirmation_id",
+  "qpay_merchant_id",
+  "column_break_53",
+  "qpay_card_number",
+  "qpay_expiry_date",
+  "qpay_auth_amount",
+  "section_break_14",
+  "response_data",
+  "signed_field_names",
+  "title",
+  "naming_series",
+  "section_break_40",
+  "payment_gateway_hash",
+  "generated_hash",
+  "column_break_45",
+  "signature_verified",
+  "payment_updated",
+  "v2"
+ ],
+ "fields": [
+  {
+   "default": "Today",
+   "fieldname": "date_time",
+   "fieldtype": "Date",
+   "label": "Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "time",
+   "fieldtype": "Time",
+   "label": "Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_4",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_log_type",
+   "fieldtype": "Select",
+   "label": "Payment Log Type",
+   "options": "\nDebit Card\nCredit Card\nPayLater\nPayment Token",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.payment_log_type == \"Debit Card\"",
+   "fieldname": "debit_txn_type",
+   "fieldtype": "Select",
+   "label": "Debit Card Transaction Type",
+   "options": "\nPayOne\nInquiry",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_6",
+   "fieldtype": "Section Break",
+   "label": "Payment Details"
+  },
+  {
+   "fieldname": "column_break_8",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "document_type",
+   "fieldtype": "Link",
+   "label": "Document Type",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_doc",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Document",
+   "options": "document_type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_amount",
+   "fieldtype": "Data",
+   "label": "Requested Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_reference_number",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "in_standard_filter": 1,
+   "label": "Reference Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_11",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "decision",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Decision",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reason_code",
+   "fieldtype": "Data",
+   "label": "Reason Code",
+   "read_only": 1
+  },
+  {
+   "fieldname": "message",
+   "fieldtype": "Small Text",
+   "label": "Message",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.payment_log_type == \"Credit Card\"",
+   "fieldname": "other_details_section",
+   "fieldtype": "Section Break",
+   "label": "Credit Card Transaction Details"
+  },
+  {
+   "fieldname": "signed_date_time",
+   "fieldtype": "Data",
+   "label": "Transaction Date and Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_transaction_type",
+   "fieldtype": "Select",
+   "label": "Transaction Type",
+   "options": "\nsale\ncreate_payment_token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_customer_ip_address",
+   "fieldtype": "Data",
+   "label": "Customer IP",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_10",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "req_transaction_uuid",
+   "fieldtype": "Data",
+   "label": "Transaction UUID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "label": "Transaction Reference ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_payment_token",
+   "fieldtype": "Data",
+   "label": "Payment Token",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_19",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "req_card_number",
+   "fieldtype": "Data",
+   "label": "Card Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "req_card_expiry_date",
+   "fieldtype": "Data",
+   "label": "Expiry Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "card_type",
+   "fieldtype": "Data",
+   "label": "Card Type",
+   "read_only": 1
+  },
+  {
+   "fieldname": "card_type_name",
+   "fieldtype": "Data",
+   "label": "Card Type Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "auth_amount",
+   "fieldtype": "Data",
+   "label": "Authorized Amount",
+   "read_only": 1
+  },
+  {
+   "depends_on": "eval:doc.payment_log_type == \"Debit Card\"",
+   "fieldname": "debit_card_transaction_details_section",
+   "fieldtype": "Section Break",
+   "label": "Debit Card Transaction Details"
+  },
+  {
+   "fieldname": "qpay_date_time",
+   "fieldtype": "Data",
+   "label": "Transaction Date and Time",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_49",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qpay_txn_pun",
+   "fieldtype": "Data",
+   "label": "Transaction PUN",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qpay_confirmation_id",
+   "fieldtype": "Data",
+   "label": "Transaction Confirmation ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qpay_merchant_id",
+   "fieldtype": "Data",
+   "label": "Merchant Session ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_53",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "qpay_card_number",
+   "fieldtype": "Data",
+   "label": "Card Number",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qpay_expiry_date",
+   "fieldtype": "Data",
+   "label": "Expiry Date",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qpay_auth_amount",
+   "fieldtype": "Data",
+   "label": "Authorized Amount",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_14",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "response_data",
+   "fieldtype": "JSON",
+   "hidden": 1,
+   "label": "Response Data",
+   "read_only": 1
+  },
+  {
+   "fieldname": "signed_field_names",
+   "fieldtype": "Long Text",
+   "hidden": 1,
+   "label": "Signed Fields",
+   "read_only": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title",
+   "read_only": 1
+  },
+  {
+   "default": "PAY-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Series",
+   "options": "PAY-.YYYY.-",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_40",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "payment_gateway_hash",
+   "fieldtype": "Data",
+   "label": "Payment Gateway Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "generated_hash",
+   "fieldtype": "Data",
+   "label": "Generated Hash",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_45",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "signature_verified",
+   "fieldtype": "Check",
+   "label": "Signature Verified",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "payment_updated",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Payment Updated",
+   "read_only": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "v2",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "v2",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_ssmb",
+   "fieldtype": "Section Break",
+   "label": "Gateway Details"
+  },
+  {
+   "fieldname": "payment_gateway",
+   "fieldtype": "Link",
+   "label": "Payment Gateway",
+   "options": "Payment Gateway",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_settings",
+   "fetch_if_empty": 1,
+   "fieldname": "gateway_settings",
+   "fieldtype": "Link",
+   "label": "Gateway Settings",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_controller",
+   "fetch_if_empty": 1,
+   "fieldname": "gateway_controller",
+   "fieldtype": "Dynamic Link",
+   "label": "Gateway Controller",
+   "options": "gateway_settings",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gvqr",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_nwct",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payment_response_log",
+   "fieldtype": "Link",
+   "label": "Payment Response Log",
+   "options": "Payment Response Log",
+   "read_only": 1
+  }
+ ],
+ "in_create": 1,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-10 18:10:56.018516",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "Payment Log",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title",
+ "track_changes": 1
+}

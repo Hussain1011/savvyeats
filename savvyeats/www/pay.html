@@ -26,6 +26,27 @@
       --radius-lg: 18px;
       --radius-sm: 12px;
     }
+    #freeze {
+  z-index: 1055;
+  bottom: 0;
+  opacity: 0;
+  background-color: var(--bg-color);
+
+  .freeze-message-container {
+    inset: 0;
+    padding: 3rem;
+    background-color: var(--bg-light-gray);
+    color: var(--text-on-light-gray);
+    font-size: larger;
+    position: absolute;
+    display: grid;
+    place-content: center;
+  }
+}
+
+#freeze.in {
+  opacity: 0.8;
+}
     @media (prefers-color-scheme: light){
       :root{
         --bg:#f6f8ff; --card:#ffffff; --card-2:#f3f5ff; --muted:#606b8a; --text:#0b1020;
@@ -231,23 +252,21 @@
         <!-- Payment methods -->
         <input type="hidden" name="payment_method" id="payment_method" value="" />
         <div class="methods" role="group" aria-label="Payment methods">
-          <button type="button" class="method" data-value="credit_card" aria-pressed="false">
-            <span class="icon">💳</span>
-            <span>Credit Card</span>
-            <span class="tag">Visa / Mastercard</span>
-          </button>
-
-          <button type="button" class="method" data-value="debit_card" aria-pressed="false">
-            <span class="icon">💳</span>
-            <span>Debit Card</span>
-            <span class="tag">Bank Debit</span>
-          </button>
-
-          <button type="button" class="method" data-value="apple_pay" aria-pressed="false">
-            <span class="icon"></span>
-            <span>Apple&nbsp;Pay</span>
-            <span class="tag">Fast checkout</span>
-          </button>
+          {% for s in settings.payment_gateways %}
+            {% if s.gateway_settings == "Cybersource" %}
+              <button type="button" class="method" data-value="{{ s.payment_gateway }}" aria-pressed="false">
+                <span class="icon">💳</span>
+                <span>{{ _(s.title) }}</span>
+                <span class="tag">{{ _("Visa / Mastercard") }}</span>
+              </button>
+            {% elif s.gateway_settings == "QPay" %}
+              <button type="button" class="method" data-value="{{ s.payment_gateway }}" aria-pressed="false">
+                <span class="icon">💳</span>
+                <span>{{ _(s.title) }}</span>
+                <span class="tag">Bank Debit</span>
+              </button>
+            {% endif %}
+          {% endfor %}
         </div>
       </div>
 
@@ -293,7 +312,7 @@
           method: "savvyeats.www.pay.get_payment_url",
           args: {
             "order_id": "{{ order.name }}",
-            "payment_method": document.getElementById("payment_method")
+            "payment_method": document.getElementById("payment_method").value
           },
           freeze: true,
           callback: function(r){

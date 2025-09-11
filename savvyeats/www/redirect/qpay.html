@@ -1,0 +1,16 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Redirecting to QPay</title></head>
+  <body onload="document.forms[0].submit()">
+    <form method="post" action="{{ redirect_url }}">
+      {% for d in fields %}
+        {% for i,v in  d.items() %}
+          <input type="hidden" name="{{ i }}" value="{{ v }}">
+        {% endfor %}    
+      {% endfor %}
+      <input type="hidden" name="payment_url" value="{{ payment_url }}">
+      <input type="hidden" name="hash" value="{{ code }}">
+      <noscript><button type="submit">Pay with QPay</button></noscript>
+    </form>
+  </body>
+</html>

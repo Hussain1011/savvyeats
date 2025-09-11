@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+  <head><meta charset="utf-8"><title>Redirecting to Cybersource…</title></head>
+  <body onload="document.forms[0].submit()">
+    <form method="post" action="{{ url }}">
+      {% for d in data %}
+        {% for i,v in  d.items() %}
+          <input type="hidden" name="{{ i }}" value="{{ v }}">
+        {% endfor %}    
+      {% endfor %}
+      <noscript><button type="submit">Pay with Cybersource</button></noscript>
+    </form>
+  </body>
+</html>

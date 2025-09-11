@@ -5,7 +5,9 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "invoice_print_format"
+  "invoice_print_format",
+  "section_break_saox",
+  "payment_gateways"
  ],
  "fields": [
   {
@@ -16,12 +18,22 @@
    "link_filters": "[[\"Print Format\",\"doc_type\",\"=\",\"Sales Order\"]]",
    "options": "Print Format",
    "reqd": 1
+  },
+  {
+   "fieldname": "section_break_saox",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "payment_gateways",
+   "fieldtype": "Table",
+   "label": "Payment Gateways",
+   "options": "SavvyEats Settings Payment Gateways"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-02 17:23:21.279596",
+ "modified": "2025-09-10 12:28:07.420603",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "SavvyEats Settings",
