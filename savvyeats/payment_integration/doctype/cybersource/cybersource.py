@@ -62,7 +62,16 @@ class Cybersource(Document):
 		}
 
 		signed_list = default_dict["signed_field_names"].split(",")
-		signature = self.get_signature(signed_list)
+
+		fields_array = []
+		for item in signed_list:
+			for key,value in default_dict.items():
+				if key==item:
+					fields_array.append(str(key)+"="+str(value))
+
+		encode_string = ",".join(fields_array)
+
+		signature = self.get_signature(signed_list, encode_string=encode_string)
 		
 		data = []
 		for key,value in default_dict.items():
@@ -74,8 +83,10 @@ class Cybersource(Document):
 
 		return data, self.transaction_url
 
-	def get_signature(self, fields):
-		hash_value = hmac.new(self.signature.encode(), self.generate_data_string(fields).encode(), hashlib.sha256)
+	def get_signature(self, fields, encode_string=None):
+		if not encode_string:
+			encode_string = self.generate_data_string(fields)
+		hash_value = hmac.new(self.signature.encode(), encode_string.encode(), hashlib.sha256)
 		signature = base64.b64encode(hash_value.digest()).decode("utf-8")
 
 		return signature
