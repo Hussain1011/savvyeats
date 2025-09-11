@@ -113,7 +113,7 @@ def reciept(**kwargs):
 	if not response.decision == "ACCEPT":
 		frappe.local.response["type"] = "redirect"
 		frappe.local.response["location"] = "/payment-response/failure/{0}".format(docname)
-		raise frappe.Redirect
+		return frappe.Redirect
 
 	if frappe.db.exists("Payment Log", {"req_transaction_uuid": response.req_transaction_uuid}):
 		frappe.local.response["type"] = "redirect"
