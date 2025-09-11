@@ -174,5 +174,4 @@ def reciept(**kwargs):
 		frappe.db.commit()
 		frappe.local.response["type"] = "redirect"
 		frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
-		raise frappe.Redirect
 
