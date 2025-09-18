@@ -1,0 +1,178 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-16 11:38:22.946132",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "sales_order",
+  "customer",
+  "customer_name",
+  "column_break_scwb",
+  "delivery_note",
+  "delivery_trip",
+  "delivery_time_slot",
+  "delivery_stop",
+  "section_break_nbzq",
+  "contact_name",
+  "column_break_rejh",
+  "contact_phone",
+  "section_break_ttfx",
+  "address",
+  "latitude",
+  "longitude",
+  "column_break_buvb",
+  "estimated_arrival",
+  "distance",
+  "distance_uom"
+ ],
+ "fields": [
+  {
+   "fetch_from": "delivery_note.subscription",
+   "fetch_if_empty": 1,
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sales Order",
+   "options": "Sales Order"
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Delivery Note",
+   "options": "Delivery Note"
+  },
+  {
+   "fieldname": "delivery_trip",
+   "fieldtype": "Link",
+   "label": "Delivery Trip",
+   "options": "Delivery Trip"
+  },
+  {
+   "fetch_from": "delivery_note.shipping_address_name",
+   "fetch_if_empty": 1,
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
+  },
+  {
+   "fetch_from": "address.latitude",
+   "fetch_if_empty": 1,
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude"
+  },
+  {
+   "fetch_from": "address.longitude",
+   "fetch_if_empty": 1,
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude"
+  },
+  {
+   "fetch_from": "delivery_stop.estimated_arrival",
+   "fetch_if_empty": 1,
+   "fieldname": "estimated_arrival",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Estimated Arrival"
+  },
+  {
+   "fetch_from": "delivery_stop.distance",
+   "fetch_if_empty": 1,
+   "fieldname": "distance",
+   "fieldtype": "Float",
+   "label": "Distance"
+  },
+  {
+   "fetch_from": "delivery_stop.uom",
+   "fetch_if_empty": 1,
+   "fieldname": "distance_uom",
+   "fieldtype": "Link",
+   "label": "Distance UOM",
+   "options": "UOM"
+  },
+  {
+   "fetch_from": "sales_order.customer",
+   "fetch_if_empty": 1,
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Customer",
+   "options": "Customer"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "column_break_scwb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_nbzq",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "sales_order.contact_person_name",
+   "fetch_if_empty": 1,
+   "fieldname": "contact_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Name"
+  },
+  {
+   "fieldname": "column_break_rejh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "sales_order.contact_phone",
+   "fetch_if_empty": 1,
+   "fieldname": "contact_phone",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Contact Phone"
+  },
+  {
+   "fieldname": "section_break_ttfx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_buvb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "sales_order.delivery_time_slot",
+   "fetch_if_empty": 1,
+   "fieldname": "delivery_time_slot",
+   "fieldtype": "Link",
+   "label": "Delivery Time Slot",
+   "options": "Delivery Time Slot",
+   "read_only": 1
+  },
+  {
+   "fieldname": "delivery_stop",
+   "fieldtype": "Link",
+   "label": "Delivery Stop",
+   "options": "Delivery Stop",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-17 16:49:50.910571",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Delivery Schedule Deliveries",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

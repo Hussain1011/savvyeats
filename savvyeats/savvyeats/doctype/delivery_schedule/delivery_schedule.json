@@ -1,0 +1,116 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-09-15 09:51:36.914494",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "delivery_date",
+  "title",
+  "naming_series",
+  "column_break_ikxd",
+  "subscription_delivery",
+  "section_break_hbnx",
+  "drivers",
+  "deliveries_tab_tab",
+  "deliveries",
+  "amended_from"
+ ],
+ "fields": [
+  {
+   "fieldname": "delivery_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Delivery Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_ikxd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "subscription_delivery",
+   "fieldtype": "Link",
+   "label": "Subscription Delivery",
+   "options": "Subscription Delivery",
+   "read_only": 1
+  },
+  {
+   "fieldname": "deliveries_tab_tab",
+   "fieldtype": "Tab Break",
+   "label": "Deliveries"
+  },
+  {
+   "fieldname": "deliveries",
+   "fieldtype": "Table",
+   "options": "Delivery Schedule Deliveries",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_hbnx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "depends_on": "eval:!doc.__islocal;",
+   "fieldname": "drivers",
+   "fieldtype": "Table",
+   "label": "Drivers",
+   "options": "Delivery Schedule Drivers"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Delivery Schedule",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "title",
+   "fieldtype": "Data",
+   "hidden": 1,
+   "label": "Title",
+   "no_copy": 1
+  },
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "DS-.MM.-.YYYY.-"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-16 14:51:41.989957",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Delivery Schedule",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "delivery_date",
+ "show_title_field_in_link": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "title"
+}

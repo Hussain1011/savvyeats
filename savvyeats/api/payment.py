@@ -93,6 +93,7 @@ def verify_payment(order_id):
 		order.customer = customer
 
 	order.flags.ignore_permissions = True
+	order.subscription_status = "Active"
 	order.submit()
 	user = frappe.session.user
 	frappe.set_user("Administrator")

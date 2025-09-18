@@ -1,0 +1,161 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-16 10:53:56.829704",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "driver",
+  "driver_name",
+  "vehicle",
+  "column_break_tcnl",
+  "delivery_time_slot",
+  "departure_time",
+  "section_break_lddf",
+  "phone_no",
+  "address",
+  "column_break_qhfo",
+  "latitude",
+  "longitude",
+  "section_break_odxr",
+  "delivery_trip",
+  "column_break_upxj",
+  "total_estimated_distance",
+  "distance_uom"
+ ],
+ "fields": [
+  {
+   "columns": 2,
+   "fieldname": "driver",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Driver",
+   "options": "Driver",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fetch_from": "driver.full_name",
+   "fetch_if_empty": 1,
+   "fieldname": "driver_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Driver Name",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "driver.cell_number",
+   "fetch_if_empty": 1,
+   "fieldname": "phone_no",
+   "fieldtype": "Data",
+   "label": "Phone No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_lddf",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fetch_from": "driver.address",
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
+  },
+  {
+   "fetch_from": "address.latitude",
+   "fetch_if_empty": 1,
+   "fieldname": "latitude",
+   "fieldtype": "Data",
+   "label": "Latitude",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "address.longitude",
+   "fieldname": "longitude",
+   "fieldtype": "Data",
+   "label": "Longitude",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_qhfo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "column_break_tcnl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "delivery_trip",
+   "fieldtype": "Link",
+   "label": "Delivery Trip",
+   "options": "Delivery Trip",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_odxr",
+   "fieldtype": "Section Break"
+  },
+  {
+   "columns": 2,
+   "fetch_from": "delivery_trip.total_distance",
+   "fieldname": "total_estimated_distance",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Total Estimated Distance",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "delivery_trip.uom",
+   "fieldname": "distance_uom",
+   "fieldtype": "Link",
+   "label": "Distance UOM",
+   "options": "UOM",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_upxj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "columns": 2,
+   "fieldname": "departure_time",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Departure Time",
+   "reqd": 1
+  },
+  {
+   "columns": 2,
+   "fieldname": "delivery_time_slot",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Delivery Time Slot",
+   "options": "Delivery Time Slot",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "driver.default_vehicle",
+   "fetch_if_empty": 1,
+   "fieldname": "vehicle",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Vehicle",
+   "options": "Vehicle",
+   "reqd": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-17 12:11:14.923412",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Delivery Schedule Drivers",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

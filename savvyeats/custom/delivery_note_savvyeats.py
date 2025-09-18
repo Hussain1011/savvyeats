@@ -30,6 +30,9 @@ def validate(self, method):
 		if not d.note:
 			d.note = item_doc.note
 
+		if not d.delivery_date:
+			d.delivery_date = item_doc.delivery_date
+
 	self.subscription = sales_order
 	order = frappe.get_doc("Sales Order", self.subscription)
 	self.dish_plan = order.dish_plan

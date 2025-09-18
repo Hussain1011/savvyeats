@@ -1,0 +1,173 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-14 12:10:16.266392",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "customer",
+  "customer_name",
+  "column_break_xdrn",
+  "dish_plan",
+  "week_plan",
+  "section_break_qqtk",
+  "sales_order",
+  "sales_order_item",
+  "column_break_qnmj",
+  "delivery_note",
+  "delivery_note_item",
+  "section_break_lypt",
+  "item_code",
+  "item_name",
+  "uom",
+  "qty",
+  "column_break_mkvo",
+  "meal",
+  "note"
+ ],
+ "fields": [
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "label": "Customer",
+   "options": "Customer",
+   "reqd": 1
+  },
+  {
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Delivery Note",
+   "options": "Delivery Note",
+   "reqd": 1
+  },
+  {
+   "fieldname": "delivery_note_item",
+   "fieldtype": "Link",
+   "label": "Delivery Note Item",
+   "options": "Delivery Note Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "delivery_note_item.item_code",
+   "fetch_if_empty": 1,
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item Code",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fetch_if_empty": 1,
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "label": "Item Name"
+  },
+  {
+   "fetch_from": "delivery_note_item.meal",
+   "fetch_if_empty": 1,
+   "fieldname": "meal",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Meal",
+   "options": "Meal"
+  },
+  {
+   "fetch_from": "delivery_note_item.note",
+   "fieldname": "note",
+   "fieldtype": "Small Text",
+   "in_list_view": 1,
+   "label": "Note"
+  },
+  {
+   "fetch_from": "delivery_note_item.stock_qty",
+   "fetch_if_empty": 1,
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "QTY",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "delivery_note_item.uom",
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_order",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Sales Order",
+   "options": "Sales Order",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_order_item",
+   "fieldtype": "Link",
+   "label": "Sales Order Item",
+   "options": "Sales Order Item",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xdrn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "section_break_lypt",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_mkvo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "customer.customer_name",
+   "fetch_if_empty": 1,
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "label": "Customer Name"
+  },
+  {
+   "fieldname": "section_break_qqtk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_qnmj",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "sales_order.dish_plan",
+   "fetch_if_empty": 1,
+   "fieldname": "dish_plan",
+   "fieldtype": "Link",
+   "label": "Dish Plan",
+   "options": "Dish Plan"
+  },
+  {
+   "fetch_from": "sales_order.week_plan",
+   "fetch_if_empty": 1,
+   "fieldname": "week_plan",
+   "fieldtype": "Link",
+   "label": "Week Plan",
+   "options": "Week Plan"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-09-14 15:33:20.132289",
+ "modified_by": "Administrator",
+ "module": "SavvyEats",
+ "name": "Subscription Delivery Items",
+ "owner": "Administrator",
+ "permissions": [],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
