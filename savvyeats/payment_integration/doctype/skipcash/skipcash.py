@@ -163,18 +163,18 @@ def reciept(**kwargs):
 	auth_header = (frappe.get_request_header("Authorization") or "").strip()
 	data = frappe.request.data
 
+	try:
+		data = json.loads(data.decode("utf-8")) if isinstance(data, (bytes, bytearray)) else json.loads(data)
+	except Exception as e:
+		frappe.log_error(e)
+		frappe.local.response["http_status_code"] = 400
+		return "Invalid JSON"
+
 	prl = frappe.new_doc("Payment Response Log")
-	prl.response_data = data
+	prl.response_data = str(data)
 	prl.payment_type = "SkipCash"
 	prl.insert(ignore_permissions=True)
 	frappe.db.commit()
-
-	
-	try:
-		data = json.loads(data.decode("utf-8")) if isinstance(data, (bytes, bytearray)) else json.loads(data)
-	except Exception:
-		frappe.local.response["http_status_code"] = 400
-		return "Invalid JSON"
 
 	doctype = data.get("custom1")
 	docname = data.get("custom2")
