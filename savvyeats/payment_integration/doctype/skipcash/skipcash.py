@@ -210,7 +210,7 @@ def reciept(**kwargs):
 		"custom1": custom1,
 		"visaId": visa_id,
 	}
-
+	data = body
 	prl = frappe.new_doc("Payment Response Log")
 	prl.response_data = str(data)
 	prl.payment_type = "SkipCash"
