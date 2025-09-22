@@ -212,7 +212,7 @@ def reciept(**kwargs):
 	}
 	data = body
 	prl = frappe.new_doc("Payment Response Log")
-	prl.response_data = str(data)
+	prl.response_data = data
 	prl.payment_type = "SkipCash"
 	prl.insert(ignore_permissions=True)
 	frappe.db.commit()
