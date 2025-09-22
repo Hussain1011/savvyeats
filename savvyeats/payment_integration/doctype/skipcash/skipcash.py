@@ -155,20 +155,61 @@ def _make_headers_for_get_detail(client_id: str) -> dict:
 	# Manual says the Authorization header contains the Client ID for this GET. 
 	return {"Authorization": client_id, "Accept": "application/json"}
 
+
+
+# {"id":"33089cb6-d563-4457-bc67-73ccd856b777","statusId":0,"created":"2025-09-21T15:06:09Z","payUrl":"https://skipcashtest.azurewebsites.net/pay/33089cb6-d563-4457-bc67-73ccd856b777","amount":"400.00","firstPaymentAmount":0,"currency":"QAR","transactionId":"SAL-ORD-2025-00003","finishedDate":null,"custom1":"SkipCash","custom2":"SAL-ORD-2025-00003","custom3":"SkipCash","custom4":"SkipCash Sandbox","custom5":"SkipCash","custom6":null,"custom7":null,"custom8":null,"custom9":null,"custom10":null,"visaId":null,"refundId":null,"refundStatusId":null,"tokenId":null,"status":"new","cardType":null,"cardNumber":null,"recurringSubscriptionId":"00000000-0000-0000-0000-000000000000","info":null,"brandName":null,"accountFundingSource":null,"cardProduct":null,"issuerName":null,"issuerCountry":null,"reasonCode":null}
+
 @frappe.whitelist(allow_guest=True)
 def reciept(**kwargs):
+	frappe.local.flags.ignore_csrf = True
 
-	# {"id":"33089cb6-d563-4457-bc67-73ccd856b777","statusId":0,"created":"2025-09-21T15:06:09Z","payUrl":"https://skipcashtest.azurewebsites.net/pay/33089cb6-d563-4457-bc67-73ccd856b777","amount":"400.00","firstPaymentAmount":0,"currency":"QAR","transactionId":"SAL-ORD-2025-00003","finishedDate":null,"custom1":"SkipCash","custom2":"SAL-ORD-2025-00003","custom3":"SkipCash","custom4":"SkipCash Sandbox","custom5":"SkipCash","custom6":null,"custom7":null,"custom8":null,"custom9":null,"custom10":null,"visaId":null,"refundId":null,"refundStatusId":null,"tokenId":null,"status":"new","cardType":null,"cardNumber":null,"recurringSubscriptionId":"00000000-0000-0000-0000-000000000000","info":null,"brandName":null,"accountFundingSource":null,"cardProduct":null,"issuerName":null,"issuerCountry":null,"reasonCode":null}
+	auth_header = (
+		frappe.get_request_header("Authorization")
+		or frappe.get_request_header("authorization")
+		or frappe.get_request_header("HTTP_AUTHORIZATION")
+		or ""
+	).strip()
 
-	auth_header = (frappe.get_request_header("Authorization") or "").strip()
-	data = frappe.request.data
+	raw = frappe.request.data
+	body = None
+	if raw:
+		try:
+			body = json.loads(raw.decode("utf-8") if isinstance(raw, (bytes, bytearray)) else raw)
+		except Exception as e:
+			frappe.logger().warning({"msg": "Webhook raw body not JSON; falling back to form_dict", "err": str(e)})
+			body = None
 
-	try:
-		data = json.loads(data.decode("utf-8")) if isinstance(data, (bytes, bytearray)) else json.loads(data)
-	except Exception as e:
-		frappe.log_error(e)
+	if body is None:
+		fd = frappe.local.form_dict or {}
+		body = {k: v for k, v in fd.items() if k != "cmd"}
+		if kwargs:
+			body.update(kwargs)
+
+	if not body:
 		frappe.local.response["http_status_code"] = 400
-		return "Invalid JSON"
+		return "Empty body"
+
+	def pick(d, *keys):
+		for k in keys:
+			if k in d and d[k] not in (None, "", []):
+				return d[k]
+		return None
+
+	payment_id = pick(body, "paymentId", "id", "PaymentId")
+	amount = pick(body, "amount", "Amount")
+	status_id = pick(body, "statusId", "StatusId")
+	transaction_id = pick(body, "transactionId", "transId", "TransactionId")
+	custom1 = pick(body, "custom1", "Custom1")
+	visa_id = pick(body, "visaId", "VisaId")
+
+	canonical = {
+		"paymentId": payment_id,
+		"amount": amount,
+		"statusId": status_id,
+		"transactionId": transaction_id,
+		"custom1": custom1,
+		"visaId": visa_id,
+	}
 
 	prl = frappe.new_doc("Payment Response Log")
 	prl.response_data = str(data)
