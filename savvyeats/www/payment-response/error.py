@@ -11,4 +11,6 @@ def get_context(context):
 		context.order_id = order.name
 		context.total_amount = order.get("rounded_total")
 		context.currency = "QAR"
+	else:
+		context.error_message = "Something Went Wrong!"
 	return context

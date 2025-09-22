@@ -305,34 +305,51 @@ def reciept(**kwargs):
 		prl.payment_type = "SkipCash"
 		prl.insert(ignore_permissions=True)
 		frappe.db.commit()
+	except Exception as e:
+		frappe.log_error(e)
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/error/00000000"
+		raise frappe.Redirect
 
-		if data["statusId"] != '2':
-			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = "/payment-response/failure/{0}".format(data["transId"].split("/")[1])
-			return frappe.Redirect
 
-		pg = frappe.get_doc("Payment Gateway", data["custom1"], ignore_permissions=True)
-		settings = frappe.get_doc(pg.gateway_settings, pg.gateway_controller, ignore_permissions=True)
-		payment_id = data["id"]
-		url = f"{settings.base_url}/api/v1/payments/{payment_id}"
+	if data["statusId"] != '2':
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/failure/{0}".format(data["transId"].split("/")[1])
+		raise frappe.Redirect
+
+	pg = frappe.get_doc("Payment Gateway", data["custom1"], ignore_permissions=True)
+
+	settings = frappe.get_doc(pg.gateway_settings, pg.gateway_controller, ignore_permissions=True)
+	payment_id = data["id"]
+	url = f"{settings.base_url}/api/v1/payments/{payment_id}"
+
+	try:
 		resp = requests.get(url, headers=_make_headers_for_get_detail(settings.client_id), timeout=15)
-		payload = resp.json() if resp.headers.get("Content-Type","").startswith("application/json") else {}
-		data = payload["resultObj"]
+	except Exception as e:
+		frappe.log_error(e)
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/error/00000000"
+		raise frappe.Redirect
 
-		exist = frappe.get_all("Payment Log", filters={"req_transaction_uuid": data["id"]})
-		if exist:
-			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
-			return frappe.Redirect
+	payload = resp.json() if resp.headers.get("Content-Type","").startswith("application/json") else {}
+	data = payload["resultObj"]
 
-		doctype = data.get("custom5")
-		docname = data.get("custom2")
-		gateway_settings = data.get("custom3")
-		gateway_controller = data.get("custom4")
-		payment_gateway = data.get("custom1")
+	exist = frappe.get_all("Payment Log", filters={"req_transaction_uuid": data["id"]})
+	if exist:
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+		return frappe.Redirect
 
-		doc = frappe.get_doc(doctype, docname, ignore_permissions=True)
+	doctype = data.get("custom5")
+	docname = data.get("custom2")
+	gateway_settings = data.get("custom3")
+	gateway_controller = data.get("custom4")
+	payment_gateway = data.get("custom1")
 
+	doc = frappe.get_doc(doctype, docname, ignore_permissions=True)
+
+
+	try:
 		pay_log = frappe.get_doc({
 			'doctype': 'Payment Log',
 			'payment_log_type': 'SkipCash',
@@ -369,77 +386,97 @@ def reciept(**kwargs):
 
 		pay_log.insert(ignore_permissions=True)
 		frappe.db.commit()
-
-		order = doc
-
-		if order.docstatus != 0:
-			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
-			return frappe.Redirect
-
-		if order.rounded_total != float(data.get("amount")):
-			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
-			return frappe.Redirect
-
-		if order.customer == "Online Customer":
-			customer_data = frappe.get_all("Customer", filters={"user": frappe.session.user}, fields=["name", "customer_name"])
-			if customer_data:
-				customer = customer_data[0].name
-				customer_name = customer_data[0].customer_name
-			else:
-				c = frappe.new_doc("Customer")
-				c.customer_name = frappe.db.get_value("User", frappe.session.user, "full_name")
-				c.user = frappe.session.user
-				c.customer_type = "Individual"
-				c.flags.ignore_permissions = True
-				c.insert()
-				frappe.db.commit()
-				customer = c.name
-				customer_name = c.customer_name
-
-			order.customer = customer
-			order.customer_name = customer_name
-			order.title = customer_name
-
-		order.flags.ignore_permissions = True
-		order.subscription_status = "Active"
-		order.submit()
-
-		user = frappe.session.user
-
-		frappe.set_user("Administrator")
-		pe = get_payment_entry(
-				order.doctype,
-				order.name
-			)
-		frappe.set_user(user)
-
-		pe.update({
-			"mode_of_payment": pg.gateway_account,
-			"reference_no": data.get("id"),
-			"reference_date": getdate(),
-			"remarks": "Payment Entry against {} {} via Payment Log {}".format(
-				order.doctype, order.name, pay_log.name
-			),
-		})
-
-		pe.set_missing_values()
-		pe.flags.ignore_permissions = True
-		pe.submit()
-		pay_log.flags.ignore_permissions = True
-		pay_log.payment_updated = 1
-		pay_log.save()
-		frappe.db.commit()
-
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
-		return frappe.Redirect
 	except Exception as e:
 		frappe.log_error(e)
 		frappe.local.response["type"] = "redirect"
 		frappe.local.response["location"] = "/payment-response/error/00000000"
 		return frappe.Redirect
+
+	# order = doc
+	# if order.docstatus != 0:
+	# 	frappe.local.response["type"] = "redirect"
+	# 	frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+	# 	return frappe.Redirect
+
+	# if order.rounded_total != float(data.get("amount")):
+	# 	frappe.local.response["type"] = "redirect"
+	# 	frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+	# 	return frappe.Redirect
+
+
+	# if order.customer == "Online Customer":
+	# 	customer_data = frappe.get_all("Customer", filters={"user": order.owner}, fields=["name", "customer_name"])
+	# 	if customer_data:
+	# 		customer = customer_data[0].name
+	# 		customer_name = customer_data[0].customer_name
+	# 	else:
+	# 		try:
+	# 			c = frappe.new_doc("Customer")
+	# 			c.customer_name = frappe.db.get_value("User", order.owner, "full_name")
+	# 			c.user = order.owner
+	# 			c.customer_type = "Individual"
+	# 			c.flags.ignore_permissions = True
+	# 			c.insert()
+	# 			frappe.db.commit()
+	# 			customer = c.name
+	# 			customer_name = c.customer_name
+	# 		except Exception as e:
+	# 			frappe.log_error(e)
+	# 			frappe.local.response["type"] = "redirect"
+	# 			frappe.local.response["location"] = "/payment-response/error/00000000"
+	# 			raise frappe.Redirect
+
+
+	# 	order.customer = customer
+	# 	order.customer_name = customer_name
+	# 	order.title = customer_name
+
+
+	# try:
+	# 	order.flags.ignore_permissions = True
+	# 	order.subscription_status = "Active"
+	# 	order.submit()
+	# except Exception as e:
+	# 	frappe.log_error(e)
+	# 	frappe.local.response["type"] = "redirect"
+	# 	frappe.local.response["location"] = "/payment-response/error/00000000"
+	# 	raise frappe.Redirect
+
+	# try:
+	# 	user = order.owner
+
+	# 	frappe.set_user("Administrator")
+	# 	pe = get_payment_entry(
+	# 			order.doctype,
+	# 			order.name
+	# 		)
+	# 	frappe.set_user(user)
+
+	# 	pe.update({
+	# 		"mode_of_payment": pg.gateway_account,
+	# 		"reference_no": data.get("id"),
+	# 		"reference_date": getdate(),
+	# 		"remarks": "Payment Entry against {} {} via Payment Log {}".format(
+	# 			order.doctype, order.name, pay_log.name
+	# 		),
+	# 	})
+
+	# 	pe.set_missing_values()
+	# 	pe.flags.ignore_permissions = True
+	# 	pe.submit()
+	# 	pay_log.flags.ignore_permissions = True
+	# 	pay_log.payment_updated = 1
+	# 	pay_log.save()
+	# 	frappe.db.commit()
+	# except Exception as e:
+	# 	frappe.log_error(e)
+	# 	frappe.local.response["type"] = "redirect"
+	# 	frappe.local.response["location"] = "/payment-response/error/00000000"
+	# 	return frappe.Redirect
+
+	frappe.local.response["type"] = "redirect"
+	frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
+	return frappe.Redirect
 	
 
 # @frappe.whitelist()
