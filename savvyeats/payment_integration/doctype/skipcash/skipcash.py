@@ -237,9 +237,6 @@ def reciept(**kwargs):
 		return "OK"
 
 
-	doctype = docname
-
-
 	pay_log = frappe.get_doc({
 		'doctype': 'Payment Log',
 		'payment_log_type': 'SkipCash',
