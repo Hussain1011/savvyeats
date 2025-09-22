@@ -29,7 +29,7 @@
  ],
  "in_create": 1,
  "links": [],
- "modified": "2025-09-22 11:10:45.950974",
+ "modified": "2025-09-22 11:39:50.475102",
  "modified_by": "Administrator",
  "module": "Payment Integration",
  "name": "Payment Response Log",
@@ -46,7 +46,6 @@
    "share": 1
   }
  ],
- "read_only": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
