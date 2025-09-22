@@ -217,11 +217,13 @@ def reciept(**kwargs):
 	prl.insert(ignore_permissions=True)
 	frappe.db.commit()
 
-	doctype = data.get("custom1")
-	docname = data.get("custom2")
-	gateway_settings = data.get("custom3")
-	gateway_controller = data.get("custom4")
-	payment_gateway = data.get("custom5")
+	doctype = data.get("Custom1")
+	docname = data.get("Custom2")
+	gateway_settings = data.get("Custom3")
+	gateway_controller = data.get("Custom4")
+	payment_gateway = data.get("Custom5")
+
+	doc = frappe.get_doc(doctype, docname, ignore_permissions=True)
 
 	pg = frappe.get_doc("Payment Gateway", payment_gateway, ignore_permissions=True)
 	settings = frappe.get_doc(pg.gateway_settings, pg.gateway_controller, ignore_permissions=True)
@@ -235,6 +237,8 @@ def reciept(**kwargs):
 
 	if status_text != "paid":
 		return "OK"
+
+	#{"PaymentId": "c3f65d87-2d5d-4f97-8b85-d93008de3b9d", "Amount": "15.00", "StatusId": 2, "TransactionId": "Sales Order/SAL-ORD-2025-00049", "FinishedDate": "2025-09-22T11:35:18.9133333", "Custom1": "Sales Order", "Custom2": "SAL-ORD-2025-00049", "Custom3": "SkipCash", "Custom4": "SkipCash SandBox", "Custom5": "SkipCash Sandbox", "Custom6": null, "Custom7": null, "Custom8": null, "Custom9": null, "Custom10": null, "VisaId": "7585301175546640804606", "TokenId": "", "CardType": "Credit Card", "CardNubmer": "411111XXXXXX1111", "RecurringSubscriptionId": "00000000-0000-0000-0000-000000000000"}
 
 
 	pay_log = frappe.get_doc({
@@ -258,8 +262,8 @@ def reciept(**kwargs):
 		'req_customer_ip_address' : "",
 		'req_card_number' : "",
 		'req_card_expiry_date' : "",
-		'card_type' : "",
-		'card_type_name' : "",
+		'card_type' : data.get("CardType"),
+		'card_type_name' : data.get("CardNubmer"),
 		'auth_amount' : data.get("amount"),
 		'signed_field_names' : "",
 		'signed_date_time' : "",
