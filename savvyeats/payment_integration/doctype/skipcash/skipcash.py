@@ -7,8 +7,11 @@ import frappe
 from frappe.utils.password import get_decrypted_password
 from frappe.model.document import Document
 from datetime import datetime
-from frappe.utils import get_datetime
-
+from frappe.utils import get_datetime, getdate
+from erpnext.accounts.doctype.payment_entry.payment_entry import (
+	get_company_defaults,
+	get_payment_entry,
+)
 
 CREATE_ORDER_SIGN_ORDER = [
 	"Uid","KeyId","Amount","FirstName","LastName","Phone","Email",
@@ -65,11 +68,11 @@ class SkipCash(Document):
 			"country": "QA",
 			"postalCode": None,
 			"transactionId": reference_number,
-			"custom1": doc.doctype,
+			"custom1": payment_gateway,
 			"custom2": doc.name,
 			"custom3": self.doctype,
 			"custom4": self.name,
-			"custom5": payment_gateway
+			"custom5": doc.doctype
 		}
 
 		sig_str = self.build_signature_string_for_create(body)
@@ -152,7 +155,6 @@ def build_signature_string_for_webhook(body: dict) -> str:
 	return ",".join(parts)
 
 def _make_headers_for_get_detail(client_id: str) -> dict:
-	# Manual says the Authorization header contains the Client ID for this GET. 
 	return {"Authorization": client_id, "Accept": "application/json"}
 
 
@@ -160,7 +162,7 @@ def _make_headers_for_get_detail(client_id: str) -> dict:
 # {"id":"33089cb6-d563-4457-bc67-73ccd856b777","statusId":0,"created":"2025-09-21T15:06:09Z","payUrl":"https://skipcashtest.azurewebsites.net/pay/33089cb6-d563-4457-bc67-73ccd856b777","amount":"400.00","firstPaymentAmount":0,"currency":"QAR","transactionId":"SAL-ORD-2025-00003","finishedDate":null,"custom1":"SkipCash","custom2":"SAL-ORD-2025-00003","custom3":"SkipCash","custom4":"SkipCash Sandbox","custom5":"SkipCash","custom6":null,"custom7":null,"custom8":null,"custom9":null,"custom10":null,"visaId":null,"refundId":null,"refundStatusId":null,"tokenId":null,"status":"new","cardType":null,"cardNumber":null,"recurringSubscriptionId":"00000000-0000-0000-0000-000000000000","info":null,"brandName":null,"accountFundingSource":null,"cardProduct":null,"issuerName":null,"issuerCountry":null,"reasonCode":null}
 
 @frappe.whitelist(allow_guest=True)
-def reciept(**kwargs):
+def webhook(**kwargs):
 	frappe.local.flags.ignore_csrf = True
 
 	auth_header = (
@@ -225,11 +227,11 @@ def reciept(**kwargs):
 	prl.insert(ignore_permissions=True)
 	frappe.db.commit()
 
-	doctype = data.get("Custom1")
+	doctype = data.get("Custom5")
 	docname = data.get("Custom2")
 	gateway_settings = data.get("Custom3")
 	gateway_controller = data.get("Custom4")
-	payment_gateway = data.get("Custom5")
+	payment_gateway = data.get("Custom1")
 
 	doc = frappe.get_doc(doctype, docname, ignore_permissions=True)
 
@@ -290,12 +292,155 @@ def reciept(**kwargs):
 
 	return "OK"
 
-def get_payment_detail_internal(payment_id: str) -> dict:
-	settings = _settings()
-	url = f"{settings.base_url}/api/v1/payments/{payment_id}"
-	resp = requests.get(url, headers=_make_headers_for_get_detail(settings.client_id), timeout=15)
-	payload = resp.json() if resp.headers.get("Content-Type","").startswith("application/json") else {}
-	return payload
+
+
+
+@frappe.whitelist(allow_guest=True)
+def reciept(**kwargs):
+	try:
+		data = frappe.form_dict
+		data = frappe._dict(data)
+		prl = frappe.new_doc("Payment Response Log")
+		prl.response_data = json.dumps(data)
+		prl.payment_type = "SkipCash"
+		prl.insert(ignore_permissions=True)
+		frappe.db.commit()
+
+		if data["statusId"] != '2':
+			frappe.local.response["type"] = "redirect"
+			frappe.local.response["location"] = "/payment-response/failure/{0}".format(data["transId"].split("/")[1])
+			return frappe.Redirect
+
+		pg = frappe.get_doc("Payment Gateway", data["custom1"], ignore_permissions=True)
+		settings = frappe.get_doc(pg.gateway_settings, pg.gateway_controller, ignore_permissions=True)
+		payment_id = data["id"]
+		url = f"{settings.base_url}/api/v1/payments/{payment_id}"
+		resp = requests.get(url, headers=_make_headers_for_get_detail(settings.client_id), timeout=15)
+		payload = resp.json() if resp.headers.get("Content-Type","").startswith("application/json") else {}
+		data = payload["resultObj"]
+
+		exist = frappe.get_all("Payment Log", filters={"req_transaction_uuid": data["id"]})
+		if exist:
+			frappe.local.response["type"] = "redirect"
+			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+			return frappe.Redirect
+
+		doctype = data.get("custom5")
+		docname = data.get("custom2")
+		gateway_settings = data.get("custom3")
+		gateway_controller = data.get("custom4")
+		payment_gateway = data.get("custom1")
+
+		doc = frappe.get_doc(doctype, docname, ignore_permissions=True)
+
+		pay_log = frappe.get_doc({
+			'doctype': 'Payment Log',
+			'payment_log_type': 'SkipCash',
+			'document_type': doctype,
+			'reference_doc': docname,
+			'req_amount': doc.rounded_total,
+			'decision': 'ACCEPT',
+			'reason_code': data.get("statusId"),
+			'message': data.get("payUrl"),
+			'payment_gateway': payment_gateway,
+			'gateway_settings': gateway_settings,
+			'gateway_controller': gateway_controller,
+			'transaction_id' : data.get("transactionId"),
+			'req_transaction_uuid' : data.get("id"),
+			'req_transaction_type' : "sale",
+			'req_reference_number': "",
+			'req_bill_to_forename': "",
+			'req_bill_to_surname' : "",
+			'req_bill_to_email' : "",
+			'req_customer_ip_address' : "",
+			'req_card_number' : "",
+			'req_card_expiry_date' : "",
+			'card_type' : data.get("cardType"),
+			'card_type_name' : data.get("cardNumber"),
+			'auth_amount' : data.get("amount"),
+			'signed_field_names' : "",
+			'signed_date_time' : "",
+			'response_data': data,
+			'payment_gateway_hash': "",
+			'generated_hash': '',
+			'signature_verified': 1,
+			'payment_response_log': prl.name
+		})
+
+		pay_log.insert(ignore_permissions=True)
+		frappe.db.commit()
+
+		order = doc
+
+		if order.docstatus != 0:
+			frappe.local.response["type"] = "redirect"
+			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+			return frappe.Redirect
+
+		if order.rounded_total != float(data.get("amount")):
+			frappe.local.response["type"] = "redirect"
+			frappe.local.response["location"] = "/payment-response/error/{0}".format(data.get("custom2"))
+			return frappe.Redirect
+
+		if order.customer == "Online Customer":
+			customer_data = frappe.get_all("Customer", filters={"user": frappe.session.user}, fields=["name", "customer_name"])
+			if customer_data:
+				customer = customer_data[0].name
+				customer_name = customer_data[0].customer_name
+			else:
+				c = frappe.new_doc("Customer")
+				c.customer_name = frappe.db.get_value("User", frappe.session.user, "full_name")
+				c.user = frappe.session.user
+				c.customer_type = "Individual"
+				c.flags.ignore_permissions = True
+				c.insert()
+				frappe.db.commit()
+				customer = c.name
+				customer_name = c.customer_name
+
+			order.customer = customer
+			order.customer_name = customer_name
+			order.title = customer_name
+
+		order.flags.ignore_permissions = True
+		order.subscription_status = "Active"
+		order.submit()
+
+		user = frappe.session.user
+
+		frappe.set_user("Administrator")
+		pe = get_payment_entry(
+				order.doctype,
+				order.name
+			)
+		frappe.set_user(user)
+
+		pe.update({
+			"mode_of_payment": pg.gateway_account,
+			"reference_no": data.get("id"),
+			"reference_date": getdate(),
+			"remarks": "Payment Entry against {} {} via Payment Log {}".format(
+				order.doctype, order.name, pay_log.name
+			),
+		})
+
+		pe.set_missing_values()
+		pe.flags.ignore_permissions = True
+		pe.submit()
+		pay_log.flags.ignore_permissions = True
+		pay_log.payment_updated = 1
+		pay_log.save()
+		frappe.db.commit()
+
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
+		return frappe.Redirect
+	except Exception as e:
+		frappe.log_error(e)
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/error/00000000"
+		return frappe.Redirect
+	
 
 # @frappe.whitelist()
 # def get_payment_detail(payment_id: str) -> dict:

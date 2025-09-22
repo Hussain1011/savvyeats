@@ -142,7 +142,7 @@ def reciept(**kwargs):
 				'document_type': doctype,
 				'reference_doc': docname,
 				'req_amount': doc.rounded_total,
-				'decision': response['decision'],
+				'decision': 'ACCEPT',
 				'reason_code': response['reason_code'],
 				'message': response['message'],
 				'payment_gateway': payment_gateway,

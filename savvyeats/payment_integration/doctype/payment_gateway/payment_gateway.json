@@ -42,8 +42,7 @@
    "fieldname": "gateway_account",
    "fieldtype": "Link",
    "label": "Gateway Account",
-   "link_filters": "[[\"Account\",\"is_group\",\"=\",0]]",
-   "options": "Account",
+   "options": "Mode of Payment",
    "reqd": 1
   },
   {
@@ -53,7 +52,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-02 11:29:53.212223",
+ "modified": "2025-09-22 13:02:42.380222",
  "modified_by": "Administrator",
  "module": "Payment Integration",
  "name": "Payment Gateway",
