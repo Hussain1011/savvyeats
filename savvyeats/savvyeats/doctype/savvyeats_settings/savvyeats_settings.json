@@ -6,6 +6,8 @@
  "engine": "InnoDB",
  "field_order": [
   "invoice_print_format",
+  "column_break_mtbq",
+  "skip_cash_gateway",
   "section_break_saox",
   "payment_gateways"
  ],
@@ -28,12 +30,23 @@
    "fieldtype": "Table",
    "label": "Payment Gateways",
    "options": "SavvyEats Settings Payment Gateways"
+  },
+  {
+   "fieldname": "column_break_mtbq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "skip_cash_gateway",
+   "fieldtype": "Link",
+   "label": "Skip Cash Gateway",
+   "link_filters": "[[\"Payment Gateway\",\"gateway_settings\",\"=\",\"SkipCash\"]]",
+   "options": "Payment Gateway"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-09-10 12:28:07.420603",
+ "modified": "2025-09-18 15:06:44.198532",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "SavvyEats Settings",

@@ -42,7 +42,6 @@ class SubscriptionDelivery(Document):
 				dn = make_delivery_note(d.name, kwargs={"delivery_dates":[self.delivery_date],"for_reserved_stock":True})
 				dn.set_posting_time = 1
 				dn.posting_date = self.delivery_date
-				print(dn.posting_date)
 				dn.save()
 			else:
 				dn = frappe.db.get("Delivery Note", {"subscription": self.name, "posting_date": self.delivery_date, "docstatus": 0})

@@ -171,7 +171,7 @@ def reciept(**kwargs):
 				'payment_response_log': prl.name
 			})
 			pay_log.insert(ignore_permissions=True)
-		frappe.db.commit()
-		frappe.local.response["type"] = "redirect"
-		frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
+			frappe.db.commit()
+			frappe.local.response["type"] = "redirect"
+			frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
 

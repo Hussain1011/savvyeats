@@ -1,0 +1,189 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-09-18 15:58:10.877925",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "reference_doctype",
+  "reference_docname",
+  "column_break_tviq",
+  "payment_gateway",
+  "gateway_settings",
+  "gateway_controller",
+  "section_break_evkc",
+  "skipcash_id",
+  "skipcash_statusid",
+  "skipcash_status",
+  "skipcash_created",
+  "skipcash_payurl",
+  "column_break_gvza",
+  "skipcash_amount",
+  "skipcash_currency",
+  "skipcash_transactionid",
+  "skipcash_custom1",
+  "skipcash_visaid",
+  "section_break_jpri",
+  "skipcash_json"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "hidden": 1,
+   "label": "Naming Series",
+   "options": "SCPL-.MM.-.YYYY.-"
+  },
+  {
+   "fieldname": "reference_doctype",
+   "fieldtype": "Link",
+   "label": "Reference DocType",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "reference_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Reference Docname",
+   "options": "reference_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "payment_gateway",
+   "fieldtype": "Link",
+   "label": "Payment Gateway",
+   "options": "Payment Gateway",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_tviq",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_settings",
+   "fetch_if_empty": 1,
+   "fieldname": "gateway_settings",
+   "fieldtype": "Link",
+   "label": "Gateway Settings",
+   "link_filters": "[[\"DocType\",\"module\",\"=\",\"Payment Integration\"],[\"DocType\",\"istable\",\"=\",0]]",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fetch_from": "payment_gateway.gateway_settings",
+   "fetch_if_empty": 1,
+   "fieldname": "gateway_controller",
+   "fieldtype": "Dynamic Link",
+   "label": "Gateway Controller",
+   "options": "gateway_settings",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_evkc",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "skipcash_id",
+   "fieldtype": "Data",
+   "label": "SkipCash ID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_statusid",
+   "fieldtype": "Data",
+   "label": "SkipCash StatusID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_created",
+   "fieldtype": "Datetime",
+   "label": "SkipCash Created",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_payurl",
+   "fieldtype": "Data",
+   "label": "SkipCash PayURL",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_amount",
+   "fieldtype": "Currency",
+   "label": "SkipCash Amount",
+   "options": "skipcash_currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_gvza",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "skipcash_currency",
+   "fieldtype": "Link",
+   "label": "SkipCash Currency",
+   "options": "Currency",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_transactionid",
+   "fieldtype": "Data",
+   "label": "SkipCash TransactionID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_custom1",
+   "fieldtype": "Data",
+   "label": "SkipCash Custom1",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_visaid",
+   "fieldtype": "Data",
+   "label": "SkipCash VisaID",
+   "read_only": 1
+  },
+  {
+   "fieldname": "skipcash_status",
+   "fieldtype": "Data",
+   "label": "SkipCash Status",
+   "read_only": 1
+  },
+  {
+   "fieldname": "section_break_jpri",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "skipcash_json",
+   "fieldtype": "JSON",
+   "label": "SkipCash JSON",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-09-21 15:08:08.584017",
+ "modified_by": "Administrator",
+ "module": "Payment Integration",
+ "name": "SkipCash Payment Log",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
