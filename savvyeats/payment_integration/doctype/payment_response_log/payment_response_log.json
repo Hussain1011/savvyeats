@@ -17,7 +17,7 @@
    "in_list_view": 1,
    "in_standard_filter": 1,
    "label": "Payment Type",
-   "options": "\nDebit Card\nCredit Card\nPayLater\nPayment Token",
+   "options": "\nDebit Card\nCredit Card\nPayLater\nPayment Token\nSkipCash",
    "read_only": 1
   },
   {
@@ -29,7 +29,7 @@
  ],
  "in_create": 1,
  "links": [],
- "modified": "2025-09-10 17:45:48.447729",
+ "modified": "2025-09-22 11:10:45.950974",
  "modified_by": "Administrator",
  "module": "Payment Integration",
  "name": "Payment Response Log",

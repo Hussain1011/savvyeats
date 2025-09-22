@@ -92,7 +92,7 @@
    "fieldname": "payment_log_type",
    "fieldtype": "Select",
    "label": "Payment Log Type",
-   "options": "\nDebit Card\nCredit Card\nPayLater\nPayment Token",
+   "options": "\nDebit Card\nCredit Card\nPayLater\nPayment Token\nSkipCash",
    "read_only": 1
   },
   {
@@ -426,7 +426,7 @@
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-10 18:10:56.018516",
+ "modified": "2025-09-22 11:11:02.615262",
  "modified_by": "Administrator",
  "module": "Payment Integration",
  "name": "Payment Log",
