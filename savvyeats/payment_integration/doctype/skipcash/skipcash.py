@@ -162,6 +162,14 @@ def reciept(**kwargs):
 
 	auth_header = (frappe.get_request_header("Authorization") or "").strip()
 	data = frappe.request.data
+
+	prl = frappe.new_doc("Payment Response Log")
+	prl.response_data = data
+	prl.payment_type = "SkipCash"
+	prl.insert(ignore_permissions=True)
+	frappe.db.commit()
+
+	
 	try:
 		data = json.loads(data.decode("utf-8")) if isinstance(data, (bytes, bytearray)) else json.loads(data)
 	except Exception:
@@ -189,12 +197,6 @@ def reciept(**kwargs):
 
 
 	doctype = docname
-
-	prl = frappe.new_doc("Payment Response Log")
-	prl.response_data = data
-	prl.payment_type = "SkipCash"
-	prl.insert(ignore_permissions=True)
-	frappe.db.commit()
 
 
 	pay_log = frappe.get_doc({
@@ -229,7 +231,7 @@ def reciept(**kwargs):
 		'signature_verified': 1,
 		'payment_response_log': prl.name
 	})
-	
+
 	pay_log.insert(ignore_permissions=True)
 	frappe.db.commit()
 	frappe.local.response["type"] = "redirect"
