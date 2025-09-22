@@ -200,6 +200,10 @@ def reciept(**kwargs):
 	status_id = pick(body, "statusId", "StatusId")
 	transaction_id = pick(body, "transactionId", "transId", "TransactionId")
 	custom1 = pick(body, "custom1", "Custom1")
+	custom2 = pick(body, "custom2", "Custom2")
+	custom3 = pick(body, "custom3", "Custom3")
+	custom4 = pick(body, "custom4", "Custom4")
+	custom5 = pick(body, "custom5", "Custom5")
 	visa_id = pick(body, "visaId", "VisaId")
 
 	canonical = {
@@ -208,6 +212,10 @@ def reciept(**kwargs):
 		"statusId": status_id,
 		"transactionId": transaction_id,
 		"custom1": custom1,
+		"custom2": custom2,
+		"custom3": custom3,
+		"custom4": custom4,
+		"custom5": custom5,
 		"visaId": visa_id,
 	}
 	data = body
@@ -235,6 +243,7 @@ def reciept(**kwargs):
 		frappe.local.response["http_status_code"] = 401
 		return "Unauthorized"
 
+	status_text = STATUS_MAP[data.get("StatusId")]
 	if status_text != "paid":
 		return "OK"
 
@@ -247,13 +256,13 @@ def reciept(**kwargs):
 		'document_type': doctype,
 		'reference_doc': docname,
 		'req_amount': doc.rounded_total,
-		'reason_code': data.get("reasonCode"),
+		'reason_code': data.get("StatusId"),
 		'message': data.get("payUrl"),
 		'payment_gateway': payment_gateway,
 		'gateway_settings': gateway_settings.doctype,
 		'gateway_controller': gateway_settings.name,
 		'transaction_id' : data.get("transactionId"),
-		'req_transaction_uuid' : data.get("payUrl"),
+		'req_transaction_uuid' : data.get("PaymentId"),
 		'req_transaction_type' : "sale",
 		'req_reference_number': "",
 		'req_bill_to_forename': "",
