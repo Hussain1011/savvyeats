@@ -142,7 +142,7 @@ def reciept(**kwargs):
 				'document_type': doctype,
 				'reference_doc': docname,
 				'req_amount': doc.rounded_total,
-				'decision': 'ACCEPT',
+				'decision': response['decision'],
 				'reason_code': response['reason_code'],
 				'message': response['message'],
 				'payment_gateway': payment_gateway,
@@ -171,7 +171,7 @@ def reciept(**kwargs):
 				'payment_response_log': prl.name
 			})
 			pay_log.insert(ignore_permissions=True)
-			frappe.db.commit()
-			frappe.local.response["type"] = "redirect"
-			frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
+		frappe.db.commit()
+		frappe.local.response["type"] = "redirect"
+		frappe.local.response["location"] = "/payment-response/success/{0}".format(docname)
 

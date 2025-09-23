@@ -47,6 +47,14 @@ def get_deliveries(limit_start=0):
 
 	return send_success_response("", "", {"today": today_delivery, "all": data})
 
+@frappe.whitelist(methods=["GET"])
+def get_delivery_details(delivery_id):
+	pass
+
+@frappe.whitelist(methods=["GET"])
+def get_delivery_location(delivery_id):
+	location = frappe.get_all("Driver Location", filters={"delivery_note": delivery_id, "actual": 1}, fields=["*"], order_by="timestamp asc", limit_page_length=1)
+	return send_success_response("", "", {"location": location})
 
 @frappe.whitelist(methods=["POST"])
 def rate_delivery_item(delivery_id, item_row_id, rating):

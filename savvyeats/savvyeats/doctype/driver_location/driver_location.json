@@ -10,7 +10,15 @@
   "longitude",
   "delivery_trip",
   "delivery_stop",
-  "timestamp"
+  "timestamp",
+  "actual",
+  "column_break_bfar",
+  "delivery_note",
+  "customer_latitude",
+  "customer_longitude",
+  "distance",
+  "estimated_arrival",
+  "estimated_arrival_max"
  ],
  "fields": [
   {
@@ -45,12 +53,60 @@
    "fieldname": "timestamp",
    "fieldtype": "Datetime",
    "label": "Timestamp"
+  },
+  {
+   "fieldname": "column_break_bfar",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fetch_from": "delivery_stop.delivery_note",
+   "fetch_if_empty": 1,
+   "fieldname": "delivery_note",
+   "fieldtype": "Link",
+   "label": "Delivery Note",
+   "options": "Delivery Note"
+  },
+  {
+   "fetch_from": "delivery_stop.latitude",
+   "fetch_if_empty": 1,
+   "fieldname": "customer_latitude",
+   "fieldtype": "Data",
+   "label": "Customer Latitude"
+  },
+  {
+   "fetch_from": "delivery_stop.longitude",
+   "fetch_if_empty": 1,
+   "fieldname": "customer_longitude",
+   "fieldtype": "Data",
+   "label": "Customer Longitude"
+  },
+  {
+   "fieldname": "estimated_arrival",
+   "fieldtype": "Datetime",
+   "label": "Estimated Arrival"
+  },
+  {
+   "fieldname": "distance",
+   "fieldtype": "Float",
+   "label": "Distance"
+  },
+  {
+   "fieldname": "estimated_arrival_max",
+   "fieldtype": "Datetime",
+   "label": "Estimated Arrival Max"
+  },
+  {
+   "default": "0",
+   "fieldname": "actual",
+   "fieldtype": "Check",
+   "hidden": 1,
+   "label": "Actual"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-17 17:16:37.330208",
+ "modified": "2025-09-23 15:37:04.294391",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Driver Location",

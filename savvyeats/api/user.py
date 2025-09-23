@@ -273,7 +273,7 @@ def get_otp():
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def update_details(data):
-	allowed_fields = {"first_name", "gender", "phone", "birth_date", "hear_about_us", "referred_by", "general_notifications", "security_alerts", "weekly_progress_summary", "goal_achievment", "milestone_celebration", "health_tips_and_article", "subscription_and_alerts", "social_and_community", "do_not_disturb", "special_offers"}
+	allowed_fields = {"first_name", "gender", "phone", "birth_date", "hear_about_us", "referred_by", "general_notifications", "security_alerts", "weekly_progress_summary", "goal_achievment", "milestone_celebration", "health_tips_and_article", "subscription_and_alerts", "social_and_community", "do_not_disturb", "special_offers", "user_image"}
 	clean_data = {k: v for k, v in data.items() if k in allowed_fields}
 
 	user = frappe.get_doc("User", frappe.session.user)
