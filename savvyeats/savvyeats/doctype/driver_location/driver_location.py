@@ -16,9 +16,7 @@ class DriverLocation(Document):
 	def after_insert(self):
 		frappe.enqueue(calculate_distance, doc=self, queue="long", enqueue_after_commit=True)
 
-def calculate_distance(doc):
-	if doc.flags.start:
-		doc.flags.start = False
+def calculate_distance(doc, save=True):
 	import googlemaps
 
 	try:
@@ -48,7 +46,10 @@ def calculate_distance(doc):
 		doc.estimated_arrival = estimated_arrival
 		doc.estimated_arrival_max = estimated_arrival_max
 		doc.actual = 1
-		doc.save()
+		if not doc.flags.start:
+			doc.save()
+		else:
+			frappe.db.set_value("Delivery Stop", doc.delivery_stop, "distance", doc.distance)
 		frappe.db.set_value("Delivery Stop", doc.delivery_stop, "actual_arrival", estimated_arrival_max)
 		frappe.db.set_value("Delivery Stop", doc.delivery_stop, "remaining_distance", doc.distance)
 		frappe.db.commit()

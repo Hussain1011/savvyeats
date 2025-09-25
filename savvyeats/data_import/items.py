@@ -52,6 +52,79 @@ def get_file(filename):
 	path = os.path.join(os.path.dirname(__file__))
 	return os.path.join(path, filename)
 
+
+def fetch_dish_master():
+	u = {
+		1: "Gram",
+		2: "Kilocalorie",
+		3: "Nos"
+	}
+
+	nutrients = {
+		"Calories": ["Calories", "Cal / Gr", "Kilocalorie"],
+		"Protein": ["Protein (g)", "Protein / g", "Gram"],
+		"Fats": ["Fat (g)", "Fat / g", "Gram"],
+		"Carbs": ["Carbs (g)", "N. Carbs / g", "Gram"],
+		"Net Carbs": ["Net Carbs (g)", "N. Carbs / g", "Gram"],
+		"Fibers": ["Fibers (g)", "Fibers / g", "Gram"]
+	}
+
+	with open(get_file("final_master_recipes.json"), "r", encoding="utf-8") as f:
+		dishes = json.load(f)
+		#print(dishes)
+		for i,d in dishes.items():
+			doc = frappe.new_doc("Item")
+			doc.item_code = i
+			doc.item_name = d["item_name"]
+			doc.kitchen_name = d["item_name"]
+			doc.item_category = "Dish"
+			doc.item_group = d["Category"] or "Other"
+			doc.uom = u[1]
+			doc.is_stock_item = 1
+			doc.serving_size = d["Serving Size (g)"]
+
+			for i,v in nutrients.items():
+				r = doc.append("nutrients", {})
+				r.nutrient = i
+				r.value = d[v[0]] or 0
+				r.per_gram = d[v[1]] or 0
+			
+
+	# n = {}
+	# nutrients = run_external_mysql_query("select * from nutrients")
+	# for nu in nutrients:
+	# 	n[nu["id"]] = nu
+
+	# records = run_external_mysql_query("select * from food where type = 'INGREDIENT' ")
+	# for d in records:
+	# 	data = json.loads(d["data"])
+	# 	doc = frappe.new_doc("Item")
+	# 	doc.item_code = d["client_name"]
+	# 	doc.item_name = d["client_name"]
+	# 	doc.kitchen_name = d["kitchen_name"]
+	# 	doc.item_category = "Ingredient"
+	# 	doc.item_group = "Raw Material"
+	# 	doc.uom = u[data["unit_id"]]
+	# 	doc.is_stock_item = 1
+	# 	doc.valuation_rate = data["purchase_price"]
+	# 	doc.serving_size = data["serving_size"]
+
+	# 	for i in data["nutrients"]:
+	# 		nut = n[i["id"]]
+	# 		r = doc.append("nutrients", {})
+	# 		r.nutrient = nut["name"]
+	# 		r.value = i["value"]
+
+			try:
+				doc.save()
+			except Exception as e:
+				pass
+
+
+	frappe.db.commit()
+
+
+
 def fetch_ingredients():
 	u = {
 		1: "Gram",

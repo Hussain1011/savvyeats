@@ -17,6 +17,7 @@
   "customer_latitude",
   "customer_longitude",
   "distance",
+  "total_distance",
   "estimated_arrival",
   "estimated_arrival_max"
  ],
@@ -101,12 +102,19 @@
    "fieldtype": "Check",
    "hidden": 1,
    "label": "Actual"
+  },
+  {
+   "fetch_from": "delivery_stop.distance",
+   "fetch_if_empty": 1,
+   "fieldname": "total_distance",
+   "fieldtype": "Float",
+   "label": "Total Distance"
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-09-23 15:37:04.294391",
+ "modified": "2025-09-25 11:59:27.831355",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Driver Location",

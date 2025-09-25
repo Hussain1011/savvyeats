@@ -2,6 +2,9 @@ import frappe
 import random
 from frappe.utils import add_to_date, now_datetime, escape_html, getdate, get_datetime
 from savvyeats.api.user import send_error_response, send_success_response
+import json
+from mimetypes import guess_type
+from frappe.utils.image import optimize_image
 
 @frappe.whitelist(methods=["GET"])
 def get_delivery_trips(driver_id):
@@ -43,7 +46,8 @@ def start_delivery(driver_id, delivery_trip_id, delivery_stop_id, data):
 @frappe.whitelist(methods=["POST"])
 def update_delivery_status(driver_id, delivery_trip_id, delivery_stop_id, data):
 	try:
-		allowed_fields = {"delivery_status", "failure_reason", "failure_reason_details", "delivery_proof", "driver_notes"}
+		allowed_fields = {"delivery_status", "failure_reason", "failure_reason_details", "driver_notes"}
+		data = json.loads(data)
 		clean_data = {k: v for k, v in data.items() if k in allowed_fields}
 
 		for i,v in clean_data.items():
@@ -51,8 +55,47 @@ def update_delivery_status(driver_id, delivery_trip_id, delivery_stop_id, data):
 			if i == "delivery_status" and v == "Delivered":
 				frappe.db.set_value("Delivery Stop", delivery_stop_id, "visited", 1)
 				frappe.db.set_value("Delivery Stop", delivery_stop_id, "end_time", get_datetime())
+
+		files = frappe.request.files
+		if "File" in files:
+			file = files["File"]
+			content = file.stream.read()
+			filename = file.filename
+			content_type = guess_type(filename)[0]
+			if content_type and content_type.startswith("image/"):
+				args = {"content": content, "content_type": content_type}
+				if frappe.form_dict.max_width:
+					args["max_width"] = int(frappe.form_dict.max_width)
+				if frappe.form_dict.max_height:
+					args["max_height"] = int(frappe.form_dict.max_height)
+				content = optimize_image(**args)
+
+
+			frappe.local.uploaded_file = content
+			frappe.local.uploaded_filename = filename
+
+			file_doc = frappe.get_doc(
+				{
+					"doctype": "File",
+					"attached_to_doctype": "Delivery Trip",
+					"attached_to_name": delivery_trip_id,
+					"attached_to_field": "delivery_proof",
+					"folder": "Home",
+					"file_name": filename,
+					"file_url": None,
+					"is_private": 1,
+					"content": content,
+				}
+			).save(ignore_permissions=True)
+
+			frappe.db.set_value("Delivery Stop", delivery_stop_id, "delivery_proof", file_doc.file_url)
+
+			frappe.db.commit()
+
+
 				
 	except Exception as e:
+		print(e)
 		message_en = "Error updating delivery status."
 		message_ar = "خطأ في تحديث حالة التوصيل."
 

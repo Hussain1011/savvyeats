@@ -15,6 +15,7 @@ def validate(self, method):
 
 def before_submit(self, method):
 	validate_addresses(self)
+	self.subscription_status = "Active"
 
 @frappe.whitelist()
 def update_owner(sales_order, owner):
