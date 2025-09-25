@@ -52,7 +52,7 @@ def update_delivery_status(driver_id, delivery_trip_id, delivery_stop_id, data):
 
 		for i,v in clean_data.items():
 			frappe.db.set_value("Delivery Stop", delivery_stop_id, i, v)
-			if i == "delivery_status" and v == "Delivered":
+			if i == "delivery_status" and v in ["Delivered", "Failed Attempt"]:
 				frappe.db.set_value("Delivery Stop", delivery_stop_id, "visited", 1)
 				frappe.db.set_value("Delivery Stop", delivery_stop_id, "end_time", get_datetime())
 
