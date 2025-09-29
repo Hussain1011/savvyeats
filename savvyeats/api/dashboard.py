@@ -5,7 +5,8 @@ from frappe import _
 from savvyeats.api.user import send_error_response, send_success_response
 
 @frappe.whitelist(methods=["GET"])
-def get_dashboard():
+def get_dashboard(today=None):
+	today = getdate(today)
 	orders = frappe.get_all("Sales Order", filters={"docstatus": 1, "owner": frappe.session.user, "status": ["not in", ["Completed", "Cancelled", "Closed"]]})
 	if not orders:
 		return send_success_response("", "", {})
@@ -38,10 +39,17 @@ def get_dashboard():
 			dates[str(d.delivery_date)]["meals"] = meal_nutrients[d.delivery_date]
 
 	today_delivery = {}
-	delivery = frappe.get_all("Delivery Note", filters={"subscription": order.name, "posting_date": getdate()})
-	if delivery:
-		today_delivery = frappe.get_doc("Delivery Note", delivery[0].name)
-
+	deliveries = frappe.db.sql("""
+		SELECT *
+		FROM deliveries
+		WHERE sales_order = %(sales_order)s
+		ORDER BY delivery_date
+		""", {
+		"sales_order": order.name,
+		"delivery_date": today
+	}, as_dict=True)
+	if deliveries:
+		today_delivery = deliveries[0]
 
 	data = {"order": order, "dates": dates, "today_delivery": today_delivery}
 

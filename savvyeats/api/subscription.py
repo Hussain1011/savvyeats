@@ -15,41 +15,58 @@ def get_current_subscription():
 	return send_success_response("", "", order)
 
 @frappe.whitelist(methods=["GET"])
-def get_deliveries(limit_start=0):
+def get_deliveries(limit_start=0, today=None):
+	today = getdate(today)
 	customer = frappe.get_all("Customer", filters={"user": frappe.session.user})
 	if not customer:
 		return send_success_response("", "", {})
+
+	limit_start = int(limit_start) if limit_start else 0
+	limit_page_length = 10
+
+	deliveries = frappe.db.sql("""
+		SELECT *
+		FROM deliveries
+		WHERE customer = %(customer)s
+		ORDER BY delivery_date
+		LIMIT %(limit_start)s, %(page_length)s
+		""", {
+		"customer": customer[0].name,
+		"limit_start": limit_start,
+		"page_length": limit_page_length
+	}, as_dict=True)
 		
-	deliveries = frappe.get_all("Delivery Note", filters={"docstatus": 1, "customer": customer[0].name}, limit_page_length=10, limit_start=limit_start)
 	if not deliveries:
 		return send_success_response("", "", {})
 
-	today_delivery = {}
+	today_delivery = [d for d in deliveries if getdate(d.delivery_date) == today]
 
-	data = []
-	for d in deliveries:
-		doc = frappe.get_doc("Delivery Note", d.name, ignore_permissions=True)
-		doc.shipping_address_doc = {}
-		if doc.shipping_address_name:
-			doc.shipping_address_doc = frappe.get_doc("Address", doc.shipping_address_name, ignore_permissions=True)
-
-		doc.customer_address_doc = {}
-		if doc.customer_address:
-			doc.customer_address_doc = frappe.get_doc("Address", doc.customer_address, ignore_permissions=True)
-
-
-		data.append(doc)
-		if getdate(doc.posting_date) == getdate():
-			delivery_trip = frappe.get_all("Delivery Trip", filters=[["Delivery Stop", "delivery_note", "=", doc.name], ["Delivery Trip", "docstatus", "=", 1]])
-			if delivery_trip:
-				doc.delivery_trip = frappe.get_doc("Delivery Trip", delivery_trip[0].name, ignore_permissions=True)
-			today_delivery = doc
-
-	return send_success_response("", "", {"today": today_delivery, "all": data})
+	return send_success_response("", "", {"today": today_delivery[0] if today_delivery else {}, "all": deliveries})
 
 @frappe.whitelist(methods=["GET"])
 def get_delivery_details(delivery_id):
-	pass
+	doc = frappe.get_doc("Delivery Note", delivery_id, ignore_permissions=True).as_dict()
+	doc.shipping_address_doc = {}
+	if doc.shipping_address_name:
+		doc.shipping_address_doc = frappe.get_doc("Address", doc.shipping_address_name, ignore_permissions=True)
+
+	doc.customer_address_doc = {}
+	if doc.customer_address:
+		doc.customer_address_doc = frappe.get_doc("Address", doc.customer_address, ignore_permissions=True)
+
+	deliveries = frappe.db.sql("""
+		SELECT *
+		FROM deliveries
+		WHERE delivery_note = %(delivery_note)s
+		ORDER BY delivery_date
+		""", {
+		"delivery_note": doc.name
+	}, as_dict=True)
+
+	doc.delivery_details = deliveries[0] if deliveries else {}
+
+	return send_success_response("", "", doc)
+
 
 @frappe.whitelist(methods=["GET"])
 def get_delivery_location(delivery_id):

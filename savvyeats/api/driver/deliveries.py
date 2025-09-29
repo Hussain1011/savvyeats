@@ -95,7 +95,6 @@ def update_delivery_status(driver_id, delivery_trip_id, delivery_stop_id, data):
 
 				
 	except Exception as e:
-		print(e)
 		message_en = "Error updating delivery status."
 		message_ar = "خطأ في تحديث حالة التوصيل."
 

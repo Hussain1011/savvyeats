@@ -78,7 +78,8 @@ class DeliveryTripOverride(DeliveryTrip):
 				"longitude": delivery_note.longitude,
 				"distance": delivery_note.distance,
 				"distance_uom": delivery_note.uom,
-				"estimated_arrival": delivery_note.estimated_arrival
+				"estimated_arrival": delivery_note.estimated_arrival,
+				"delivery_status": delivery_note.delivery_status
 			}
 			for field, value in update_fields.items():
 				value = None if delete else value
