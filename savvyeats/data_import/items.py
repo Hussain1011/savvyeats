@@ -48,6 +48,8 @@ def fetch_nutrients():
 	frappe.db.commit()
 
 
+
+
 def get_file(filename):
 	path = os.path.join(os.path.dirname(__file__))
 	return os.path.join(path, filename)
@@ -143,7 +145,6 @@ def fetch_ingredients():
 
 	with open(get_file("nutritional_list.json"), "r", encoding="utf-8") as f:
 		nutritional_list = json.load(f)
-		print(nutritional_list[0])
 		for d in nutritional_list:
 			doc = frappe.new_doc("Item")
 			doc.item_code = d["Ingredient ID"]
@@ -196,6 +197,49 @@ def fetch_ingredients():
 	frappe.db.commit()
 
 
+def update_sub_recipe_uom():
+	u = {
+		1: "Gram",
+		2: "Kilocalorie",
+		3: "Nos"
+	}
+
+	uom_mapping = {
+		"Gr": "Gram",
+		"gr": "Gram",
+		"GR": "Gram",
+		"Pcs": "Nos",
+		"pcs": "Nos",
+		"PCs": "Nos"
+	}
+
+	with open(get_file("sub_recipe_id_uom.json"), "r", encoding="utf-8") as f:
+		sub_recipe_details = json.load(f)
+		for i,v in sub_recipe_details.items():
+			uom = uom_mapping[v]
+			frappe.db.set_value("Item", i, "stock_uom", uom)
+
+
+
+def update_bom():
+	boms = frappe.get_all("BOM")
+	for d in boms:
+		bom = frappe.get_doc("BOM", d.name)
+		for b in bom.items:
+			if b.item_code.startswith("SR"):
+				sr_bom = "BOM-{0}-001".format(b.item_code)
+				if frappe.db.exists("BOM", sr_bom):
+					frappe.db.set_value(b.doctype, b.name, "bom_no", sr_bom)
+				else:
+					print(b.item_code)
+
+		# try:
+		# 	bom.save()
+		# except Exception as e:
+		# 	print(e)
+
+
+
 def fetch_sub_recipe():
 	u = {
 		1: "Gram",
@@ -214,23 +258,34 @@ def fetch_sub_recipe():
 
 	nutrients = {
 		"Calories": ["Calories", "Calories / g", "Kilocalorie"],
-		"Protein": ["Protien (g)", "Protien / g", "Gram"],
+		"Protein": ["Protein (g)", "Protien / g", "Gram"],
 		"Fats": ["Fat (g)", "Fat / g", "Gram"],
 		"Net Carbs": ["Net Carbs (g)", "Net Carbs / g", "Gram"],
 		"Fibers": ["Fibers (g)", "Fibers / g", "Gram"]
 	}
 
 
-	with open(get_file("sub_recipe_master_keyed.json"), "r", encoding="utf-8") as f:
+	with open(get_file("sub_recipe_details_with_qty.json"), "r", encoding="utf-8") as f:
 		sub_recipe_details = json.load(f)
 
 		for i,v in sub_recipe_details.items():
-			doc = frappe.get_doc("Item", i)
-			valuation_rate = v["SR - Cost / UOM"]
-			doc.valuation_rate = float(valuation_rate) or 0
-			if math.isnan(doc.valuation_rate):
-				doc.valuation_rate = 0
-			print(doc.valuation_rate)
+			main_bom = frappe.get_doc("BOM", "BOM-{0}-001".format(i))
+
+			for d in v["ingredients"]:
+				pass
+
+
+			try:
+				pass
+			except Exception as e:
+				print(e)
+
+			# doc = frappe.get_doc("Item", i)
+			# valuation_rate = v["SR - Cost / UOM"]
+			# doc.valuation_rate = float(valuation_rate) or 0
+			# if math.isnan(doc.valuation_rate):
+			# 	doc.valuation_rate = 0
+			# print(doc.valuation_rate)
 			# for a,b in nutrients.items():
 			# 	r = doc.append("nutrients", {})
 			# 	r.nutrient = a
@@ -278,28 +333,21 @@ def fetch_sub_recipe():
 	# 		r.nutrient = nut["name"]
 	# 		r.value = i["value"]
 
-			try:
-				#pass
-				doc.save()
-			except Exception as e:
-				print(e)
+			# try:
+			# 	#pass
+			# 	doc.save()
+			# except Exception as e:
+			# 	print(e)
 
 
-	frappe.db.commit()
+	# frappe.db.commit()
 
 
-
-def fetch_dishes():
+def fetch_master_recipe():
 	u = {
 		1: "Gram",
 		2: "Kilocalorie",
 		3: "Nos"
-	}
-
-	type_mapping = {
-		"Light": "LO-CAL",
-		"Balanced": "OPTI-MEAL",
-		"Strong": "FULL-ON"
 	}
 
 	uom_mapping = {
@@ -312,45 +360,106 @@ def fetch_dishes():
 	}
 
 	nutrients = {
-		"Calories": ["Calories", "Calories", "Kilocalorie"],
-		"Protein": ["Protien (g)", "Protien (g)", "Gram"],
-		"Fats": ["Fat (g)", "Fat (g)", "Gram"],
-		"Net Carbs": ["Net Carbs (g)", "Net Carbs (g)", "Gram"],
-		"Fibers": ["Fibers (g)", "Fibers (g)", "Gram"]
+		"Calories": ["Calories", "Calories / g", "Kilocalorie"],
+		"Protein": ["Protein (g)", "Protien / g", "Gram"],
+		"Fats": ["Fat (g)", "Fat / g", "Gram"],
+		"Net Carbs": ["Net Carbs (g)", "Net Carbs / g", "Gram"],
+		"Fibers": ["Fibers (g)", "Fibers / g", "Gram"]
 	}
 
 
-	with open(get_file("summary_full.json"), "r", encoding="utf-8") as f:
+	with open(get_file("recipes_str2_oldformat.json"), "r", encoding="utf-8") as f:
 		sub_recipe_details = json.load(f)
-		print(sub_recipe_details[0])
-		for d in sub_recipe_details:
-			doc = frappe.new_doc("Item")
-			doc.item_code = d["Item ID"]
-			doc.item_name = d["Iteam Name"]
-			doc.kitchen_name = d["Item Display Name"]
-			doc.description = d["Description"]
-			doc.item_category = "Dish"
-			doc.item_group = d["Category"]
-			doc.uom = u[3]
-			doc.is_stock_item = 1
-			doc.has_variants = 0
-			doc.variant_of = d["Item Display Name"]
-			doc.variant_based_on = "Item Attribute"
-			r = doc.append("attributes", {})
-			r.attribute = "Dish Plan"
-			r.attribute_value = type_mapping[d["Type"]]
+
+		for i,v in sub_recipe_details.items():
+			if not frappe.db.exists("Item", i):
+				if not frappe.db.exists("Item", i):
+					item = frappe.new_doc("Item")
+					item.item_code = i
+					item.item_name = v["item_name"]
+					item.kitchen_name = v["item_name"]
+					item.item_category = "Dish"
+					item.item_group = "Mains"
+					item.uom = "Nos"
+					item.is_stock_item = 1
+
+					for a,b in nutrients.items():
+						r = item.append("nutrients", {})
+						r.nutrient = a
+						r.value = v["nutrients"][b[0]] or 0
+
+					item.save()
+
+			doc = frappe.new_doc("BOM")
+			doc.item = i
+			doc.is_active = 1
+			doc.is_default = 1
+			doc.set_rate_of_sub_assembly_item_based_on_bom = 1
+			doc.quantity = 1
+			doc.gross_quantity = 1
+
+			for d in v["ingredients"]:
+				if "Ingredient ID" not in d:
+					continue
+				if not frappe.db.exists("Item", d["Ingredient ID"]):
+					raw = frappe.new_doc("Item")
+					raw.item_code = d["Ingredient ID"]
+					raw.item_name = d["Ingredient Name"]
+					raw.kitchen_name = d["Ingredient Name"]
+					raw.item_category = "Ingredient"
+					raw.item_group = "Raw Material"
+					raw.uom = uom_mapping[d["UOM"]]
+					raw.is_stock_item = 1
+					raw.valuation_rate = 1
+					if "Cost / UOM" in d:
+						raw.valuation_rate = d["Cost / UOM"]
+
+					if "Net Qty" in d:
+						raw.serving_size = d["Net Qty"]
+
+					for a,b in nutrients.items():
+						for f in b:
+							if f in d:
+								r = raw.append("nutrients", {})
+								r.nutrient = a
+								r.value = d[f]
+								break
+
+					raw.save()
+
+				row = doc.append("items", {})
+				row.item_code = d["Ingredient ID"]
+				if "UOM" in d and d["UOM"].strip() in uom_mapping:
+					frappe.db.set_value("Item", row.item_code, "stock_uom", uom_mapping[d["UOM"].strip()])
+				row.qty = 1
+				if "Net Qty" in d:
+					row.qty = d["Net Qty"]
+				if "Gross Qty" in d:
+					row.gross_qty = d["Gross QTY"]
+				row.rate = 1
+				if "Cost / UOM" in d:
+					row.rate = d["Cost / UOM"]
+				if "UOM" in d and d["UOM"].strip() in uom_mapping:
+					row.uom = uom_mapping[d["UOM"].strip()]
 
 
+			try:
+				if len(doc.items) > 0:
+					doc.save()
+			except Exception as e:
+				print(e)
 
-			valuation_rate = d["Cost (QAR)"]
-			doc.valuation_rate = float(valuation_rate) or 0
-			if math.isnan(doc.valuation_rate):
-				doc.valuation_rate = 0
-			print(doc.valuation_rate)
-			for a,b in nutrients.items():
-				r = doc.append("nutrients", {})
-				r.nutrient = a
-				r.value = d[b[0]] or 0
+			# doc = frappe.get_doc("Item", i)
+			# valuation_rate = v["SR - Cost / UOM"]
+			# doc.valuation_rate = float(valuation_rate) or 0
+			# if math.isnan(doc.valuation_rate):
+			# 	doc.valuation_rate = 0
+			# print(doc.valuation_rate)
+			# for a,b in nutrients.items():
+			# 	r = doc.append("nutrients", {})
+			# 	r.nutrient = a
+			# 	r.value = v[b[0]] or 0
+			# 	r.per_gram = v[b[1]] or 0
 			
 
 	# m = {}
@@ -393,14 +502,141 @@ def fetch_dishes():
 	# 		r.nutrient = nut["name"]
 	# 		r.value = i["value"]
 
-			try:
-				#pass
-				doc.save()
-			except Exception as e:
-				print(e)
+			# try:
+			# 	#pass
+			# 	doc.save()
+			# except Exception as e:
+			# 	print(e)
 
 
-	frappe.db.commit()
+	# frappe.db.commit()
+
+
+
+
+def fetch_dishes():
+	u = {
+		1: "Gram",
+		2: "Kilocalorie",
+		3: "Nos"
+	}
+
+	type_mapping = {
+		"Light": "LO-CAL",
+		"Balanced": "OPTI-MEAL",
+		"Strong": "FULL-ON"
+	}
+
+	uom_mapping = {
+		"Gr": "Gram",
+		"gr": "Gram",
+		"GR": "Gram",
+		"Pcs": "Nos",
+		"pcs": "Nos",
+		"PCs": "Nos"
+	}
+
+	nutrients = {
+		"Calories": ["Calories", "Calories", "Kilocalorie"],
+		"Protein": ["Protein (g)", "Protien (g)", "Gram"],
+		"Fats": ["Fat (g)", "Fat (g)", "Gram"],
+		"Net Carbs": ["Net Carbs (g)", "Net Carbs (g)", "Gram"],
+		"Fibers": ["Fibers (g)", "Fibers (g)", "Gram"]
+	}
+
+
+	with open(get_file("grouped_without_full_BLS_v2.json"), "r", encoding="utf-8") as f:
+		sub_recipe_details = json.load(f)
+		for v,i in sub_recipe_details.items():
+			if v == "ADD ON":
+				continue
+			for d in i:
+				if d["item_name"] == "Raspberry Rose Chia Jar":
+					continue
+				print(d["item_name"])
+				# tp = d["item_name"].split(" - ")[1].strip()
+				# if tp == "B":
+				# 	it_type = "Balanced"
+				# elif tp == "L":
+				# 	it_type = "Light"
+				# elif tp == "S":
+				# 	it_type = "Strong"
+				doc = frappe.new_doc("Item")
+				doc.item_code = d["item_code"]
+				doc.item_name = d["item_name"]
+				doc.kitchen_name = d["item_name"]
+				doc.description = d["item_name"]
+				doc.item_category = "Dish"
+				doc.item_group = "Mains"
+				doc.uom = u[3]
+				doc.is_stock_item = 1
+				doc.has_variants = 0
+				# doc.variant_of = v
+				# doc.variant_based_on = "Item Attribute"
+				# r = doc.append("attributes", {})
+				# r.attribute = "Dish Plan"
+				# r.attribute_value = type_mapping[it_type]
+
+
+
+				valuation_rate = 1
+				doc.valuation_rate = float(valuation_rate) or 0
+				if math.isnan(doc.valuation_rate):
+					doc.valuation_rate = 0
+				for a,b in nutrients.items():
+					r = doc.append("nutrients", {})
+					r.nutrient = a
+					r.value = d["nutrients"][b[0]] or 0
+			
+
+	# m = {}
+	# materials = run_external_mysql_query("select * from food")
+	# for mt in materials:
+	# 	m[mt["id"]] = mt
+
+	# records = run_external_mysql_query("select * from food where type = 'SUB_RECIPE' ")
+	# for d in records:
+	# 	data = json.loads(d["data"])
+	# 	doc = frappe.new_doc("BOM")
+	# 	doc.item = d["client_name"]
+	# 	doc.is_active = 1
+	# 	doc.is_default = 1
+	# 	doc.set_rate_of_sub_assembly_item_based_on_bom = 1
+	# 	doc.quantity = data["netQuantity"]
+	# 	print(data["materials"])
+	# 	for i in data["materials"]:
+	# 		if i["food_id"] == 335:
+	# 			i["food_id"] = 153
+	# 		item = m[i["food_id"]]
+	# 		row = doc.append("items", {})
+	# 		row.item_code = item["client_name"]
+	# 		row.qty = i["grossQuantity"]
+
+
+		# doc.item_code = d["client_name"]
+		# doc.item_name = d["client_name"]
+		# doc.kitchen_name = d["kitchen_name"]
+		# doc.item_category = "Sub Recipe"
+		# doc.item_group = "Sub Assemblies"
+		# doc.uom = u[data["unit_id"]]
+		# doc.is_stock_item = 1
+		#doc.valuation_rate = data["purchase_price"]
+		# doc.serving_size = data["serving_size"]
+
+	# 	for i in data["nutrients"]:
+	# 		nut = n[i["id"]]
+	# 		r = doc.append("nutrients", {})
+	# 		r.nutrient = nut["name"]
+	# 		r.value = i["value"]
+
+				try:
+					#pass
+					doc.save()
+				except Exception as e:
+					print(e)
+
+
+	#frappe.db.commit()
 
 
 
@@ -429,9 +665,9 @@ def fetch_item_templates():
 	}
 
 
-	with open(get_file("summary_unique_item_display_name_no_desc.json"), "r", encoding="utf-8") as f:
+	with open(get_file("grouped_with_BLS_v2.json"), "r", encoding="utf-8") as f:
 		item_template = json.load(f)
-		for d in item_template:
+		for d,v in item_template.items():
 			doc = frappe.new_doc("Item")
 			doc.item_code = d
 			doc.item_name = d

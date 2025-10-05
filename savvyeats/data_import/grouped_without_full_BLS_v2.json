@@ -1,0 +1,1570 @@
+{
+  "ADD ON": [
+    {
+      "item_code": "S206",
+      "item_name": "ADD ON - SAVVY",
+      "nutrients": {
+        "Calories": 2384.92,
+        "Fat (g)": 84.25000000000001,
+        "Protein (g)": 209.23999999999995,
+        "Net Carbs (g)": 162.03,
+        "Fibers (g)": 32.5
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0233",
+          "Ingredient Name": "Chicken Breast Fresh Chilled",
+          "UOM": "gr",
+          "Gross": "150",
+          "Net": 100,
+          "Cost / UOM": 0.04,
+          "Total Cost": "5.40",
+          "% of Cost": "9.95%",
+          "Calories": "120.00",
+          "Fat (g)": 2.62,
+          "Protein (g)": 22.5,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0231",
+          "Ingredient Name": "Beef Tenderloin USDA PRIME  Chilled",
+          "UOM": "gr",
+          "Gross": "150",
+          "Net": 100,
+          "Cost / UOM": 0.11,
+          "Total Cost": "15.75",
+          "% of Cost": "29.01%",
+          "Calories": "210.50",
+          "Fat (g)": 9,
+          "Protein (g)": 30.5,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0241",
+          "Ingredient Name": "Salmon Fresh fillet",
+          "UOM": "gr",
+          "Gross": "130",
+          "Net": 100,
+          "Cost / UOM": 0.06,
+          "Total Cost": "7.28",
+          "% of Cost": "13.41%",
+          "Calories": "180.00",
+          "Fat (g)": 12,
+          "Protein (g)": 22,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0325",
+          "Ingredient Name": "White Fish",
+          "UOM": "gr",
+          "Gross": "130",
+          "Net": 100,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.30",
+          "% of Cost": "2.39%",
+          "Calories": "80.00",
+          "Fat (g)": 1.5,
+          "Protein (g)": 15,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0237",
+          "Ingredient Name": "Shrimps 15/20 Fresh (Local)",
+          "UOM": "gr",
+          "Gross": "130",
+          "Net": 100,
+          "Cost / UOM": 0.02,
+          "Total Cost": "3.19",
+          "% of Cost": "5.87%",
+          "Calories": "85.00",
+          "Fat (g)": 0.51,
+          "Protein (g)": 20.1,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0273",
+          "Ingredient Name": "Whole Eggs Brown",
+          "UOM": "Pcs",
+          "Gross": "1",
+          "Net": 1,
+          "Cost / UOM": 0.44,
+          "Total Cost": "0.44",
+          "% of Cost": "0.82%",
+          "Calories": "72.00",
+          "Fat (g)": 4.8,
+          "Protein (g)": 6.3,
+          "Net Carbs (g)": 0.4,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0235",
+          "Ingredient Name": "Turkey Ham",
+          "UOM": "gr",
+          "Gross": "60",
+          "Net": 60,
+          "Cost / UOM": 0.05,
+          "Total Cost": "2.70",
+          "% of Cost": "4.97%",
+          "Calories": "80.40",
+          "Fat (g)": 3.48,
+          "Protein (g)": 11.76,
+          "Net Carbs (g)": 0.56,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0297",
+          "Ingredient Name": "Greek Yoghurt 0%",
+          "UOM": "gr",
+          "Gross": "100",
+          "Net": 100,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.43",
+          "% of Cost": "2.62%",
+          "Calories": "82.14",
+          "Fat (g)": 0.18,
+          "Protein (g)": 8.21,
+          "Net Carbs (g)": 11.52,
+          "Fibers (g)": "0.63"
+        },
+        {
+          "Ingredient ID": "RM0310",
+          "Ingredient Name": "White rice",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 100,
+          "Cost / UOM": 0.03,
+          "Total Cost": "1.41",
+          "% of Cost": "2.59%",
+          "Calories": "130.00",
+          "Fat (g)": 0.25,
+          "Protein (g)": 2.7,
+          "Net Carbs (g)": 28.12,
+          "Fibers (g)": "0.38"
+        },
+        {
+          "Ingredient ID": "RM0175",
+          "Ingredient Name": "Whole Wheat Penne",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 100,
+          "Cost / UOM": 0.02,
+          "Total Cost": "0.75",
+          "% of Cost": "1.38%",
+          "Calories": "357.14",
+          "Fat (g)": 2.68,
+          "Protein (g)": 14.29,
+          "Net Carbs (g)": 60.71,
+          "Fibers (g)": "8.93"
+        },
+        {
+          "Ingredient ID": "RM0096",
+          "Ingredient Name": "Potato big",
+          "UOM": "gr",
+          "Gross": "100",
+          "Net": 100,
+          "Cost / UOM": 0,
+          "Total Cost": "0.33",
+          "% of Cost": "0.61%",
+          "Calories": "58.00",
+          "Fat (g)": 0.1,
+          "Protein (g)": 2.57,
+          "Net Carbs (g)": 9.9,
+          "Fibers (g)": "2.50"
+        },
+        {
+          "Ingredient ID": "RM0108",
+          "Ingredient Name": "Zucchini",
+          "UOM": "gr",
+          "Gross": "140",
+          "Net": 100,
+          "Cost / UOM": 0.02,
+          "Total Cost": "2.52",
+          "% of Cost": "4.64%",
+          "Calories": "17.00",
+          "Fat (g)": 0.32,
+          "Protein (g)": 1.21,
+          "Net Carbs (g)": 2.11,
+          "Fibers (g)": "1.00"
+        },
+        {
+          "Ingredient ID": "RM0004",
+          "Ingredient Name": "Lettuce Mix",
+          "UOM": "gr",
+          "Gross": "30",
+          "Net": 30,
+          "Cost / UOM": 0.06,
+          "Total Cost": "1.86",
+          "% of Cost": "3.43%",
+          "Calories": "4.50",
+          "Fat (g)": 0.05,
+          "Protein (g)": 0.41,
+          "Net Carbs (g)": 0.47,
+          "Fibers (g)": "0.39"
+        },
+        {
+          "Ingredient ID": "RM0321",
+          "Ingredient Name": "Rice Cake",
+          "UOM": "pcs",
+          "Gross": "3",
+          "Net": 3,
+          "Cost / UOM": 0.08,
+          "Total Cost": "0.23",
+          "% of Cost": "0.41%",
+          "Calories": "78.00",
+          "Fat (g)": 0.6,
+          "Protein (g)": 1.8,
+          "Net Carbs (g)": 14.88,
+          "Fibers (g)": "0.72"
+        },
+        {
+          "Ingredient ID": "RM0250",
+          "Ingredient Name": "Multi cereal sliced bread",
+          "UOM": "gr",
+          "Gross": "40",
+          "Net": 40,
+          "Cost / UOM": 0.02,
+          "Total Cost": "0.84",
+          "% of Cost": "1.54%",
+          "Calories": "100.00",
+          "Fat (g)": 1.43,
+          "Protein (g)": 5,
+          "Net Carbs (g)": 13.57,
+          "Fibers (g)": "3.57"
+        },
+        {
+          "Ingredient ID": "RM0030",
+          "Ingredient Name": "Avocado",
+          "UOM": "gr",
+          "Gross": "100",
+          "Net": 100,
+          "Cost / UOM": 0.03,
+          "Total Cost": "3.00",
+          "% of Cost": "5.53%",
+          "Calories": "120.00",
+          "Fat (g)": 10.1,
+          "Protein (g)": 2.23,
+          "Net Carbs (g)": 2.22,
+          "Fibers (g)": "5.60"
+        },
+        {
+          "Ingredient ID": "RM0168",
+          "Ingredient Name": "Peanut butter - paste",
+          "UOM": "gr",
+          "Gross": "45",
+          "Net": 45,
+          "Cost / UOM": 0.02,
+          "Total Cost": "0.99",
+          "% of Cost": "1.82%",
+          "Calories": "270.00",
+          "Fat (g)": 18,
+          "Protein (g)": 11.21,
+          "Net Carbs (g)": 1.31,
+          "Fibers (g)": "3.92"
+        },
+        {
+          "Ingredient ID": "RM0176",
+          "Ingredient Name": "Almonds - peeled - raw - sliced",
+          "UOM": "gr",
+          "Gross": "10",
+          "Net": 10,
+          "Cost / UOM": 0.05,
+          "Total Cost": "0.48",
+          "% of Cost": "0.88%",
+          "Calories": "59.00",
+          "Fat (g)": 5.25,
+          "Protein (g)": 2.14,
+          "Net Carbs (g)": 0.88,
+          "Fibers (g)": "0.99"
+        },
+        {
+          "Ingredient ID": "RM0188",
+          "Ingredient Name": "Walnut - peeled - raw",
+          "UOM": "gr",
+          "Gross": "10",
+          "Net": 10,
+          "Cost / UOM": 0.05,
+          "Total Cost": "0.50",
+          "% of Cost": "0.92%",
+          "Calories": "61.90",
+          "Fat (g)": 5.93,
+          "Protein (g)": 2.41,
+          "Net Carbs (g)": 0.28,
+          "Fibers (g)": "0.68"
+        },
+        {
+          "Ingredient ID": "RM0131",
+          "Ingredient Name": "Dates",
+          "UOM": "gr",
+          "Gross": "20",
+          "Net": 20,
+          "Cost / UOM": 0,
+          "Total Cost": "0.08",
+          "% of Cost": "0.15%",
+          "Calories": "56.00",
+          "Fat (g)": 0.08,
+          "Protein (g)": 0.48,
+          "Net Carbs (g)": 13.34,
+          "Fibers (g)": "1.60"
+        },
+        {
+          "Ingredient ID": "RM0220",
+          "Ingredient Name": "Protein Powder",
+          "UOM": "gr",
+          "Gross": "30",
+          "Net": 30,
+          "Cost / UOM": 0.12,
+          "Total Cost": "3.48",
+          "% of Cost": "6.41%",
+          "Calories": "105.94",
+          "Fat (g)": 0.47,
+          "Protein (g)": 23.44,
+          "Net Carbs (g)": 0.94,
+          "Fibers (g)": "0.94"
+        },
+        {
+          "Ingredient ID": "RM0007",
+          "Ingredient Name": "pumpkin seeds",
+          "UOM": "gr",
+          "Gross": "10",
+          "Net": 10,
+          "Cost / UOM": 0.04,
+          "Total Cost": "0.35",
+          "% of Cost": "0.64%",
+          "Calories": "57.40",
+          "Fat (g)": 4.9,
+          "Protein (g)": 2.98,
+          "Net Carbs (g)": 0.82,
+          "Fibers (g)": "0.65"
+        }
+      ]
+    }
+  ],
+  "Fruits": [
+    {
+      "item_code": "S207",
+      "item_name": "Fruits",
+      "nutrients": {
+        "Calories": 118.0,
+        "Fat (g)": 0.28,
+        "Protein (g)": 0.54,
+        "Net Carbs (g)": 21.2,
+        "Fibers (g)": 5.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0028",
+          "Ingredient Name": "Apple Green",
+          "UOM": "gr",
+          "Gross": "200",
+          "Net": 200,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.20",
+          "% of Cost": "100.00%",
+          "Calories": "118.00",
+          "Fat (g)": 0.28,
+          "Protein (g)": 0.54,
+          "Net Carbs (g)": 21.2,
+          "Fibers (g)": "5.00"
+        }
+      ]
+    }
+  ],
+  "cruidtite with labneh": [
+    {
+      "item_code": "S208",
+      "item_name": "cruidtite with labneh",
+      "nutrients": {
+        "Calories": 64.5,
+        "Fat (g)": 1.77,
+        "Protein (g)": 2.82,
+        "Net Carbs (g)": 7.289999999999999,
+        "Fibers (g)": 2.35
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0274",
+          "Ingredient Name": "Yoghurt ",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 50,
+          "Cost / UOM": 0.01,
+          "Total Cost": "0.35",
+          "% of Cost": "32.62%",
+          "Calories": "33.50",
+          "Fat (g)": 1.5,
+          "Protein (g)": 2,
+          "Net Carbs (g)": 3,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0064",
+          "Ingredient Name": "Carrots",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 50,
+          "Cost / UOM": 0,
+          "Total Cost": "0.20",
+          "% of Cost": "18.91%",
+          "Calories": "24.00",
+          "Fat (g)": 0.18,
+          "Protein (g)": 0.47,
+          "Net Carbs (g)": 3.6,
+          "Fibers (g)": "1.55"
+        },
+        {
+          "Ingredient ID": "RM0067",
+          "Ingredient Name": "Celery Stick Green",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 50,
+          "Cost / UOM": 0.01,
+          "Total Cost": "0.51",
+          "% of Cost": "48.46%",
+          "Calories": "7.00",
+          "Fat (g)": 0.09,
+          "Protein (g)": 0.35,
+          "Net Carbs (g)": 0.69,
+          "Fibers (g)": "0.80"
+        }
+      ]
+    }
+  ],
+  "Pomegranate": [
+    {
+      "item_code": "S209",
+      "item_name": "Pomegranate",
+      "nutrients": {
+        "Calories": 116.2,
+        "Fat (g)": 1.64,
+        "Protein (g)": 2.34,
+        "Net Carbs (g)": 20.58,
+        "Fibers (g)": 5.6
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0046",
+          "Ingredient Name": "Pomegranate",
+          "UOM": "gr",
+          "Gross": "140",
+          "Net": 140,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.40",
+          "% of Cost": "100.00%",
+          "Calories": "116.20",
+          "Fat (g)": 1.64,
+          "Protein (g)": 2.34,
+          "Net Carbs (g)": 20.58,
+          "Fibers (g)": "5.60"
+        }
+      ]
+    }
+  ],
+  "Edamame frozen": [
+    {
+      "item_code": "S210",
+      "item_name": "Edamame frozen",
+      "nutrients": {
+        "Calories": 76.3,
+        "Fat (g)": 3.31,
+        "Protein (g)": 7.84,
+        "Net Carbs (g)": 1.97,
+        "Fibers (g)": 3.36
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0109",
+          "Ingredient Name": "Edamame frozen",
+          "UOM": "gr",
+          "Gross": "80",
+          "Net": 70,
+          "Cost / UOM": 0.06,
+          "Total Cost": "4.48",
+          "% of Cost": "100.00%",
+          "Calories": "76.30",
+          "Fat (g)": 3.31,
+          "Protein (g)": 7.84,
+          "Net Carbs (g)": 1.97,
+          "Fibers (g)": "3.36"
+        }
+      ]
+    }
+  ],
+  "Bananas": [
+    {
+      "item_code": "S211",
+      "item_name": "Bananas",
+      "nutrients": {
+        "Calories": 117.6,
+        "Fat (g)": 0.35,
+        "Protein (g)": 0.89,
+        "Net Carbs (g)": 25.56,
+        "Fibers (g)": 2.04
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0031",
+          "Ingredient Name": "Bananas",
+          "UOM": "gr",
+          "Gross": "120",
+          "Net": 120,
+          "Cost / UOM": 0,
+          "Total Cost": "0.54",
+          "% of Cost": "100.00%",
+          "Calories": "117.60",
+          "Fat (g)": 0.35,
+          "Protein (g)": 0.89,
+          "Net Carbs (g)": 25.56,
+          "Fibers (g)": "2.04"
+        }
+      ]
+    }
+  ],
+  "Oranges": [
+    {
+      "item_code": "S212",
+      "item_name": "Oranges ",
+      "nutrients": {
+        "Calories": 104.0,
+        "Fat (g)": 0.3,
+        "Protein (g)": 1.82,
+        "Net Carbs (g)": 19.6,
+        "Fibers (g)": 4.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0043",
+          "Ingredient Name": "Oranges ",
+          "UOM": "gr",
+          "Gross": "200",
+          "Net": 200,
+          "Cost / UOM": 0,
+          "Total Cost": "0.90",
+          "% of Cost": "100.00%",
+          "Calories": "104.00",
+          "Fat (g)": 0.3,
+          "Protein (g)": 1.82,
+          "Net Carbs (g)": 19.6,
+          "Fibers (g)": "4.00"
+        }
+      ]
+    }
+  ],
+  "Guac & Chips": [
+    {
+      "item_code": "S213",
+      "item_name": "Guac & Chips",
+      "nutrients": {
+        "Calories": 80.4,
+        "Fat (g)": 3.78,
+        "Protein (g)": 1.9500000000000002,
+        "Net Carbs (g)": 8.46,
+        "Fibers (g)": 1.8499999999999999
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0030",
+          "Ingredient Name": "Avocado",
+          "UOM": "gr",
+          "Gross": "40",
+          "Net": 30,
+          "Cost / UOM": 0.03,
+          "Total Cost": "1.20",
+          "% of Cost": "88.89%",
+          "Calories": "36.00",
+          "Fat (g)": 3.03,
+          "Protein (g)": 0.67,
+          "Net Carbs (g)": 0.67,
+          "Fibers (g)": "1.68"
+        },
+        {
+          "Ingredient ID": "RM0249",
+          "Ingredient Name": "Tortillas 12 inch",
+          "UOM": "gr",
+          "Gross": "15",
+          "Net": 15,
+          "Cost / UOM": 0.01,
+          "Total Cost": "0.15",
+          "% of Cost": "11.11%",
+          "Calories": "44.40",
+          "Fat (g)": 0.75,
+          "Protein (g)": 1.28,
+          "Net Carbs (g)": 7.79,
+          "Fibers (g)": "0.17"
+        }
+      ]
+    }
+  ],
+  "Pineapple": [
+    {
+      "item_code": "S214",
+      "item_name": "Pineapple",
+      "nutrients": {
+        "Calories": 80.0,
+        "Fat (g)": 0.19,
+        "Protein (g)": 0.86,
+        "Net Carbs (g)": 18.72,
+        "Fibers (g)": 2.24
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0045",
+          "Ingredient Name": "Pineapple ",
+          "UOM": "gr",
+          "Gross": "500",
+          "Net": 160,
+          "Cost / UOM": 0.01,
+          "Total Cost": "3.00",
+          "% of Cost": "100.00%",
+          "Calories": "80.00",
+          "Fat (g)": 0.19,
+          "Protein (g)": 0.86,
+          "Net Carbs (g)": 18.72,
+          "Fibers (g)": "2.24"
+        }
+      ]
+    }
+  ],
+  "Hummus Grissini": [
+    {
+      "item_code": "S215",
+      "item_name": "Hummus Grissini",
+      "nutrients": {
+        "Calories": 55.18,
+        "Fat (g)": 3.8,
+        "Protein (g)": 3.06,
+        "Net Carbs (g)": 3.84,
+        "Fibers (g)": 1.3
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0062",
+          "Ingredient Name": "Hummus Bi Tahini",
+          "UOM": "gr",
+          "Gross": "35",
+          "Net": 35,
+          "Cost / UOM": 0.02,
+          "Total Cost": "0.55",
+          "% of Cost": "100.00%",
+          "Calories": "55.18",
+          "Fat (g)": 3.8,
+          "Protein (g)": 3.06,
+          "Net Carbs (g)": 3.84,
+          "Fibers (g)": "1.30"
+        }
+      ]
+    }
+  ],
+  "Mango": [
+    {
+      "item_code": "S216",
+      "item_name": "Mango",
+      "nutrients": {
+        "Calories": 90.0,
+        "Fat (g)": 0.57,
+        "Protein (g)": 1.23,
+        "Net Carbs (g)": 20.1,
+        "Fibers (g)": 2.4
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0041",
+          "Ingredient Name": "Mango",
+          "UOM": "gr",
+          "Gross": "300",
+          "Net": 150,
+          "Cost / UOM": 0.01,
+          "Total Cost": "4.05",
+          "% of Cost": "100.00%",
+          "Calories": "90.00",
+          "Fat (g)": 0.57,
+          "Protein (g)": 1.23,
+          "Net Carbs (g)": 20.1,
+          "Fibers (g)": "2.40"
+        }
+      ]
+    }
+  ],
+  "Corn": [
+    {
+      "item_code": "S217",
+      "item_name": "Corn",
+      "nutrients": {
+        "Calories": 94.44,
+        "Fat (g)": 1.44,
+        "Protein (g)": 3.33,
+        "Net Carbs (g)": 18.78,
+        "Fibers (g)": 2.33
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0154",
+          "Ingredient Name": "Sweet Corn Can",
+          "UOM": "gr",
+          "Gross": "100",
+          "Net": 100,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.15",
+          "% of Cost": "100.00%",
+          "Calories": "94.44",
+          "Fat (g)": 1.44,
+          "Protein (g)": 3.33,
+          "Net Carbs (g)": 18.78,
+          "Fibers (g)": "2.33"
+        }
+      ]
+    }
+  ],
+  "Rice cake and jam": [
+    {
+      "item_code": "S218",
+      "item_name": "Rice cake and jam",
+      "nutrients": {
+        "Calories": 90.84,
+        "Fat (g)": 2.6999999999999997,
+        "Protein (g)": 1.76,
+        "Net Carbs (g)": 13.92,
+        "Fibers (g)": 1.44
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0068",
+          "Ingredient Name": "Strawberry choco oats filling",
+          "UOM": "gr",
+          "Gross": "30",
+          "Net": 30,
+          "Cost / UOM": 0.06,
+          "Total Cost": "1.66",
+          "% of Cost": "91.72%",
+          "Calories": "38.84",
+          "Fat (g)": 2.3,
+          "Protein (g)": 0.56,
+          "Net Carbs (g)": 4,
+          "Fibers (g)": "0.96"
+        },
+        {
+          "Ingredient ID": "RM0321",
+          "Ingredient Name": "Rice Cake",
+          "UOM": "gr",
+          "Gross": "2",
+          "Net": 2,
+          "Cost / UOM": 0.08,
+          "Total Cost": "0.15",
+          "% of Cost": "8.28%",
+          "Calories": "52.00",
+          "Fat (g)": 0.4,
+          "Protein (g)": 1.2,
+          "Net Carbs (g)": 9.92,
+          "Fibers (g)": "0.48"
+        }
+      ]
+    }
+  ],
+  "Grapes Green Seedless": [
+    {
+      "item_code": "S219",
+      "item_name": "Grapes Green Seedless",
+      "nutrients": {
+        "Calories": 120.0,
+        "Fat (g)": 0.35,
+        "Protein (g)": 1.35,
+        "Net Carbs (g)": 26.55,
+        "Fibers (g)": 1.35
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0037",
+          "Ingredient Name": "Grapes Green Seedless",
+          "UOM": "gr",
+          "Gross": "150",
+          "Net": 150,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.95",
+          "% of Cost": "100.00%",
+          "Calories": "120.00",
+          "Fat (g)": 0.35,
+          "Protein (g)": 1.35,
+          "Net Carbs (g)": 26.55,
+          "Fibers (g)": "1.35"
+        }
+      ]
+    }
+  ],
+  "Strawberries": [
+    {
+      "item_code": "S220",
+      "item_name": "Strawberries",
+      "nutrients": {
+        "Calories": 64.0,
+        "Fat (g)": 0.6,
+        "Protein (g)": 1.34,
+        "Net Carbs (g)": 11.36,
+        "Fibers (g)": 4.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0048",
+          "Ingredient Name": "Strawberries",
+          "UOM": "gr",
+          "Gross": "200",
+          "Net": 200,
+          "Cost / UOM": 0.03,
+          "Total Cost": "6.60",
+          "% of Cost": "100.00%",
+          "Calories": "64.00",
+          "Fat (g)": 0.6,
+          "Protein (g)": 1.34,
+          "Net Carbs (g)": 11.36,
+          "Fibers (g)": "4.00"
+        }
+      ]
+    }
+  ],
+  "Watermelon": [
+    {
+      "item_code": "S221",
+      "item_name": "Watermelon ",
+      "nutrients": {
+        "Calories": 90.0,
+        "Fat (g)": 0.45,
+        "Protein (g)": 1.83,
+        "Net Carbs (g)": 21.45,
+        "Fibers (g)": 1.2
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0049",
+          "Ingredient Name": "Watermelon ",
+          "UOM": "gr",
+          "Gross": "300",
+          "Net": 300,
+          "Cost / UOM": 0,
+          "Total Cost": "0.81",
+          "% of Cost": "100.00%",
+          "Calories": "90.00",
+          "Fat (g)": 0.45,
+          "Protein (g)": 1.83,
+          "Net Carbs (g)": 21.45,
+          "Fibers (g)": "1.20"
+        }
+      ]
+    }
+  ],
+  "Plums": [
+    {
+      "item_code": "S222",
+      "item_name": "Plums",
+      "nutrients": {
+        "Calories": 90.0,
+        "Fat (g)": 0.6,
+        "Protein (g)": 1.5,
+        "Net Carbs (g)": 22.0,
+        "Fibers (g)": 2.72
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0399",
+          "Ingredient Name": "Plums ",
+          "UOM": "gr",
+          "Gross": "200",
+          "Net": 200,
+          "Cost / UOM": 0.01,
+          "Total Cost": "1.60",
+          "% of Cost": "100.00%",
+          "Calories": "90.00",
+          "Fat (g)": 0.6,
+          "Protein (g)": 1.5,
+          "Net Carbs (g)": 22,
+          "Fibers (g)": "2.72"
+        }
+      ]
+    }
+  ],
+  "Pears": [
+    {
+      "item_code": "S223",
+      "item_name": "Pears",
+      "nutrients": {
+        "Calories": 126.0,
+        "Fat (g)": 0.32,
+        "Protein (g)": 0.76,
+        "Net Carbs (g)": 24.0,
+        "Fibers (g)": 6.2
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0044",
+          "Ingredient Name": "Pears",
+          "UOM": "gr",
+          "Gross": "200",
+          "Net": 200,
+          "Cost / UOM": 0.02,
+          "Total Cost": "3.00",
+          "% of Cost": "100.00%",
+          "Calories": "126.00",
+          "Fat (g)": 0.32,
+          "Protein (g)": 0.76,
+          "Net Carbs (g)": 24,
+          "Fibers (g)": "6.20"
+        }
+      ]
+    }
+  ],
+  "Kiwi": [
+    {
+      "item_code": "S224",
+      "item_name": "Kiwi",
+      "nutrients": {
+        "Calories": 141.52,
+        "Fat (g)": 1.07,
+        "Protein (g)": 2.59,
+        "Net Carbs (g)": 26.84,
+        "Fibers (g)": 7.32
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0038",
+          "Ingredient Name": "Kiwi",
+          "UOM": "gr",
+          "Gross": "244",
+          "Net": 244,
+          "Cost / UOM": 0.01,
+          "Total Cost": "2.93",
+          "% of Cost": "29.70%",
+          "Calories": "141.52",
+          "Fat (g)": 1.07,
+          "Protein (g)": 2.59,
+          "Net Carbs (g)": 26.84,
+          "Fibers (g)": "7.32"
+        }
+      ]
+    }
+  ],
+  "Melon": [
+    {
+      "item_code": "S225",
+      "item_name": "Melon",
+      "nutrients": {
+        "Calories": 100.08,
+        "Fat (g)": 0.39,
+        "Protein (g)": 1.5,
+        "Net Carbs (g)": 23.05,
+        "Fibers (g)": 2.22
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0042",
+          "Ingredient Name": "Melon Sweet",
+          "UOM": "gr",
+          "Gross": "278",
+          "Net": 278,
+          "Cost / UOM": 0.01,
+          "Total Cost": "2.50",
+          "% of Cost": "17.40%",
+          "Calories": "100.08",
+          "Fat (g)": 0.39,
+          "Protein (g)": 1.5,
+          "Net Carbs (g)": 23.05,
+          "Fibers (g)": "2.22"
+        }
+      ]
+    }
+  ],
+  "Rasperry": [
+    {
+      "item_code": "S226",
+      "item_name": "Rasperry ",
+      "nutrients": {
+        "Calories": 98.8,
+        "Fat (g)": 22.61,
+        "Protein (g)": 2.28,
+        "Net Carbs (g)": 10.26,
+        "Fibers (g)": 12.35
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0047",
+          "Ingredient Name": "Raspberries ",
+          "UOM": "gr",
+          "Gross": "190",
+          "Net": 190,
+          "Cost / UOM": 0.09,
+          "Total Cost": "17.10",
+          "% of Cost": "59.01%",
+          "Calories": "98.80",
+          "Fat (g)": 22.61,
+          "Protein (g)": 2.28,
+          "Net Carbs (g)": 10.26,
+          "Fibers (g)": "12.35"
+        }
+      ]
+    }
+  ],
+  "Peach": [
+    {
+      "item_code": "S227",
+      "item_name": "Peach",
+      "nutrients": {
+        "Calories": 100.0,
+        "Fat (g)": 0.0,
+        "Protein (g)": 0.0,
+        "Net Carbs (g)": 0.17,
+        "Fibers (g)": 3.33
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0383",
+          "Ingredient Name": "Peach ",
+          "UOM": "gr",
+          "Gross": "250",
+          "Net": 250,
+          "Cost / UOM": 0.02,
+          "Total Cost": "6.00",
+          "% of Cost": "100.00%",
+          "Calories": "100.00",
+          "Fat (g)": 0,
+          "Protein (g)": 0,
+          "Net Carbs (g)": 0.17,
+          "Fibers (g)": "3.33"
+        }
+      ]
+    }
+  ],
+  "Dried Figue": [
+    {
+      "item_code": "S228",
+      "item_name": "Dried Figue",
+      "nutrients": {
+        "Calories": 112.4,
+        "Fat (g)": 0.0,
+        "Protein (g)": 0.0,
+        "Net Carbs (g)": 27.32,
+        "Fibers (g)": 0.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0397",
+          "Ingredient Name": "Dried Fig ",
+          "UOM": "gr",
+          "Gross": "40",
+          "Net": 40,
+          "Cost / UOM": 0.07,
+          "Total Cost": "2.99",
+          "% of Cost": "100.00%",
+          "Calories": "112.40",
+          "Fat (g)": 0,
+          "Protein (g)": 0,
+          "Net Carbs (g)": 27.32,
+          "Fibers (g)": "0.00"
+        }
+      ]
+    }
+  ],
+  "Raisin Mix": [
+    {
+      "item_code": "S229",
+      "item_name": "Raisin Mix",
+      "nutrients": {
+        "Calories": 103.6,
+        "Fat (g)": 0.19,
+        "Protein (g)": 0.88,
+        "Net Carbs (g)": 3.85,
+        "Fibers (g)": 2.38
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0286",
+          "Ingredient Name": "Raisins",
+          "UOM": "gr",
+          "Gross": "35",
+          "Net": 35,
+          "Cost / UOM": 0.02,
+          "Total Cost": "0.70",
+          "% of Cost": "100.00%",
+          "Calories": "103.60",
+          "Fat (g)": 0.19,
+          "Protein (g)": 0.88,
+          "Net Carbs (g)": 3.85,
+          "Fibers (g)": "2.38"
+        }
+      ]
+    }
+  ],
+  "Dry apricot": [
+    {
+      "item_code": "S230",
+      "item_name": "Dry apricot",
+      "nutrients": {
+        "Calories": 101.22,
+        "Fat (g)": 0.21,
+        "Protein (g)": 1.43,
+        "Net Carbs (g)": 23.39,
+        "Fibers (g)": 3.07
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0308",
+          "Ingredient Name": "Apricot Dry ",
+          "UOM": "gr",
+          "Gross": "42",
+          "Net": 42,
+          "Cost / UOM": 0.03,
+          "Total Cost": "1.18",
+          "% of Cost": "100.00%",
+          "Calories": "101.22",
+          "Fat (g)": 0.21,
+          "Protein (g)": 1.43,
+          "Net Carbs (g)": 23.39,
+          "Fibers (g)": "3.07"
+        }
+      ]
+    }
+  ],
+  "Cramberry": [
+    {
+      "item_code": "S231",
+      "item_name": "Cramberry",
+      "nutrients": {
+        "Calories": 107.8,
+        "Fat (g)": 0.39,
+        "Protein (g)": 0.07,
+        "Net Carbs (g)": 27.2,
+        "Fibers (g)": 1.86
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0315",
+          "Ingredient Name": "Dried Cranberries",
+          "UOM": "gr",
+          "Gross": "35",
+          "Net": 35,
+          "Cost / UOM": 0.07,
+          "Total Cost": "2.28",
+          "% of Cost": "100.00%",
+          "Calories": "107.80",
+          "Fat (g)": 0.39,
+          "Protein (g)": 0.07,
+          "Net Carbs (g)": 27.2,
+          "Fibers (g)": "1.86"
+        }
+      ]
+    }
+  ],
+  "Dates": [
+    {
+      "item_code": "S232",
+      "item_name": "Dates",
+      "nutrients": {
+        "Calories": 98.0,
+        "Fat (g)": 0.14,
+        "Protein (g)": 0.84,
+        "Net Carbs (g)": 23.35,
+        "Fibers (g)": 2.8
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "RM0131",
+          "Ingredient Name": "dates",
+          "UOM": "gr",
+          "Gross": "35",
+          "Net": 35,
+          "Cost / UOM": 0,
+          "Total Cost": "0.14",
+          "% of Cost": "100.00%",
+          "Calories": "98.00",
+          "Fat (g)": 0.14,
+          "Protein (g)": 0.84,
+          "Net Carbs (g)": 23.35,
+          "Fibers (g)": "2.80"
+        }
+      ]
+    }
+  ],
+  "Raspberry Rose Chia Jar": [
+    {
+      "item_code": "S310",
+      "item_name": "Raspberry Rose Chia Jar ",
+      "nutrients": {
+        "Calories": 0.0,
+        "Fat (g)": 0.0,
+        "Protein (g)": 0.0,
+        "Net Carbs (g)": 0.0,
+        "Fibers (g)": 0.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0189",
+          "Ingredient Name": "Chia Pudding Rose Water ",
+          "UOM": "gr",
+          "Calories": "0.00",
+          "Fat (g)": 0,
+          "Protein (g)": 0,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        }
+      ]
+    },
+    {
+      "item_code": "S311",
+      "item_name": "Raspberry Rose Chia Jar ",
+      "nutrients": {
+        "Calories": 0.0,
+        "Fat (g)": 0.0,
+        "Protein (g)": 0.0,
+        "Net Carbs (g)": 0.0,
+        "Fibers (g)": 0.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0189",
+          "Ingredient Name": "Chia Pudding Rose Water ",
+          "UOM": "gr",
+          "Calories": "0.00",
+          "Fat (g)": 0,
+          "Protein (g)": 0,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        }
+      ]
+    },
+    {
+      "item_code": "S312",
+      "item_name": "Raspberry Rose Chia Jar ",
+      "nutrients": {
+        "Calories": 0.0,
+        "Fat (g)": 0.0,
+        "Protein (g)": 0.0,
+        "Net Carbs (g)": 0.0,
+        "Fibers (g)": 0.0
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0189",
+          "Ingredient Name": "Chia Pudding Rose Water ",
+          "UOM": "gr",
+          "Calories": "0.00",
+          "Fat (g)": 0,
+          "Protein (g)": 0,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        },
+        {
+          "UOM": "gr"
+        }
+      ]
+    }
+  ],
+  "SAVVY Meghle": [
+    {
+      "item_code": "S313",
+      "item_name": "SAVVY Meghle",
+      "nutrients": {
+        "Calories": 231.46,
+        "Fat (g)": 12.86,
+        "Protein (g)": 7.8100000000000005,
+        "Net Carbs (g)": 17.26,
+        "Fibers (g)": 6.68
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0192",
+          "Ingredient Name": "SAVVY Meghle - Batch ",
+          "UOM": "gr",
+          "Gross": "60",
+          "Net": 60,
+          "Cost / UOM": 0.04,
+          "Total Cost": "2.17",
+          "% of Cost": "58.11%",
+          "Calories": "89.26",
+          "Fat (g)": 1.53,
+          "Protein (g)": 3.16,
+          "Net Carbs (g)": 15.71,
+          "Fibers (g)": "4.47"
+        },
+        {
+          "Ingredient ID": "RM0203",
+          "Ingredient Name": "Coconut Flakes",
+          "UOM": "gr",
+          "Gross": "5",
+          "Net": 5,
+          "Cost / UOM": 0.09,
+          "Total Cost": "0.45",
+          "% of Cost": "12.11%",
+          "Calories": "22.80",
+          "Fat (g)": 0.5,
+          "Protein (g)": 0.16,
+          "Net Carbs (g)": 0,
+          "Fibers (g)": "0.50"
+        },
+        {
+          "Ingredient ID": "RM0188",
+          "Ingredient Name": "Walnut - peeled - raw",
+          "UOM": "gr",
+          "Gross": "10",
+          "Net": 10,
+          "Cost / UOM": 0.05,
+          "Total Cost": "0.50",
+          "% of Cost": "13.37%",
+          "Calories": "61.90",
+          "Fat (g)": 5.93,
+          "Protein (g)": 2.41,
+          "Net Carbs (g)": 0.28,
+          "Fibers (g)": "0.68"
+        },
+        {
+          "Ingredient ID": "RM0018",
+          "Ingredient Name": "Pistachio",
+          "UOM": "gr",
+          "Gross": "5",
+          "Net": 5,
+          "Cost / UOM": 0.07,
+          "Total Cost": "0.37",
+          "% of Cost": "10.00%",
+          "Calories": "28.00",
+          "Fat (g)": 2.27,
+          "Protein (g)": 1.01,
+          "Net Carbs (g)": 0.83,
+          "Fibers (g)": "0.53"
+        },
+        {
+          "Ingredient ID": "RM0176",
+          "Ingredient Name": "Almonds - peeled - raw - sliced",
+          "UOM": "gr",
+          "Gross": "5",
+          "Net": 5,
+          "Cost / UOM": 0.05,
+          "Total Cost": "0.24",
+          "% of Cost": "6.42%",
+          "Calories": "29.50",
+          "Fat (g)": 2.63,
+          "Protein (g)": 1.07,
+          "Net Carbs (g)": 0.44,
+          "Fibers (g)": "0.50"
+        }
+      ]
+    }
+  ],
+  "No Bake Cheese Cake": [
+    {
+      "item_code": "S314",
+      "item_name": "No Bake Cheese Cake ",
+      "nutrients": {
+        "Calories": 410.18,
+        "Fat (g)": 14.139999999999999,
+        "Protein (g)": 8.47,
+        "Net Carbs (g)": 47.52,
+        "Fibers (g)": 3.6700000000000004
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0182",
+          "Ingredient Name": "Strawberry Cheesecake - Base ",
+          "UOM": "gr",
+          "Gross": "60",
+          "Net": 60,
+          "Cost / UOM": 0.02,
+          "Total Cost": "1.00",
+          "% of Cost": "24.42%",
+          "Calories": "285.25",
+          "Fat (g)": 7.51,
+          "Protein (g)": 3.81,
+          "Net Carbs (g)": 38.09,
+          "Fibers (g)": "1.88"
+        },
+        {
+          "Ingredient ID": "SR0183",
+          "Ingredient Name": "Strawberry Cheesecake - Filling",
+          "UOM": "gr",
+          "Gross": "60",
+          "Net": 60,
+          "Cost / UOM": 0.02,
+          "Total Cost": "1.09",
+          "% of Cost": "26.61%",
+          "Calories": "93.49",
+          "Fat (g)": 5.78,
+          "Protein (g)": 3.99,
+          "Net Carbs (g)": 5.72,
+          "Fibers (g)": "0.18"
+        },
+        {
+          "Ingredient ID": "SR0184",
+          "Ingredient Name": "Strawberry Cheesecake - Layer ",
+          "UOM": "gr",
+          "Gross": "40",
+          "Net": 40,
+          "Cost / UOM": 0.04,
+          "Total Cost": "1.68",
+          "% of Cost": "40.95%",
+          "Calories": "29.84",
+          "Fat (g)": 0.83,
+          "Protein (g)": 0.64,
+          "Net Carbs (g)": 3.43,
+          "Fibers (g)": "1.51"
+        },
+        {
+          "Ingredient ID": "RM0048",
+          "Ingredient Name": "Strawberries",
+          "UOM": "gr",
+          "Gross": "10",
+          "Net": 5,
+          "Cost / UOM": 0.03,
+          "Total Cost": "0.33",
+          "% of Cost": "8.02%",
+          "Calories": "1.60",
+          "Fat (g)": 0.02,
+          "Protein (g)": 0.03,
+          "Net Carbs (g)": 0.28,
+          "Fibers (g)": "0.10"
+        }
+      ]
+    }
+  ],
+  "Healthy Cinammon Roll": [
+    {
+      "item_code": "S315",
+      "item_name": "Healthy Cinammon Roll",
+      "nutrients": {
+        "Calories": 100.62,
+        "Fat (g)": 1.37,
+        "Protein (g)": 4.51,
+        "Net Carbs (g)": 27.59,
+        "Fibers (g)": 0.68
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0193",
+          "Ingredient Name": "Cinnamon Roll - Dough ",
+          "UOM": "gr",
+          "Gross": "50",
+          "Net": 50,
+          "Cost / UOM": 0,
+          "Total Cost": "0.22",
+          "% of Cost": "71.75%",
+          "Calories": "78.51",
+          "Fat (g)": 1.37,
+          "Protein (g)": 4.5,
+          "Net Carbs (g)": 21.88,
+          "Fibers (g)": "0.68"
+        },
+        {
+          "Ingredient ID": "SR0194",
+          "Ingredient Name": "Cinnamon Roll - Filling ",
+          "UOM": "gr",
+          "Gross": "8",
+          "Net": 8,
+          "Cost / UOM": 0.01,
+          "Total Cost": "0.09",
+          "% of Cost": "28.25%",
+          "Calories": "22.11",
+          "Fat (g)": 0,
+          "Protein (g)": 0.01,
+          "Net Carbs (g)": 5.71,
+          "Fibers (g)": "0.00"
+        }
+      ]
+    }
+  ],
+  "Pancake With Cottage Cheese": [
+    {
+      "item_code": "S328",
+      "item_name": "Pancake With Cottage Cheese ",
+      "nutrients": {
+        "Calories": 416.3,
+        "Fat (g)": 24.05,
+        "Protein (g)": 34.55,
+        "Net Carbs (g)": 13.959999999999999,
+        "Fibers (g)": 0.7899999999999999
+      },
+      "ingredients": [
+        {
+          "Ingredient ID": "SR0199",
+          "Ingredient Name": "Pancake - Dough ",
+          "UOM": "gr",
+          "Gross": "45",
+          "Net": 45,
+          "Cost / UOM": 0.06,
+          "Total Cost": "2.87",
+          "% of Cost": "45.07%",
+          "Calories": "376.70",
+          "Fat (g)": 22.69,
+          "Protein (g)": 31.11,
+          "Net Carbs (g)": 10.84,
+          "Fibers (g)": "0.33"
+        },
+        {
+          "Ingredient ID": "RM0013",
+          "Ingredient Name": "Full Fat Cottage Cheese",
+          "UOM": "gr",
+          "Gross": "30",
+          "Net": 30,
+          "Cost / UOM": 0.07,
+          "Total Cost": "1.98",
+          "% of Cost": "31.12%",
+          "Calories": "29.45",
+          "Fat (g)": 1.29,
+          "Protein (g)": 3.3,
+          "Net Carbs (g)": 1.02,
+          "Fibers (g)": "0.00"
+        },
+        {
+          "Ingredient ID": "RM0033",
+          "Ingredient Name": "Blueberries ",
+          "UOM": "gr",
+          "Gross": "15",
+          "Net": 15,
+          "Cost / UOM": 0.09,
+          "Total Cost": "1.35",
+          "% of Cost": "21.22%",
+          "Calories": "8.55",
+          "Fat (g)": 0.05,
+          "Protein (g)": 0.11,
+          "Net Carbs (g)": 1.82,
+          "Fibers (g)": "0.36"
+        },
+        {
+          "Ingredient ID": "RM0048",
+          "Ingredient Name": "Strawberries",
+          "UOM": "gr",
+          "Gross": "5",
+          "Net": 5,
+          "Cost / UOM": 0.03,
+          "Total Cost": "0.17",
+          "% of Cost": "2.59%",
+          "Calories": "1.60",
+          "Fat (g)": 0.02,
+          "Protein (g)": 0.03,
+          "Net Carbs (g)": 0.28,
+          "Fibers (g)": "0.10"
+        }
+      ]
+    }
+  ]
+}

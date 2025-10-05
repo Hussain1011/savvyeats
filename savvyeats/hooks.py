@@ -46,7 +46,8 @@ app_license = "mit"
 doctype_js = {
 	"Address" : "public/js/address_savvy_eats.js",
 	"Sales Order" : "public/js/sales_order_savvy_eats.js",
-	"Driver" : "public/js/driver_savvy_eats.js"
+	"Driver" : "public/js/driver_savvy_eats.js",
+	"Item" : "public/js/item_savvy_eats.js"
 }
 doctype_list_js = {
 	"Sales Order" : "public/js/sales_order_savvy_eats_list.js",
