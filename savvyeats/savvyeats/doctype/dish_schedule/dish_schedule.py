@@ -58,7 +58,7 @@ class DishSchedule(Document):
 		duplicate = frappe.get_all("Dish Schedule", filters={"date": self.date, "name": ["!=", self.name]})
 
 		if duplicate:
-			frappe.throw(_("Dish Schedule for Date: <b>{0}</b> already exist."))
+			frappe.throw(_("Dish Schedule for Date: <b>{0}</b> already exist.".format(self.get_formatted("date"))))
 
 	@frappe.whitelist()
 	def add_items(self, meal, items):
