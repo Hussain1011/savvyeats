@@ -65,7 +65,7 @@ frappe.ui.form.on("Dish Schedule", {
                     get_data: function (txt) {
                         return frappe.db.get_link_options('Item', txt, {
                             item_category: 'Dish',
-                            has_variants: 1
+                            variant_of: ""
                         });
                     }
                 }

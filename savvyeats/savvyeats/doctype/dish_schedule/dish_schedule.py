@@ -72,14 +72,24 @@ class DishSchedule(Document):
 		idx = 0
 		for d in items:
 			variants = frappe.get_all("Item", filters={"disabled": 0, "variant_of": d})
-			for v in variants:
-				item = frappe.get_doc("Item", v.name)
-				for dp in item.dish_plans:
-					row = self.append("items", {})
-					row.item_code = item.item_code
-					row.item_name = item.item_name
-					row.meal = meal
-					row.dish_plan = dp.dish_plan
+			if variants:
+				for v in variants:
+					item = frappe.get_doc("Item", v.name)
+					for dp in item.dish_plans:
+						row = self.append("items", {})
+						row.item_code = item.item_code
+						row.item_name = item.item_name
+						row.meal = meal
+						row.dish_plan = dp.dish_plan
+			else:
+				item = frappe.get_doc("Item", d)
+				if not item.variant_of and not item.has_variants:
+					for dp in item.dish_plans:
+						row = self.append("items", {})
+						row.item_code = item.item_code
+						row.item_name = item.item_name
+						row.meal = meal
+						row.dish_plan = dp.dish_plan
 
 		self.save()
 
