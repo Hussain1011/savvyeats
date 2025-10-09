@@ -26,7 +26,7 @@ def get_payment_link(order_id):
 			"error": ["Order already paid or cancelled."]
 		}
 		return send_error_response(message_en, message_ar, errors)
-	data = {"url": "/pay/{0}".format(order.name), "payment_status": 0}
+	data = {"url": "/skip-cash/{0}".format(order.name), "payment_status": 0}
 	if order.rounded_total == 0:
 		data["payment_status"] = 1
 
