@@ -4,7 +4,7 @@ from frappe.utils import add_to_date, now_datetime, escape_html
 
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
-def send_otp(email: str, mobile_no: str):
+def send_otp(email: str, mobile_no: str, test=False):
 	user = frappe.db.get("User", {"email": email})
 	if user:
 		message_en = "An account with this email already exists."
@@ -32,17 +32,30 @@ def send_otp(email: str, mobile_no: str):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	otp_verification = frappe.get_doc(
-		{
-			"doctype": "OTP Verification",
-			"mobile_no": mobile_no,
-			"verification_type": "Mobile No",
-			"otp": get_otp(),
-			"expiry": add_to_date(None, minutes=5)
-		}
-	)
-	otp_verification.flags.ignore_permissions = True
-	otp_verification.insert()
+	if test:
+		otp_verification = frappe.get_doc(
+			{
+				"doctype": "OTP Verification",
+				"mobile_no": mobile_no,
+				"verification_type": "Mobile No",
+				"otp": get_otp(),
+				"expiry": add_to_date(None, minutes=5)
+			}
+		)
+		otp_verification.flags.ignore_permissions = True
+		otp_verification.insert()
+	else:
+		otp_verification = frappe.get_doc(
+			{
+				"doctype": "OTP Verification",
+				"mobile_no": mobile_no,
+				"verification_type": "Mobile No",
+				"otp": get_otp(),
+				"expiry": add_to_date(None, minutes=5)
+			}
+		)
+		otp_verification.flags.ignore_permissions = True
+		otp_verification.insert()
 	message_en = "A one-time password (OTP) has been successfully sent to your mobile number via SMS."
 	message_ar = "تم إرسال كلمة المرور لمرة واحدة (OTP) إلى رقم هاتفك المحمول عبر الرسائل النصية بنجاح."
 	return send_success_response(message_en, message_ar)
@@ -109,6 +122,18 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 		"api_secret": api_secret
 	}
 	return send_success_response(message_en, message_ar, data)
+
+
+
+@frappe.whitelist(methods=["POST"])
+def update_fcm_token(token):
+	if not frappe.db.exists("FCM Token", token):
+		doc = frappe.new_doc("FCM Token")
+		doc.user = frappe.session.user
+		doc.token = token
+		doc.flags.ignore_permissions = True
+		doc.insert()
+		frappe.db.commit()
 
 
 
