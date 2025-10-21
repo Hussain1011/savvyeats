@@ -1,6 +1,7 @@
 import frappe
 import random
 from frappe.utils import add_to_date, now_datetime, escape_html
+from frappe.core.doctype.sms_settings.sms_settings import send_sms
 
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
@@ -31,31 +32,20 @@ def send_otp(email: str, mobile_no: str, test=False):
 			"singup_limit": ["Too many users signed up recently, so the registration is temporarily disabled. Please try again in an hour."]
 		}
 		return send_error_response(message_en, message_ar, errors)
-
-	if test:
-		otp_verification = frappe.get_doc(
-			{
-				"doctype": "OTP Verification",
-				"mobile_no": mobile_no,
-				"verification_type": "Mobile No",
-				"otp": get_otp(),
-				"expiry": add_to_date(None, minutes=5)
-			}
-		)
-		otp_verification.flags.ignore_permissions = True
-		otp_verification.insert()
-	else:
-		otp_verification = frappe.get_doc(
-			{
-				"doctype": "OTP Verification",
-				"mobile_no": mobile_no,
-				"verification_type": "Mobile No",
-				"otp": get_otp(),
-				"expiry": add_to_date(None, minutes=5)
-			}
-		)
-		otp_verification.flags.ignore_permissions = True
-		otp_verification.insert()
+	otp = get_otp()
+	otp_verification = frappe.get_doc(
+		{
+			"doctype": "OTP Verification",
+			"mobile_no": mobile_no,
+			"verification_type": "Mobile No",
+			"otp": otp,
+			"expiry": add_to_date(None, minutes=5)
+		}
+	)
+	otp_verification.flags.ignore_permissions = True
+	otp_verification.insert()
+	message = "Your one-time code is {0}. It expires in {1} min. Never share this code.".format(otp, 5)
+	send_sms(["974{0}".format(mobile_no)], msg=message, success_msg=False)
 	message_en = "A one-time password (OTP) has been successfully sent to your mobile number via SMS."
 	message_ar = "تم إرسال كلمة المرور لمرة واحدة (OTP) إلى رقم هاتفك المحمول عبر الرسائل النصية بنجاح."
 	return send_success_response(message_en, message_ar)
@@ -159,18 +149,20 @@ def forget_send_otp(mobile_no: str):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	otp = random.randint(100000, 999999)
+	otp = get_otp()
 	otp_verification = frappe.get_doc(
 		{
 			"doctype": "OTP Verification",
 			"mobile_no": mobile_no,
 			"verification_type": "Mobile No",
-			"otp": get_otp(),
+			"otp": otp,
 			"expiry": add_to_date(None, minutes=5)
 		}
 	)
 	otp_verification.flags.ignore_permissions = True
 	otp_verification.insert()
+	message = "Your one-time code is {0}. It expires in {1} min. Never share this code.".format(otp, 5)
+	send_sms("974{0}".format(mobile_no), msg=message, success_msg=False)
 	message_en = "A one-time password (OTP) has been successfully sent to your mobile number via SMS."
 	message_ar = "تم إرسال كلمة المرور لمرة واحدة (OTP) إلى رقم هاتفك المحمول عبر الرسائل النصية بنجاح."
 	return send_success_response(message_en, message_ar)
@@ -293,7 +285,7 @@ def login(email: str, password: str):
 
 def get_otp():
 	otp = random.randint(100000, 999999)
-	otp = 123456
+	#otp = 123456
 	return otp
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
