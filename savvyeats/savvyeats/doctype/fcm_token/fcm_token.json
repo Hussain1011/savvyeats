@@ -1,6 +1,5 @@
 {
  "actions": [],
- "autoname": "field:token",
  "creation": "2025-10-16 12:07:53.947732",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -12,10 +11,8 @@
  "fields": [
   {
    "fieldname": "token",
-   "fieldtype": "Data",
-   "label": "Token",
-   "read_only": 1,
-   "unique": 1
+   "fieldtype": "Small Text",
+   "label": "token"
   },
   {
    "fieldname": "column_break_udvv",
@@ -26,17 +23,17 @@
    "fieldtype": "Link",
    "label": "User",
    "options": "User",
-   "read_only": 1
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "in_create": 1,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-19 15:13:53.610021",
+ "modified": "2025-10-21 13:15:09.428547",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "FCM Token",
- "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [
   {
