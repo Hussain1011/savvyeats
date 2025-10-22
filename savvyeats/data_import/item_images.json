@@ -1,0 +1,1062 @@
+{
+  "S207": {
+    "item_name": "Fruits",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S208": {
+    "item_name": "cruidtite with labneh",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S209": {
+    "item_name": "Pomegranate",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S210": {
+    "item_name": "Edamame frozen",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S211": {
+    "item_name": "Bananas",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S212": {
+    "item_name": "Oranges ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S213": {
+    "item_name": "Guac & Chips",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S214": {
+    "item_name": "Pineapple",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S215": {
+    "item_name": "Hummus Grissini",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S216": {
+    "item_name": "Mango",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S217": {
+    "item_name": "Corn",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S218": {
+    "item_name": "Rice cake and jam",
+    "image_name": "Rice Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Rice Cake.jpg"
+  },
+  "S219": {
+    "item_name": "Grapes Green Seedless",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S220": {
+    "item_name": "Strawberries",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S221": {
+    "item_name": "Watermelon ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S222": {
+    "item_name": "Plums",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S223": {
+    "item_name": "Pears",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S224": {
+    "item_name": "Kiwi",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S225": {
+    "item_name": "Melon",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S226": {
+    "item_name": "Rasperry ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S227": {
+    "item_name": "Peach",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S228": {
+    "item_name": "Dried Figue",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S229": {
+    "item_name": "Raisin Mix",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S230": {
+    "item_name": "Dry apricot",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S231": {
+    "item_name": "Cramberry",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S232": {
+    "item_name": "Dates",
+    "image_name": "Dates.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Dates.jpg"
+  },
+  "S310": {
+    "item_name": "Raspberry Rose Chia Jar ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S311": {
+    "item_name": "Raspberry Rose Chia Jar ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S312": {
+    "item_name": "Raspberry Rose Chia Jar ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S313": {
+    "item_name": "SAVVY Meghle",
+    "image_name": "Savvy Sable.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Sable.jpg"
+  },
+  "S314": {
+    "item_name": "No Bake Cheese Cake ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S315": {
+    "item_name": "Healthy Cinammon Roll",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S328": {
+    "item_name": "Pancake With Cottage Cheese ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S200": {
+    "item_name": "Tacos Bowl - L",
+    "image_name": "Magic Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Magic Bowl.jpg"
+  },
+  "S201": {
+    "item_name": "Tacos Bowl - B",
+    "image_name": "Magic Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Magic Bowl.jpg"
+  },
+  "S202": {
+    "item_name": "Tacos Bowl - S",
+    "image_name": "Magic Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Magic Bowl.jpg"
+  },
+  "S206": {
+    "item_name": "ADD ON - SAVVY",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S464": {
+    "item_name": "Kale & Go Salad ",
+    "image_name": "Chicken Greek Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Greek Salad.jpeg"
+  },
+  "S465": {
+    "item_name": "Beef & Go ",
+    "image_name": "Beef Stroganoff.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Stroganoff.jpeg"
+  },
+  "S466": {
+    "item_name": "Frenchie Goat ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S467": {
+    "item_name": "Postfit ",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S468": {
+    "item_name": "Tuna'd Up",
+    "image_name": "",
+    "image_url": ""
+  },
+  "S469": {
+    "item_name": "Shrimps & Noodles",
+    "image_name": "Shrimps.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Shrimps.jpg"
+  },
+  "S470": {
+    "item_name": "Date",
+    "image_name": "Dates.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Dates.jpg"
+  },
+  "SAVVY Falafel Bites": {
+    "item_name": "SAVVY Falafel Bites",
+    "image_name": "",
+    "image_url": ""
+  },
+  "SAVVY Sfouf": {
+    "item_name": "SAVVY Sfouf",
+    "image_name": "Savvy Sable.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Sable.jpg"
+  },
+  "Chicken Souvlaki Bowl": {
+    "item_name": "Chicken Souvlaki Bowl",
+    "image_name": "Chicken Roulade.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Roulade.jpg"
+  },
+  "Couscous & Feta Salad": {
+    "item_name": "Couscous & Feta Salad",
+    "image_name": "Farmers Feta Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Farmers Feta Salad.jpeg"
+  },
+  "Apple Pie Fuel Jar": {
+    "item_name": "Apple Pie Fuel Jar",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Arabic Date & Tahini Jar": {
+    "item_name": "Arabic Date & Tahini Jar",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Tiramisu Jar": {
+    "item_name": "Tiramisu Jar",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Date Lazy Cake": {
+    "item_name": "Date Lazy Cake",
+    "image_name": "Date Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Date Cake.jpg"
+  },
+  "Sponge Cake": {
+    "item_name": "Sponge Cake",
+    "image_name": "Apple Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Apple Cake.jpg"
+  },
+  "Berries Ball": {
+    "item_name": "Berries Ball",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Matcha Ball": {
+    "item_name": "Matcha Ball",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Bounty Ball": {
+    "item_name": "Bounty Ball",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Choco Truffle": {
+    "item_name": "Choco Truffle",
+    "image_name": "Tahini Cookie Truffle.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Tahini Cookie Truffle.jpg"
+  },
+  "Rose & Pistachio Ball": {
+    "item_name": "Rose & Pistachio Ball",
+    "image_name": "Pistachio Energy Balls.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pistachio Energy Balls.jpg"
+  },
+  "Cranberry Energy Ball": {
+    "item_name": "Cranberry Energy Ball",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Smoked Salmon Edamame": {
+    "item_name": "Smoked Salmon Edamame",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Grilled Salmon Avocado": {
+    "item_name": "Grilled Salmon Avocado",
+    "image_name": "Salmon Egg Avocado Boat.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Salmon Egg Avocado Boat.jpg"
+  },
+  "Goat Cheese Salad": {
+    "item_name": "Goat Cheese Salad",
+    "image_name": "Greek Salad.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Greek Salad.jpg"
+  },
+  "Peach & Mozarella Salad": {
+    "item_name": "Peach & Mozarella Salad",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Macaroni Salad": {
+    "item_name": "Macaroni Salad",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Chickpeas Chicken Salad": {
+    "item_name": "Chickpeas Chicken Salad",
+    "image_name": "Pears & Chicken Rocket Salad.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pears & Chicken Rocket Salad.jpg"
+  },
+  "Shrimps Vegetables Skewers With Couscous": {
+    "item_name": "Shrimps Vegetables Skewers With Couscous",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Freekeh Chicken": {
+    "item_name": "Freekeh Chicken",
+    "image_name": "Parmesan Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Parmesan Chicken.jpeg"
+  },
+  "Chicken Fatteh Bowl": {
+    "item_name": "Chicken Fatteh Bowl",
+    "image_name": "Chicken Rosto.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Rosto.jpeg"
+  },
+  "Kibbeh & Crunch": {
+    "item_name": "Kibbeh & Crunch",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Levant Chicken & Pistachio Raisins Rice": {
+    "item_name": "Levant Chicken & Pistachio Raisins Rice",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Shakshuka": {
+    "item_name": "Shakshuka",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Labneh Balls With Homemade Surdough": {
+    "item_name": "Labneh Balls With Homemade Surdough",
+    "image_name": "",
+    "image_url": ""
+  },
+  "The Halloumi Ritual": {
+    "item_name": "The Halloumi Ritual",
+    "image_name": "",
+    "image_url": ""
+  },
+  "SAVVY Burger with fries": {
+    "item_name": "SAVVY Burger with fries",
+    "image_name": "Savvy Burger & Fries.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Burger & Fries.jpeg"
+  },
+  "Shrimp Paella": {
+    "item_name": "Shrimp Paella",
+    "image_name": "Shrimps.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Shrimps.jpg"
+  },
+  "Chicken Rosto With Egg": {
+    "item_name": "Chicken Rosto With Egg",
+    "image_name": "Chicken Rosto.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Rosto.jpeg"
+  },
+  "SAVVY Mac & Cheese": {
+    "item_name": "SAVVY Mac & Cheese",
+    "image_name": "Savvy Mac & Cheese.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Mac & Cheese.jpeg"
+  },
+  "Steak & Vegetables Bundle": {
+    "item_name": "Steak & Vegetables Bundle",
+    "image_name": "Steak & Vegetables Bundle.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Steak & Vegetables Bundle.jpeg"
+  },
+  "Tacos Bowl": {
+    "item_name": "Tacos Bowl",
+    "image_name": "Magic Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Magic Bowl.jpg"
+  },
+  "Rosto Beef & Potato Mash": {
+    "item_name": "Rosto Beef & Potato Mash",
+    "image_name": "Rosto Beef.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Rosto Beef.jpeg"
+  },
+  "Soufflee": {
+    "item_name": "Soufflee",
+    "image_name": "Souffle.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Souffle.jpeg"
+  },
+  "Protein Granola Bar": {
+    "item_name": "Protein Granola Bar",
+    "image_name": "Protein Granola Bar.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Protein Granola Bar.jpeg"
+  },
+  "Lemony Coconut Energy Ballls": {
+    "item_name": "Lemony Coconut Energy Ballls",
+    "image_name": "Lemony Coconut Energy Ball.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Lemony Coconut Energy Ball.jpeg"
+  },
+  "Honey Sea Salt Vanilla Bar": {
+    "item_name": "Honey Sea Salt Vanilla Bar",
+    "image_name": "Honey Salt Vanilla bar.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Honey Salt Vanilla bar.jpeg"
+  },
+  "SAVVY Brownie": {
+    "item_name": "SAVVY Brownie",
+    "image_name": "Savvy Super Brownies.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Super Brownies.jpeg"
+  },
+  "Refreshing Salad With Chicken Skewers": {
+    "item_name": "Refreshing Salad With Chicken Skewers",
+    "image_name": "Refreshing Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Refreshing Salad.jpeg"
+  },
+  "Asian Sesame Shrimp Salad": {
+    "item_name": "Asian Sesame Shrimp Salad",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Brussels Sprout With Cherries & Walnuts": {
+    "item_name": "Brussels Sprout With Cherries & Walnuts",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Falafel Bowl": {
+    "item_name": "Falafel Bowl",
+    "image_name": "Falafel Bowl.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Falafel Bowl.jpeg"
+  },
+  "Burger Bowl": {
+    "item_name": "Burger Bowl",
+    "image_name": "Burger Bowl.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Burger Bowl.jpeg"
+  },
+  "Aubergine Rolls & Tomato Rice": {
+    "item_name": "Aubergine Rolls & Tomato Rice",
+    "image_name": "Aubergine Rolls & Tomato Rice.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Aubergine Rolls & Tomato Rice.jpeg"
+  },
+  "Oriental Rice & Chicken": {
+    "item_name": "Oriental Rice & Chicken",
+    "image_name": "Oriental Rice With Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Oriental Rice With Chicken.jpeg"
+  },
+  "Zucchi - gna": {
+    "item_name": "Zucchi - gna",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Arrachera Chicken": {
+    "item_name": "Arrachera Chicken",
+    "image_name": "Arrachera Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Arrachera Chicken.jpeg"
+  },
+  "Arrachera Beef": {
+    "item_name": "Arrachera Beef",
+    "image_name": "Arrachera Beef.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Arrachera Beef.jpeg"
+  },
+  "Apricot Balls": {
+    "item_name": "Apricot Balls",
+    "image_name": "Apricot Ball.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Apricot Ball.jpeg"
+  },
+  "Kafta & Potato": {
+    "item_name": "Kafta & Potato",
+    "image_name": "Roasted Baby Potato.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Roasted Baby Potato.jpg"
+  },
+  "Beef Stew": {
+    "item_name": "Beef Stew",
+    "image_name": "Beef Stew.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Stew.jpeg"
+  },
+  "Mexican Beef": {
+    "item_name": "Mexican Beef",
+    "image_name": "Mexican Egg Muffin.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mexican Egg Muffin.jpg"
+  },
+  "Peanut butter Chicken": {
+    "item_name": "Peanut butter Chicken",
+    "image_name": "Peanut Butter Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Peanut Butter Chicken.jpeg"
+  },
+  "Chicken Biryani": {
+    "item_name": "Chicken Biryani",
+    "image_name": "Chicken Biryani.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Biryani.jpeg"
+  },
+  "Beef Stroganoff": {
+    "item_name": "Beef Stroganoff",
+    "image_name": "Beef Stroganoff.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Stroganoff.jpeg"
+  },
+  "Strawberry Choco Oats": {
+    "item_name": "Strawberry Choco Oats",
+    "image_name": "Strawberry Choco Oats.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Strawberry Choco Oats.jpg"
+  },
+  "Date Cake": {
+    "item_name": "Date Cake",
+    "image_name": "Date Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Date Cake.jpg"
+  },
+  "Tahini Cookie Truffle": {
+    "item_name": "Tahini Cookie Truffle",
+    "image_name": "Tahini Cookie Truffle.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Tahini Cookie Truffle.jpg"
+  },
+  "Pistachio Energy Balls": {
+    "item_name": "Pistachio Energy Balls",
+    "image_name": "Pistachio Energy Balls.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pistachio Energy Balls.jpg"
+  },
+  "Crunch Bliss Ball": {
+    "item_name": "Crunch Bliss Ball",
+    "image_name": "Crunch Bliss Ball.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Crunch Bliss Ball.jpg"
+  },
+  "EATS Bread with EATS Hummus": {
+    "item_name": "EATS Bread with EATS Hummus",
+    "image_name": "Savvy Eats Bread with Savvy Eats Hummus.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Eats Bread with Savvy Eats Hummus.jpg"
+  },
+  "Avo choco mousse": {
+    "item_name": "Avo choco mousse",
+    "image_name": "Avo Choco mousse.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Avo Choco mousse.jpg"
+  },
+  "Choco Oats Bar": {
+    "item_name": "Choco Oats Bar",
+    "image_name": "Choco Oats Bar.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Choco Oats Bar.jpg"
+  },
+  "Protein Rice Cake Treat": {
+    "item_name": "Protein Rice Cake Treat",
+    "image_name": "Protein Rice Cake Treat.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Protein Rice Cake Treat.jpg"
+  },
+  "Mocha oats": {
+    "item_name": "Mocha oats",
+    "image_name": "Mocha oats.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mocha oats.jpg"
+  },
+  "Pumpkin cookies": {
+    "item_name": "Pumpkin cookies",
+    "image_name": "Pumpkin cookies.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pumpkin cookies.jpg"
+  },
+  "Sweet Potato Avocado Brownie": {
+    "item_name": "Sweet Potato Avocado Brownie",
+    "image_name": "Savvy Sweet Potato Avocado Brownie.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Sweet Potato Avocado Brownie.jpg"
+  },
+  "Cinnamon Coffee Cake": {
+    "item_name": "Cinnamon Coffee Cake",
+    "image_name": "Cinnamon Coffee Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Cinnamon Coffee Cake.jpg"
+  },
+  "Citronelle Muffin": {
+    "item_name": "Citronelle Muffin",
+    "image_name": "Citronelle Muffin.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Citronelle Muffin.jpg"
+  },
+  "Chewy Granola": {
+    "item_name": "Chewy Granola",
+    "image_name": "Chewy Granola.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chewy Granola.jpg"
+  },
+  "Orange Berries Oats": {
+    "item_name": "Orange Berries Oats",
+    "image_name": "Orange Berries Oats.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Orange Berries Oats.jpeg"
+  },
+  "Banana Oats Muffins": {
+    "item_name": "Banana Oats Muffins",
+    "image_name": "Banana Oats Muffin.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Banana Oats Muffin.jpeg"
+  },
+  "Peanut Butter Chickpeas Cookie": {
+    "item_name": "Peanut Butter Chickpeas Cookie",
+    "image_name": "Peanut Butter Chickpeas Cookie.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Peanut Butter Chickpeas Cookie.jpg"
+  },
+  "Apple Cake": {
+    "item_name": "Apple Cake",
+    "image_name": "Apple Cake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Apple Cake.jpg"
+  },
+  "Carrots , Raisins and Walnut Cake": {
+    "item_name": "Carrots , Raisins and Walnut Cake",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Flawless Zucchini Muffins": {
+    "item_name": "Flawless Zucchini Muffins",
+    "image_name": "Flawless Zucchini Muffins.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Flawless Zucchini Muffins.jpg"
+  },
+  "Sable": {
+    "item_name": "Sable",
+    "image_name": "Savvy Sable.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Sable.jpg"
+  },
+  "Chicken Greek Salad": {
+    "item_name": "Chicken Greek Salad",
+    "image_name": "Chicken Greek Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Greek Salad.jpeg"
+  },
+  "Veggie Quinoa Bowl": {
+    "item_name": "Veggie Quinoa Bowl",
+    "image_name": "Veggie Quinoa Bowl.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Veggie Quinoa Bowl.jpeg"
+  },
+  "Asiatic Quinoa Salad": {
+    "item_name": "Asiatic Quinoa Salad",
+    "image_name": "Asiatic Quinoa Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Asiatic Quinoa Salad.jpeg"
+  },
+  "Pears & Chicken Rocket Salad": {
+    "item_name": "Pears & Chicken Rocket Salad",
+    "image_name": "Pears & Chicken Rocket Salad.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pears & Chicken Rocket Salad.jpg"
+  },
+  "The Caesar": {
+    "item_name": "The Caesar",
+    "image_name": "Savvy Caesar.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Caesar.jpeg"
+  },
+  "EATS Spring Salad": {
+    "item_name": "EATS Spring Salad",
+    "image_name": "Eats Spring Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Eats Spring Salad.jpeg"
+  },
+  "Farmers Feta Salad": {
+    "item_name": "Farmers Feta Salad",
+    "image_name": "Farmers Feta Salad.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Farmers Feta Salad.jpeg"
+  },
+  "Lemony Mustard Fish with Greens": {
+    "item_name": "Lemony Mustard Fish with Greens",
+    "image_name": "Lemony Mustard Fish with Greens.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Lemony Mustard Fish with Greens.jpg"
+  },
+  "Chicken Provençal": {
+    "item_name": "Chicken Provençal",
+    "image_name": "Chicken Provençal.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Provençal.jpg"
+  },
+  "Parmesan Chicken Bake": {
+    "item_name": "Parmesan Chicken Bake",
+    "image_name": "Parmesan Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Parmesan Chicken.jpeg"
+  },
+  "Quinoa Beef Stew": {
+    "item_name": "Quinoa Beef Stew",
+    "image_name": "Quinoa Beef Stew.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Quinoa Beef Stew.jpg"
+  },
+  "Teriyaki-Style Shanghai Noodles": {
+    "item_name": "Teriyaki-Style Shanghai Noodles",
+    "image_name": "Teriyaki-Style Shanghai Noodles.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Teriyaki-Style Shanghai Noodles.jpg"
+  },
+  "Lemon Chicken Risotto with Broccoli": {
+    "item_name": "Lemon Chicken Risotto with Broccoli",
+    "image_name": "Lemon Chicken Risotto with Broccoli.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Lemon Chicken Risotto with Broccoli.jpg"
+  },
+  "Beef Red Curry & Edamame Mash": {
+    "item_name": "Beef Red Curry & Edamame Mash",
+    "image_name": "Beef Red Curry & Edamame Mash.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Red Curry & Edamame Mash.jpg"
+  },
+  "Cannellini Bean & Shrimp Stew": {
+    "item_name": "Cannellini Bean & Shrimp Stew",
+    "image_name": "Cannelloni Bean & Shrimp Stew.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Cannelloni Bean & Shrimp Stew.jpg"
+  },
+  "Spinach Lentil Stew": {
+    "item_name": "Spinach Lentil Stew",
+    "image_name": "Spinach Lentil Stew.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Spinach Lentil Stew.jpeg"
+  },
+  "Farmers Casserole": {
+    "item_name": "Farmers Casserole",
+    "image_name": "Farmers Casserole.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Farmers Casserole.jpg"
+  },
+  "EATS Crispy Chicken": {
+    "item_name": "EATS Crispy Chicken",
+    "image_name": "Savvy Eats Crispy Chicken.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Eats Crispy Chicken.jpg"
+  },
+  "Pollo Artichoke Orzo": {
+    "item_name": "Pollo Artichoke Orzo",
+    "image_name": "Pollo Artichoke Orzo.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pollo Artichoke Orzo.jpg"
+  },
+  "Romesco Flower Fish": {
+    "item_name": "Romesco Flower Fish",
+    "image_name": "Romesco Flowe Fish.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Romesco Flowe Fish.jpeg"
+  },
+  "Shrimp Vegetables Rice": {
+    "item_name": "Shrimp Vegetables Rice",
+    "image_name": "Grilled Vegetables.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Grilled Vegetables.jpg"
+  },
+  "Ginger Beef with Brown Rice": {
+    "item_name": "Ginger Beef with Brown Rice",
+    "image_name": "Ginger Beef with Brown Rice.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Ginger Beef with Brown Rice.jpg"
+  },
+  "Cauliflower Rice-Stuffed Pepper": {
+    "item_name": "Cauliflower Rice-Stuffed Pepper",
+    "image_name": "Cauliflower Rice-Stuffed Pepper.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Cauliflower Rice-Stuffed Pepper.jpg"
+  },
+  "Fajita Tortilla Basket": {
+    "item_name": "Fajita Tortilla Basket",
+    "image_name": "Fajita Tortilla Basket.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Fajita Tortilla Basket.jpg"
+  },
+  "Mushrooms Meatballs in Yogurt": {
+    "item_name": "Mushrooms Meatballs in Yogurt",
+    "image_name": "Mushroom Meatballs.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mushroom Meatballs.jpeg"
+  },
+  "Pearl Barley Casserole": {
+    "item_name": "Pearl Barley Casserole",
+    "image_name": "Pearl Barley Casserole.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pearl Barley Casserole.jpg"
+  },
+  "Chicken Pie": {
+    "item_name": "Chicken Pie",
+    "image_name": "Chicken Pie.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Pie.jpeg"
+  },
+  "Vegetables Fish Stew with Rice": {
+    "item_name": "Vegetables Fish Stew with Rice",
+    "image_name": "Vegetable Stew with White Fish.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Vegetable Stew with White Fish.jpg"
+  },
+  "Sweet Potato Moussaka": {
+    "item_name": "Sweet Potato Moussaka",
+    "image_name": "Sweet Potato Mousak a.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Sweet Potato Mousak a.jpeg"
+  },
+  "EATS Salmon Peanut Butter Spaghetti": {
+    "item_name": "EATS Salmon Peanut Butter Spaghetti",
+    "image_name": "Savvy Salmon Peanut Butter Spaghetti.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Salmon Peanut Butter Spaghetti.jpg"
+  },
+  "One Pot Chicken": {
+    "item_name": "One Pot Chicken",
+    "image_name": "One Pot Chicken.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/One Pot Chicken.jpg"
+  },
+  "Exotic Chicken Stew with Rice": {
+    "item_name": "Exotic Chicken Stew with Rice",
+    "image_name": "Exotic Chicken Stew with Rice.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Exotic Chicken Stew with Rice.jpg"
+  },
+  "Vegetables Quinotto": {
+    "item_name": "Vegetables Quinotto",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Asparagus Pasta": {
+    "item_name": "Asparagus Pasta",
+    "image_name": "Asparagus Chicken Pasta.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Asparagus Chicken Pasta.jpg"
+  },
+  "Saffron Shrimps with Rice": {
+    "item_name": "Saffron Shrimps with Rice",
+    "image_name": "Saffron Shrimps with Rice.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Saffron Shrimps with Rice.jpg"
+  },
+  "Red Pepper Salmon with Barley": {
+    "item_name": "Red Pepper Salmon with Barley",
+    "image_name": "Red Pepper Salmon with Barley.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Red Pepper Salmon with Barley.jpg"
+  },
+  "Citronelle Baked Fish": {
+    "item_name": "Citronelle Baked Fish",
+    "image_name": "Citronelle Baked Fish.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Citronelle Baked Fish.jpeg"
+  },
+  "Salmon Pistachio Tapenade": {
+    "item_name": "Salmon Pistachio Tapenade",
+    "image_name": "Salmon Pistachio Tapenade.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Salmon Pistachio Tapenade.jpeg"
+  },
+  "Salmoriglio Grilled Fish": {
+    "item_name": "Salmoriglio Grilled Fish",
+    "image_name": "Salmoriglio Grilled Fish.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Salmoriglio Grilled Fish.jpg"
+  },
+  "Shrimp Cauliflower Fried Rice": {
+    "item_name": "Shrimp Cauliflower Fried Rice",
+    "image_name": "Shrimp Cauliflower Fried Rice.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Shrimp Cauliflower Fried Rice.jpg"
+  },
+  "Chicken Roulade": {
+    "item_name": "Chicken Roulade",
+    "image_name": "Chicken Roulade.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Roulade.jpg"
+  },
+  "EATS Chicken Alfredo": {
+    "item_name": "EATS Chicken Alfredo",
+    "image_name": "Savvy Eats Chicken Alfredo.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savvy Eats Chicken Alfredo.jpg"
+  },
+  "Chicken Supreme & Brown rice": {
+    "item_name": "Chicken Supreme & Brown rice",
+    "image_name": "Chicken Supreme With Brown Rice.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Supreme With Brown Rice.jpeg"
+  },
+  "Chicken Meatball & Brown Spaghetti": {
+    "item_name": "Chicken Meatball & Brown Spaghetti",
+    "image_name": "Chicken Meatball & Brown Spaghetti.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Meatball & Brown Spaghetti.jpg"
+  },
+  "Leek Chicken Scallopini": {
+    "item_name": "Leek Chicken Scallopini",
+    "image_name": "Leek Chicken Scallopini.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Leek Chicken Scallopini.jpg"
+  },
+  "Asian Chicken Cashew": {
+    "item_name": "Asian Chicken Cashew",
+    "image_name": "Asian Chicken Cashew.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Asian Chicken Cashew.jpg"
+  },
+  "Tuscany Chicken": {
+    "item_name": "Tuscany Chicken",
+    "image_name": "Tuscany Chicken.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Tuscany Chicken.jpg"
+  },
+  "Chicken Mushroom with Cauliflower Rice": {
+    "item_name": "Chicken Mushroom with Cauliflower Rice",
+    "image_name": "Chicken Mushroom with Cauliflower Rice.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chicken Mushroom with Cauliflower Rice.jpg"
+  },
+  "Balsamic Chicken": {
+    "item_name": "Balsamic Chicken",
+    "image_name": "Balsamic Chicken.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Balsamic Chicken.jpeg"
+  },
+  "Stir Fry Chicken Noodles": {
+    "item_name": "Stir Fry Chicken Noodles",
+    "image_name": "Stir Fry Chicken Noodles.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Stir Fry Chicken Noodles.jpg"
+  },
+  "Zaatar Chicken": {
+    "item_name": "Zaatar Chicken",
+    "image_name": "Zaatar Chicken.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Zaatar Chicken.jpg"
+  },
+  "Beef Rollata with Pesto Potato Mash": {
+    "item_name": "Beef Rollata with Pesto Potato Mash",
+    "image_name": "Beef Rollata with Pesto Potato Mash.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Rollata with Pesto Potato Mash.jpg"
+  },
+  "Trio Medaille": {
+    "item_name": "Trio Medaille",
+    "image_name": "Trio Medaille Savvy.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Trio Medaille Savvy.jpg"
+  },
+  "Beef Tagliata With Mustard Veggies": {
+    "item_name": "Beef Tagliata With Mustard Veggies",
+    "image_name": "Beef Tagliata With Mustard Veggies.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Tagliata With Mustard Veggies.jpg"
+  },
+  "Beef Bourguignons with Spinach": {
+    "item_name": "Beef Bourguignons with Spinach",
+    "image_name": "Beef Bourguignons with Spinach.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Beef Bourguignons with Spinach.jpg"
+  },
+  "Cauliflower & Beetroot Risotto": {
+    "item_name": "Cauliflower & Beetroot Risotto",
+    "image_name": "Cauliflower & Beetroot Risotto.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Cauliflower & Beetroot Risotto.jpg"
+  },
+  "Green Risotto with Hazelnut Pesto": {
+    "item_name": "Green Risotto with Hazelnut Pesto",
+    "image_name": "Green Risotto with Hazelnut Pesto.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Green Risotto with Hazelnut Pesto.jpg"
+  },
+  "Broccoli & Mushroom Egg Muffin": {
+    "item_name": "Broccoli & Mushroom Egg Muffin",
+    "image_name": "Broccoli & Mushroom Egg Muffin.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Broccoli & Mushroom Egg Muffin.jpg"
+  },
+  "Turkey & Capsicum Egg White Wrap": {
+    "item_name": "Turkey & Capsicum Egg White Wrap",
+    "image_name": "Turkey & Capsicum Egg White Wrap.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Turkey & Capsicum Egg White Wrap.jpg"
+  },
+  "Zucchini & Oats Frittata": {
+    "item_name": "Zucchini & Oats Frittata",
+    "image_name": "Zucchini & Oats Frittata.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Zucchini & Oats Frittata.jpg"
+  },
+  "Almond Milk Rice Pudding": {
+    "item_name": "Almond Milk Rice Pudding",
+    "image_name": "Almond Milk Rice Pudding.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Almond Milk Rice Pudding.jpg"
+  },
+  "EATS Fatte": {
+    "item_name": "EATS Fatte",
+    "image_name": "Savy Eats Fatte.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Savy Eats Fatte.jpg"
+  },
+  "Bahamas Protein Pudding": {
+    "item_name": "Bahamas Protein Pudding",
+    "image_name": "Bahamas Protein Pudding.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Bahamas Protein Pudding.jpg"
+  },
+  "Spinach & Feta Egg White Wrap": {
+    "item_name": "Spinach & Feta Egg White Wrap",
+    "image_name": "Spinach & Feta Egg White Wrap.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Spinach & Feta Egg White Wrap.jpg"
+  },
+  "Lorraine's Quinoa Cupcake": {
+    "item_name": "Lorraine's Quinoa Cupcake",
+    "image_name": "Lorraine_s Quinoa Cupcake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Lorraine_s Quinoa Cupcake.jpg"
+  },
+  "Salmon & Boiled Egg Maki": {
+    "item_name": "Salmon & Boiled Egg Maki",
+    "image_name": "Salmon & Boiled Egg Maki.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Salmon & Boiled Egg Maki.jpeg"
+  },
+  "Mexican Muffin": {
+    "item_name": "Mexican Muffin",
+    "image_name": "Mexican Egg Muffin.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mexican Egg Muffin.jpg"
+  },
+  "Mediterranean Scrambled Eggs": {
+    "item_name": "Mediterranean Scrambled Eggs",
+    "image_name": "Mediteranean Scrambled Eggs.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mediteranean Scrambled Eggs.jpeg"
+  },
+  "Turkey & Cheese Scrambled Egg": {
+    "item_name": "Turkey & Cheese Scrambled Egg",
+    "image_name": "Turkey & Cheese Scrambled Eggs.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Turkey & Cheese Scrambled Eggs.jpeg"
+  },
+  "Spanish Egg Bake": {
+    "item_name": "Spanish Egg Bake",
+    "image_name": "Spanish Egg Bake.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Spanish Egg Bake.jpg"
+  },
+  "Turkey & Asparagus Omelette": {
+    "item_name": "Turkey & Asparagus Omelette",
+    "image_name": "Turkey & Asparagus Omelette.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Turkey & Asparagus Omelette.jpg"
+  },
+  "Banana Overnight Oats": {
+    "item_name": "Banana Overnight Oats",
+    "image_name": "",
+    "image_url": ""
+  },
+  "Green Fritters": {
+    "item_name": "Green Fritters",
+    "image_name": "Green Fritters.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Green Fritters.jpeg"
+  },
+  "Magic Bowl": {
+    "item_name": "Magic Bowl",
+    "image_name": "Magic Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Magic Bowl.jpg"
+  },
+  "Carrot Cake Porridge": {
+    "item_name": "Carrot Cake Porridge",
+    "image_name": "Carrot Cake Porridge.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Carrot Cake Porridge.jpg"
+  },
+  "Monte Christo Sandwich": {
+    "item_name": "Monte Christo Sandwich",
+    "image_name": "Monte Christo Sandwich.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Monte Christo Sandwich.jpg"
+  },
+  "Spicy Pumpkin Parfait": {
+    "item_name": "Spicy Pumpkin Parfait",
+    "image_name": "Spicy Pumpkin Parfait.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Spicy Pumpkin Parfait.jpg"
+  },
+  "Banana Pancakes in Blackberry Compote": {
+    "item_name": "Banana Pancakes in Blackberry Compote",
+    "image_name": "Banana Pancakes dipped in Blackberry Compote.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Banana Pancakes dipped in Blackberry Compote.jpg"
+  },
+  "Blackberry Apple Baked Bar": {
+    "item_name": "Blackberry Apple Baked Bar",
+    "image_name": "Blackberry Apple Baked Bar.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Blackberry Apple Baked Bar.jpg"
+  },
+  "Ginger & Avocado Quinoa Oats": {
+    "item_name": "Ginger & Avocado Quinoa Oats",
+    "image_name": "Ginger & Avocado Quinoa Oats.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Ginger & Avocado Quinoa Oats.jpg"
+  },
+  "Primavera Omelette": {
+    "item_name": "Primavera Omelette",
+    "image_name": "Primavera Omelette.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Primavera Omelette.jpg"
+  },
+  "B&B Peanut Butter Pancakes": {
+    "item_name": "B&B Peanut Butter Pancakes",
+    "image_name": "B&B Peanut Butter Pancakes.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/B&B Peanut Butter Pancakes.jpg"
+  },
+  "Popeye's Omelette": {
+    "item_name": "Popeye's Omelette",
+    "image_name": "Poppeye Omelette.jpeg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Poppeye Omelette.jpeg"
+  },
+  "Salmon Egg Avocado Boat": {
+    "item_name": "Salmon Egg Avocado Boat",
+    "image_name": "Salmon Egg Avocado Boat.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Salmon Egg Avocado Boat.jpg"
+  },
+  "Pistachio & Berries Oats Parfait": {
+    "item_name": "Pistachio & Berries Oats Parfait",
+    "image_name": "Pistachio & Berries Oats Parfait.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Pistachio & Berries Oats Parfait.jpg"
+  },
+  "Mango Coco Chia Pudding": {
+    "item_name": "Mango Coco Chia Pudding",
+    "image_name": "Mango Coco Chia Pudding.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Mango Coco Chia Pudding.jpg"
+  },
+  "Chocolate Chia Almond Pudding": {
+    "item_name": "Chocolate Chia Almond Pudding",
+    "image_name": "Chocolate Chia Almond Pudding.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Chocolate Chia Almond Pudding.jpg"
+  },
+  "Apricot Chia Yogurt Bowl": {
+    "item_name": "Apricot Chia Yogurt Bowl",
+    "image_name": "Apricot Chia Yogurt Bowl.jpg",
+    "image_url": "https://storage.googleapis.com/savvy_eats_live/Apricot Chia Yogurt Bowl.jpg"
+  }
+}

@@ -9,6 +9,19 @@ def execute():
 	fetch_allergens()
 
 
+def update_image_url():
+	with open(get_file("item_images.json"), "r", encoding="utf-8") as f:
+		dishes = json.load(f)
+		a = 1
+		for i,v in dishes.items():
+			if v["image_name"] and v["image_url"]:
+				doc = frappe.get_doc("Item", i)
+				doc.image = v["image_url"]
+				doc.save()
+
+		frappe.db.commit()
+
+
 def update_meal_plan():
 	docs = frappe.get_all("Item", filters={"item_category": "Dish", "has_variants": 0})
 	for d in docs:

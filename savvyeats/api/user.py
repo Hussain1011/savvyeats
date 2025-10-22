@@ -117,12 +117,14 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 
 @frappe.whitelist(methods=["POST"])
 def update_fcm_token(token):
-	doc = frappe.new_doc("FCM Token")
-	doc.user = frappe.session.user
-	doc.token = token
-	doc.flags.ignore_permissions = True
-	doc.insert()
-	frappe.db.commit()
+	exists = frappe.get_all("FCM Token", filters={"token": token})
+	if not exists:
+		doc = frappe.new_doc("FCM Token")
+		doc.user = frappe.session.user
+		doc.token = token
+		doc.flags.ignore_permissions = True
+		doc.insert()
+		frappe.db.commit()
 
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
