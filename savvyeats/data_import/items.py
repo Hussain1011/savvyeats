@@ -18,9 +18,22 @@ def update_image_url():
 				doc = frappe.get_doc("Item", i)
 				doc.image = v["image_url"]
 				doc.save()
+			else:
+				print(v["item_name"])
 
-		frappe.db.commit()
+		#frappe.db.commit()
 
+def update_variants_url():
+	templates = frappe.get_all("Item", filters={"has_variants": 1, "image": ["!=", ""]}, fields=["name","image"])
+
+	for d in templates:
+		variants = frappe.get_all("Item", filters={"variant_of": d.name})
+		for v in variants:
+			doc = frappe.get_doc("Item", v.name)
+			doc.image = d.image
+			doc.save()
+
+	frappe.db.commit()
 
 def update_meal_plan():
 	docs = frappe.get_all("Item", filters={"item_category": "Dish", "has_variants": 0})

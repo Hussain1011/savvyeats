@@ -162,7 +162,7 @@ def forget_send_otp(mobile_no: str):
 	otp_verification.flags.ignore_permissions = True
 	otp_verification.insert()
 	message = "Your one-time code is {0}. It expires in {1} min. Never share this code.".format(otp, 5)
-	send_sms("974{0}".format(mobile_no), msg=message, success_msg=False)
+	send_sms(["974{0}".format(mobile_no)], msg=message, success_msg=False)
 	message_en = "A one-time password (OTP) has been successfully sent to your mobile number via SMS."
 	message_ar = "تم إرسال كلمة المرور لمرة واحدة (OTP) إلى رقم هاتفك المحمول عبر الرسائل النصية بنجاح."
 	return send_success_response(message_en, message_ar)
