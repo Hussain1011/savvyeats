@@ -277,7 +277,7 @@ class BOM(WebsiteGenerator):
 			for n in item.get("nutrients", []):
 				key = n.nutrient.strip()
 				if key in nutrients:
-					nutrients[key] += flt(n.value) * scale_factor
+					nutrients[key] += flt(n.value/serving_size) * flt(qty)
 
 			for a in item.get("allergens", []):
 				allergens.add(a.allergen)
