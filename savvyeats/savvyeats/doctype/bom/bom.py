@@ -336,6 +336,7 @@ class BOM(WebsiteGenerator):
 		for a in sorted(totals["allergens"]):
 			item.append("allergens", {"allergen": a})
 
+		item.serving_size = self.quantity
 		item.flags.ignore_validate_update_after_submit = True
 		item.save(ignore_permissions=True)
 		frappe.db.commit()
