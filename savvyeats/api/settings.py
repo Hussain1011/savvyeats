@@ -1,5 +1,6 @@
 import frappe
 from savvyeats.api.user import send_error_response, send_success_response
+from frappe.utils import flt, cint
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_app_settings():
@@ -48,7 +49,8 @@ def get_setup_data():
 
 	for ds in dish_plans:
 		dish_plan = frappe.get_cached_doc("Dish Plan", ds.name, ignore_permmission=True).as_dict()
-
+		dish_plan.min_calories = cint(dish_plan.min_calories)
+		dish_plan.max_calories = cint(dish_plan.max_calories)
 		dish_plan.default_pricing_plan_doc = get_pricing(dish_plan.default_pricing_plan)
 		pricings = frappe.get_all("Dish Plan Pricing", filters={"enabled": 1, "dish_plan": dish_plan.name})
 		dish_plan.pricings = []
