@@ -4,9 +4,41 @@ from savvyeats.data_import.connection import run_external_mysql_query
 import time
 import os
 import math
+from frappe.utils import flt
 
 def execute():
 	fetch_allergens()
+
+
+
+def update_item_boms():
+	with open(get_file("eats_recipes.json"), "r", encoding="utf-8") as f:
+		dishes = json.load(f)
+		for i,v in dishes.items():
+			# if not i == "S310":
+			# 	continue
+			boms = frappe.get_all("BOM", filters={"item": i})
+			raw = {}
+			for x in v:
+				raw[x["Ingredient ID"]] = x
+			if boms:
+				bom = frappe.get_doc("BOM", boms[0].name)
+				print(boms[0].name)
+				for d in bom.items:
+					if d.item_code in raw:
+						d.gross_qty = flt(raw[d.item_code]["Gross"]) or 1
+						if math.isnan(d.gross_qty):
+							d.gross_qty = 1
+						d.qty = flt(raw[d.item_code]["Net"]) or 1
+						if math.isnan(d.qty):
+							d.qty = 1
+						# print(d.qty)
+						# print(d.gross_qty)
+					else:
+						d.gross_qty = 0
+						d.qty = 0
+
+				bom.save()
 
 
 def update_image_url():

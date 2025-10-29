@@ -517,7 +517,7 @@
    "columns": 0,
    "creation": "2025-08-04 15:42:07.424126",
    "default": null,
-   "depends_on": "eval:doc.item_category == 'Ingredient';",
+   "depends_on": "eval:[\"Ingredient\", \"Sub Recipe\"].includes(doc.item_category);",
    "description": null,
    "docstatus": 0,
    "dt": "Item",
