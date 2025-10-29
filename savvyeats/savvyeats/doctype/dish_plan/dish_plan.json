@@ -50,6 +50,7 @@
    "fieldtype": "Float",
    "label": "Min Calories",
    "non_negative": 1,
+   "precision": "0",
    "reqd": 1
   },
   {
@@ -61,6 +62,7 @@
    "fieldtype": "Float",
    "label": "Max Calories",
    "non_negative": 1,
+   "precision": "0",
    "reqd": 1
   },
   {
@@ -130,7 +132,7 @@
    "link_fieldname": "dish_plan"
   }
  ],
- "modified": "2025-08-17 15:38:05.893581",
+ "modified": "2025-10-29 10:38:13.240409",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",
