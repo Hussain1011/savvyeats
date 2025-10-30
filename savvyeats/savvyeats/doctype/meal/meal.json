@@ -10,6 +10,7 @@
   "section_break_boip",
   "meal_name",
   "mandatory",
+  "minimum_items",
   "column_break_axfn",
   "sorting_order",
   "section_break_isgc",
@@ -60,11 +61,16 @@
    "fieldname": "sorting_order",
    "fieldtype": "Int",
    "label": "Sorting Order"
+  },
+  {
+   "fieldname": "minimum_items",
+   "fieldtype": "Int",
+   "label": "Minimum Items"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-17 12:02:29.340050",
+ "modified": "2025-10-30 17:36:18.869103",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Meal",
