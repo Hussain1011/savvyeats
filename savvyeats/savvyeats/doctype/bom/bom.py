@@ -334,7 +334,7 @@ class BOM(WebsiteGenerator):
 
 		item.set("nutrients", [])
 		for k, v in totals["nutrients"].items():
-			item.append("nutrients", {"nutrient": k, "value": v, "uom": "Gram"})
+			item.append("nutrients", {"nutrient": k, "value": flt(v, precision=0), "uom": "Gram"})
 
 		item.set("allergens", [])
 		for a in sorted(totals["allergens"]):
