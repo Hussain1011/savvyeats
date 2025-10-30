@@ -271,17 +271,17 @@ class BOM(WebsiteGenerator):
 			item = frappe.get_doc("Item", item_code)
 			nutrients = {k: 0.0 for k in NUTRIENT_KEYS}
 			allergens = set()
-			serving_size = flt(item.serving_size) or 100.0
+			serving_size = flt(item.serving_size) or 1
 			scale_factor = flt(qty) / serving_size
 
 			for n in item.get("nutrients", []):
 				key = n.nutrient.strip()
 				if key in nutrients:
-					nutrients[key] += flt(n.value/serving_size) * flt(qty)
+					nutrients[key] += flt(n.value*qty) / flt(serving_size)
 
 			for a in item.get("allergens", []):
 				allergens.add(a.allergen)
-
+			#print([item_code, qty, nutrients])
 			return {"nutrients": nutrients, "allergens": allergens}
 
 		def merge_data(total, part):
@@ -289,7 +289,14 @@ class BOM(WebsiteGenerator):
 				total["nutrients"][k] += flt(part["nutrients"].get(k, 0))
 			total["allergens"].update(part["allergens"])
 
-		def get_bom_data(bom_no, visited=None):
+
+		def format_data(data, bqty, qty):
+			for i,v in data['nutrients'].items():
+				data['nutrients'][i] = (v/bqty) * qty
+
+			return data
+
+		def get_bom_data(bom_no, rqty, visited=None):
 			"""Recursively accumulate nutrients & allergens from a BOM."""
 			if visited is None:
 				visited = set()
@@ -306,17 +313,14 @@ class BOM(WebsiteGenerator):
 					continue
 
 				if row.bom_no:
-					child_data = get_bom_data(row.bom_no, visited)
-					for k in NUTRIENT_KEYS:
-						child_data["nutrients"][k] *= qty
+					child_data = get_bom_data(row.bom_no, row.qty, visited)
 					merge_data(data, child_data)
 				else:
 					part = get_item_nutrients(row.item_code, qty)
 					merge_data(data, part)
-
+			data = format_data(data, bom.quantity, rqty)
 			return data
-		totals = get_bom_data(self.name)
-
+		totals = get_bom_data(self.name, self.quantity)
 		if not self.item:
 			return
 		item = frappe.get_doc("Item", self.item)
@@ -324,9 +328,9 @@ class BOM(WebsiteGenerator):
 		if item.item_category not in ("Sub Recipe", "Dish"):
 			return
 
-		serving_size = flt(item.serving_size) or 100.0
-		for k in NUTRIENT_KEYS:
-			totals["nutrients"][k] = round(totals["nutrients"][k] / serving_size, 3)
+		# serving_size = flt(item.serving_size) or 100.0
+		# for k in NUTRIENT_KEYS:
+		# 	totals["nutrients"][k] = round(totals["nutrients"][k] / serving_size, 3)
 
 		item.set("nutrients", [])
 		for k, v in totals["nutrients"].items():
