@@ -22,7 +22,9 @@
   "background_image",
   "details_background_image",
   "column_break_eoen",
-  "dish_image"
+  "dish_image",
+  "meals_tab",
+  "meals"
  ],
  "fields": [
   {
@@ -121,6 +123,18 @@
    "fieldtype": "Link",
    "label": "Default Pricing Plan",
    "options": "Dish Plan Pricing"
+  },
+  {
+   "fieldname": "meals",
+   "fieldtype": "Table",
+   "label": "Meals",
+   "options": "Dish Plan Meals",
+   "reqd": 1
+  },
+  {
+   "fieldname": "meals_tab",
+   "fieldtype": "Tab Break",
+   "label": "Meals"
   }
  ],
  "image_field": "dish_image",
@@ -132,7 +146,7 @@
    "link_fieldname": "dish_plan"
   }
  ],
- "modified": "2025-10-29 10:38:13.240409",
+ "modified": "2025-11-02 14:46:36.784705",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",

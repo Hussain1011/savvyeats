@@ -60,6 +60,10 @@ def get_setup_data():
 			week_plan = frappe.get_cached_doc("Week Plan", wp.week_plan, ignore_permmission=True)
 			wp.doc = week_plan
 			wp.no_of_days = len(week_plan.days)
+
+		for d in dish_plan.meals:
+			d.doc = frappe.get_cached_doc("Meal", d.meal, ignore_permmission=True)
+			
 		data["dish_plans"].append(dish_plan)
 
 

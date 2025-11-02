@@ -10,9 +10,12 @@
   "section_break_boip",
   "meal_name",
   "mandatory",
-  "minimum_items",
   "column_break_axfn",
   "sorting_order",
+  "section_break_ehib",
+  "minimum_items",
+  "column_break_pdos",
+  "maximum_items",
   "section_break_isgc",
   "quotes"
  ],
@@ -66,11 +69,24 @@
    "fieldname": "minimum_items",
    "fieldtype": "Int",
    "label": "Minimum Items"
+  },
+  {
+   "fieldname": "maximum_items",
+   "fieldtype": "Int",
+   "label": "Maximum Items"
+  },
+  {
+   "fieldname": "section_break_ehib",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "column_break_pdos",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-10-30 17:36:18.869103",
+ "modified": "2025-11-02 14:29:08.201268",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Meal",

@@ -7,8 +7,9 @@
  "engine": "InnoDB",
  "field_order": [
   "meal",
-  "per_day_price",
-  "mandatory"
+  "mandatory",
+  "min_qty",
+  "max_qty"
  ],
  "fields": [
   {
@@ -21,26 +22,30 @@
    "reqd": 1
   },
   {
-   "columns": 4,
-   "fieldname": "per_day_price",
-   "fieldtype": "Currency",
-   "in_list_view": 1,
-   "label": "Per Day Price",
-   "reqd": 1
-  },
-  {
    "columns": 2,
    "default": "0",
    "fieldname": "mandatory",
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Mandatory"
+  },
+  {
+   "fieldname": "min_qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Min Qty"
+  },
+  {
+   "fieldname": "max_qty",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Max Qty"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-17 14:57:06.238840",
+ "modified": "2025-11-02 14:47:34.224659",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan Meals",
