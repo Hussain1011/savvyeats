@@ -9,7 +9,8 @@
   "meal",
   "mandatory",
   "min_qty",
-  "max_qty"
+  "max_qty",
+  "per_day_price"
  ],
  "fields": [
   {
@@ -40,12 +41,18 @@
    "fieldtype": "Int",
    "in_list_view": 1,
    "label": "Max Qty"
+  },
+  {
+   "fieldname": "per_day_price",
+   "fieldtype": "Currency",
+   "label": "Per Day Price",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-11-02 14:47:34.224659",
+ "modified": "2025-11-03 10:12:50.224497",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan Meals",
