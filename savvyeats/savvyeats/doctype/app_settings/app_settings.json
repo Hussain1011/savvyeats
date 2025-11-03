@@ -10,7 +10,12 @@
   "column_break_pnbi",
   "welcome_screen_background",
   "section_break_osnm",
-  "onboarding"
+  "onboarding",
+  "section_break_veih",
+  "force_update",
+  "column_break_gfll",
+  "ios_version",
+  "android_version"
  ],
  "fields": [
   {
@@ -41,12 +46,36 @@
    "fieldname": "onboarding",
    "fieldtype": "Table",
    "options": "On Boarding App Settings"
+  },
+  {
+   "fieldname": "section_break_veih",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "force_update",
+   "fieldtype": "Check",
+   "label": "Force Update"
+  },
+  {
+   "fieldname": "ios_version",
+   "fieldtype": "Data",
+   "label": "IOS Version"
+  },
+  {
+   "fieldname": "android_version",
+   "fieldtype": "Data",
+   "label": "Android Version"
+  },
+  {
+   "fieldname": "column_break_gfll",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-08-17 15:14:45.826579",
+ "modified": "2025-11-03 17:42:45.068984",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "App Settings",

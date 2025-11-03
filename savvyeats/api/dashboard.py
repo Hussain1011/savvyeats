@@ -13,6 +13,9 @@ def get_dashboard(today=None):
 
 	order = frappe.get_doc("Sales Order", orders[0].name, ignore_permissions=True)
 
+	for i in order.items:
+		i.image = frappe.db.get_value("Item", i.item_code, "image")
+
 	nutrients = frappe._dict()
 	nutrients_list = frappe.db.sql(""" select * from delivery_daily_nutrients_view where subscription = %(order)s """, {
 			"order": order.name
