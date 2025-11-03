@@ -269,44 +269,22 @@ def add_items(order_id, items):
 		order.dish_plan_pricing = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
 	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
 
-	pricing_plan_meals = {}
-	for p in pricing_plan.meals:
-		pricing_plan_meals[p.meal] = p.per_day_price
+	pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
 
-	#{"item_code": "", "delivery_date": "", "meal": "", "note": ""}
+	order.items = []
 
-	item_dict = {}
-	for i in items:
-		key = (i["meal"] or "", getdate(i["delivery_date"]) or "")
-		item_dict.setdefault(key, i)
-
-	for d in order.items:
-		key = (d.meal or "", getdate(d.delivery_date) or "")
-		if key in item_dict:
-			data = item_dict[key]
-			d.item_code = data["item_code"]
-			d.meal = data["meal"] if data["meal"] else ""
-			d.delivery_date = getdate(data["delivery_date"])
-			d.note = data["note"]
-			d.qty = int(data["qty"]) if data["qty"] and int(data["qty"]) > 1 else 1
-			if d.meal:
-				d.rate = pricing_plan_meals[d.meal]
-			else:
-				d.rate = None
-			d.extra_portion = 1 if data["extra_portion"] and d.qty > 1 else 0
-			del item_dict[key]
-
-	for i,v in item_dict.items():
+	# Add all items from the payload
+	for v in items:
 		row = order.append("items")
 		row.item_code = v["item_code"]
-		row.meal = v["meal"] if v["meal"] else ""
+		row.meal = v.get("meal", "")
 		row.delivery_date = getdate(v["delivery_date"])
-		row.note = v["note"]
-		row.qty = int(v["qty"]) if v["qty"] and int(v["qty"]) > 1 else 1
-		row.extra_portion = 1 if v["extra_portion"] and row.qty > 1 else 0
+		row.note = v.get("note", "")
+		row.qty = int(v["qty"]) if v.get("qty") and int(v["qty"]) > 1 else 1
+		row.extra_portion = 1 if v.get("extra_portion") and row.qty > 1 else 0
 
-		if v["meal"]:
-			row.rate = pricing_plan_meals[v["meal"]]
+		if row.meal:
+			row.rate = pricing_plan_meals.get(row.meal)
 
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True

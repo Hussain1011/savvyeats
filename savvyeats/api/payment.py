@@ -52,7 +52,31 @@ def verify_payment(order_id):
 
 	order = validate_addresses(order)
 
+	def process_order(order):
+		if order.customer == "Online Customer":
+			customer_data = frappe.get_all("Customer", filters={"user": frappe.session.user}, fields=["name", "customer_name"])
+			if customer_data:
+				customer = customer_data[0].name
+				customer_name = customer_data[0].customer_name
+			else:
+				c = frappe.new_doc("Customer")
+				c.customer_name = frappe.db.get_value("User", frappe.session.user, "full_name")
+				c.user = frappe.session.user
+				c.customer_type = "Individual"
+				c.flags.ignore_permissions = True
+				c.insert()
+				frappe.db.commit()
+				customer = c.name
+				customer_name = c.customer_name
+
+			order.customer = customer
+			order.customer_name = customer_name
+			order.title = customer_name
+		return order
+
 	if order.rounded_total == 0:
+
+		order = process_order(order)
 		message_en = "Payment verified successfully."
 		message_ar = "تم التحقق من الدفع بنجاح."
 		order.flags.ignore_permissions = True
@@ -79,25 +103,7 @@ def verify_payment(order_id):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	if order.customer == "Online Customer":
-		customer_data = frappe.get_all("Customer", filters={"user": frappe.session.user}, fields=["name", "customer_name"])
-		if customer_data:
-			customer = customer_data[0].name
-			customer_name = customer_data[0].customer_name
-		else:
-			c = frappe.new_doc("Customer")
-			c.customer_name = frappe.db.get_value("User", frappe.session.user, "full_name")
-			c.user = frappe.session.user
-			c.customer_type = "Individual"
-			c.flags.ignore_permissions = True
-			c.insert()
-			frappe.db.commit()
-			customer = c.name
-			customer_name = c.customer_name
-
-		order.customer = customer
-		order.customer_name = customer_name
-		order.title = customer_name
+	order = process_order(order)
 
 	order.flags.ignore_permissions = True
 	order.subscription_status = "Active"
