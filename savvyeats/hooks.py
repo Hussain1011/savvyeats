@@ -53,6 +53,10 @@ doctype_list_js = {
 	"Sales Order" : "public/js/sales_order_savvy_eats_list.js",
 	"Delivery Note" : "public/js/delivery_note_savvy_eats_list.js"
 }
+
+has_website_permission = {
+	"Sales Order": "savvyeats.custom.sales_order_savvyeats.has_website_permission"
+}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 

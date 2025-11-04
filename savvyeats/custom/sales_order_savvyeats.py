@@ -174,4 +174,8 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 	as_dict=as_dict)
 
 
+def has_website_permission(doc, ptype, user, verbose=False):
+	return True
+
+
 
