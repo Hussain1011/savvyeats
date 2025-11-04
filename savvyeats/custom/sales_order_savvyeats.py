@@ -175,7 +175,10 @@ def item_query(doctype, txt, searchfield, start, page_len, filters, as_dict=Fals
 
 
 def has_website_permission(doc, ptype, user, verbose=False):
-	return True
+	if ptype == "print":
+		return True
+
+	return False
 
 
 
