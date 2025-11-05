@@ -261,7 +261,7 @@ class BOM(WebsiteGenerator):
 		self.update_cost(update_parent=False, from_child_bom=True, update_hour_rate=False, save=False)
 		self.set_process_loss_qty()
 		self.validate_scrap_items()
-		self.update_production_item()
+		
 
 
 	def update_production_item(self):
@@ -363,6 +363,7 @@ class BOM(WebsiteGenerator):
 
 	def on_update(self):
 		frappe.cache().hdel("bom_children", self.name)
+		self.update_production_item()
 		self.check_recursion()
 
 	def on_submit(self):
