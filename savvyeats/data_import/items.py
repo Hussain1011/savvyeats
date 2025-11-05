@@ -10,33 +10,75 @@ def execute():
 	fetch_allergens()
 
 
-
-def update_item_boms():
-	with open(get_file("eats_recipes.json"), "r", encoding="utf-8") as f:
+def update_missed_items():
+	with open(get_file("filtered_ids_data.json"), "r", encoding="utf-8") as f:
 		dishes = json.load(f)
 		for i,v in dishes.items():
-			# if not i == "S310":
-			# 	continue
+			if i in ("S328", "S207"):
+				continue
+			item = frappe.get_doc("Item", i)
+			template = v[0]["`"].split("-")
+			if len(template) > 2:
+				template = "{0}-{1}".format(template[0].strip(), template[1].strip())
+			else:
+				template = template[0].strip()
+
+			if i in ["S146", "S147", "S148"]:
+				template = "SR0117"
+				
+			# frappe.db.set_value("Item", item.name, "item_name", v[0]["`"].strip())
+			# frappe.db.set_value("Item", item.name, "variant_of", template)
+			# frappe.db.set_value("Item", item.name, "description", "")
+			# image = frappe.db.get_value("Item", template, "image")
+			uom = frappe.db.get_value("Item", template, "stock_uom")
+			# frappe.db.set_value("Item", item.name, "image", image)
+			# frappe.db.set_value("Item", item.name, "image", image)
+			if uom != item.stock_uom:
+				print([i, template])
+
+
+def update_item_boms():
+	with open(get_file("filtered_ids_data.json"), "r", encoding="utf-8") as f:
+		dishes = json.load(f)
+		for i,v in dishes.items():
 			boms = frappe.get_all("BOM", filters={"item": i})
 			raw = {}
 			for x in v:
 				raw[x["Ingredient ID"]] = x
 			if boms:
 				bom = frappe.get_doc("BOM", boms[0].name)
-				print(boms[0].name)
-				for d in bom.items:
-					if d.item_code in raw:
-						d.gross_qty = flt(raw[d.item_code]["Gross"]) or 1
-						if math.isnan(d.gross_qty):
-							d.gross_qty = 1
-						d.qty = flt(raw[d.item_code]["Net"]) or 1
-						if math.isnan(d.qty):
-							d.qty = 1
-						# print(d.qty)
-						# print(d.gross_qty)
-					else:
-						d.gross_qty = 0
-						d.qty = 0
+				bom.items = []
+				for x in v:
+					row = bom.append("items", {})
+					row.item_code = x["Ingredient ID"]
+					row.gross_qty = flt(x["Gross"]) or 1
+					if math.isnan(row.gross_qty):
+						row.gross_qty = 1
+					row.qty = flt(x["Net"]) or 1
+					if math.isnan(row.qty):
+						row.qty = 1
+					row.rate = flt(x["Cost / UOM"])
+					if row.rate > 0:
+						frappe.db.set_value("Item", row.item_code, "valuation_rate", row.rate)
+					if math.isnan(row.rate):
+						row.rate = 1
+
+				# for d in bom.items:
+				# 	if d.item_code in raw:
+				# 		d.gross_qty = flt(raw[d.item_code]["Gross"]) or 1
+				# 		if math.isnan(d.gross_qty):
+				# 			d.gross_qty = 1
+				# 		d.qty = flt(raw[d.item_code]["Net"]) or 1
+				# 		if math.isnan(d.qty):
+				# 			d.qty = 1
+				# 		d.rate = flt(raw[d.item_code]["Cost / UOM"])
+				# 		if d.rate > 0:
+				# 			frappe.db.set_value("Item", d.item_code, "valuation_rate", d.rate)
+				# 		if math.isnan(d.rate):
+				# 			d.rate = 1
+				# 	else:
+				# 		d.gross_qty = 0
+				# 		d.qty = 0
 
 				bom.save()
 
