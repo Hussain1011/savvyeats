@@ -4,6 +4,7 @@ from frappe.utils import getdate, get_date_str
 import json
 from erpnext.stock.get_item_details import get_item_price
 from savvyeats.api.order import validate_sales_order
+import re
 
 @frappe.whitelist(methods=["GET"])
 def get_plan_items(order_id):
@@ -32,8 +33,9 @@ def get_plan_items(order_id):
 				for i,v in dish_plan.items():
 					for x in v:
 						x["doc"] = frappe.get_cached_doc("Item", x["item_code"]).as_dict()
-						x["doc"].item_name = x["doc"].variant_of or x["doc"].item_name
-						x["item_name"] = x["doc"].item_name
+						item_name = x["doc"].item_name.rsplit("-", 1)[0].strip()
+						x["doc"].item_name = item_name
+						x["item_name"] = item_name
 
 				data[get_date_str(d.delivery_date)] = dish_plan
 

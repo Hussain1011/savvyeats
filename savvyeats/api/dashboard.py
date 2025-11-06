@@ -15,7 +15,8 @@ def get_dashboard(today=None):
 
 	for i in order.items:
 		i.image = frappe.db.get_value("Item", i.item_code, "image")
-		i.item_name = frappe.db.get_value("Item", i.item_code, "variant_of") or i.item_name
+		if i.meal:
+			i.item_name = i.item_name.rsplit("-", 1)[0].strip()
 
 	nutrients = frappe._dict()
 	nutrients_list = frappe.db.sql(""" select * from delivery_daily_nutrients_view where subscription = %(order)s """, {
