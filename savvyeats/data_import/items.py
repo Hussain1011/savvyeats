@@ -10,6 +10,42 @@ def execute():
 	fetch_allergens()
 
 
+def update_dish_plans_items():
+	items = frappe.get_all("Item", filters={"has_variants": 0, "item_category": "Dish"})
+
+	dish_plans = {
+		"l": "LO-CAL",
+		"b": "OPTI-MEAL",
+		"s": "FULL-ON"
+	}
+	idx = 1
+	for d in items:
+		item = frappe.get_doc("Item", d.name)
+		item_name = item.item_name.split("-")[-1].strip().lower()
+		attribute = ""
+		dish_plan = ""
+		if not item.attributes:
+			continue
+		if item.attributes:
+			attribute = item.attributes[0].attribute_value
+		if item.dish_plans:
+			dish_plan = item.dish_plans[0].dish_plan
+
+		#print([item_name, dish_plan, attribute])
+		if item_name in dish_plans and dish_plan != dish_plans[item_name]:
+			print([idx, d.name])
+			item.dish_plans = []
+			item.append("dish_plans", {"dish_plan": dish_plans[item_name]})
+
+			item.attributes[0].attribute_value = dish_plans[item_name]
+
+			item.save()
+			idx += 1
+
+
+
+
+
 def update_missed_items():
 	with open(get_file("filtered_ids_data.json"), "r", encoding="utf-8") as f:
 		dishes = json.load(f)
