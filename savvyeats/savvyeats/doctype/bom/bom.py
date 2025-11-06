@@ -316,11 +316,14 @@ class BOM(WebsiteGenerator):
 					continue
 
 				if row.bom_no:
-					# recurse with a copy of the path, not shared
 					child_data = get_bom_data(row.bom_no, row.qty, path)
+					# if self.name == bom.name:
+					# 	print([row.item_name, child_data])
 					merge_data(data, child_data)
 				else:
 					part = get_item_nutrients(row.item_code, qty)
+					# if self.name == bom.name:
+					# 	print([row.item_name, part])
 					merge_data(data, part)
 
 			data = format_data(data, bom.quantity, rqty)

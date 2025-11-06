@@ -7,6 +7,10 @@ from frappe import _
 from frappe.utils import getdate, cint
 
 class DishSchedule(Document):
+	def onload(self):
+		for d in self.items:
+			d.item_name = frappe.db.get_value("Item", d.item_code, "item_name")
+
 	def validate(self):
 		self.validate_duplicate()
 		self.ensure_single_default_per_group()

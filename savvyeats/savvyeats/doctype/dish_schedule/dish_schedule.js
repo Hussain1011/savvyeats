@@ -3,9 +3,11 @@
 
 frappe.ui.form.on("Dish Schedule", {
 	refresh(frm) {
-		frm.add_custom_button(__("Add Dish"), function(){
-			frm.trigger("add_dish");
-		}).addClass("btn-primary");
+        if(!frm.is_new()){
+            frm.add_custom_button(__("Add Dish"), function(){
+                frm.trigger("add_dish");
+            }).addClass("btn-primary");
+        }
 
         if(!frm.doc.__islocal){
             frm.add_custom_button(__("Publish"), function(){
