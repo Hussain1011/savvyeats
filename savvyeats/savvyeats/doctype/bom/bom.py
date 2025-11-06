@@ -296,13 +296,16 @@ class BOM(WebsiteGenerator):
 
 			return data
 
-		def get_bom_data(bom_no, rqty, visited=None):
+		def get_bom_data(bom_no, rqty, path=None):
 			"""Recursively accumulate nutrients & allergens from a BOM."""
-			if visited is None:
-				visited = set()
-			if bom_no in visited:
+			if path is None:
+				path = []
+			if bom_no in path:
+				# stop circular recursion only for THIS path, not globally
+				frappe.msgprint(f"Circular BOM reference skipped: {bom_no}")
 				return {"nutrients": {k: 0 for k in NUTRIENT_KEYS}, "allergens": set()}
-			visited.add(bom_no)
+
+			path = path + [bom_no]  # create a new path branch
 
 			data = {"nutrients": {k: 0 for k in NUTRIENT_KEYS}, "allergens": set()}
 			bom = frappe.get_doc("BOM", bom_no)
@@ -313,11 +316,13 @@ class BOM(WebsiteGenerator):
 					continue
 
 				if row.bom_no:
-					child_data = get_bom_data(row.bom_no, row.qty, visited)
+					# recurse with a copy of the path, not shared
+					child_data = get_bom_data(row.bom_no, row.qty, path)
 					merge_data(data, child_data)
 				else:
 					part = get_item_nutrients(row.item_code, qty)
 					merge_data(data, part)
+
 			data = format_data(data, bom.quantity, rqty)
 			return data
 		totals = get_bom_data(self.name, self.quantity)

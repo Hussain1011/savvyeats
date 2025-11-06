@@ -32,6 +32,7 @@ def get_plan_items(order_id):
 				for i,v in dish_plan.items():
 					for x in v:
 						x["doc"] = frappe.get_cached_doc("Item", x["item_code"]).as_dict()
+						x["doc"].item_name = x["doc"].variant_of or x["doc"].item_name
 
 				data[get_date_str(d.delivery_date)] = dish_plan
 
