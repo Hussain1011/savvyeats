@@ -13,6 +13,7 @@
   "onboarding",
   "section_break_veih",
   "force_update",
+  "start_date",
   "column_break_gfll",
   "ios_version",
   "android_version"
@@ -70,12 +71,17 @@
   {
    "fieldname": "column_break_gfll",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-03 17:42:45.068984",
+ "modified": "2025-11-09 17:51:10.364326",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "App Settings",
