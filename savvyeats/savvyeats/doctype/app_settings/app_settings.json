@@ -16,7 +16,11 @@
   "start_date",
   "column_break_gfll",
   "ios_version",
-  "android_version"
+  "android_version",
+  "section_break_djtx",
+  "max_months",
+  "column_break_cnfj",
+  "max_weeks"
  ],
  "fields": [
   {
@@ -76,12 +80,30 @@
    "fieldname": "start_date",
    "fieldtype": "Date",
    "label": "Start Date"
+  },
+  {
+   "fieldname": "section_break_djtx",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "max_months",
+   "fieldtype": "Int",
+   "label": "Max Months"
+  },
+  {
+   "fieldname": "max_weeks",
+   "fieldtype": "Int",
+   "label": "Max Weeks"
+  },
+  {
+   "fieldname": "column_break_cnfj",
+   "fieldtype": "Column Break"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-09 17:51:10.364326",
+ "modified": "2025-11-11 17:42:22.860313",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "App Settings",
