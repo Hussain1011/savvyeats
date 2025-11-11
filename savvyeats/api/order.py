@@ -109,6 +109,7 @@ def _reset_sales_order_in_place(order):
 	order.group_same_items = 0
 	order.is_internal_customer = 0
 	order.dish_plan = None
+	order.dish_plan_pricing = ""
 	order.period_type = None
 	order.period_count = 0
 	order.transaction_date = frappe.utils.nowdate()
@@ -118,6 +119,7 @@ def _reset_sales_order_in_place(order):
 	order.meals = []
 	order.taxes = []
 	order.addresses = []
+	order.customer_address = ""
 	order.week_plan = ""
 	order.delivery_time_slot = ""
 	order.start_date = ""
@@ -125,7 +127,11 @@ def _reset_sales_order_in_place(order):
 	order.payment_schedule = []
 	order.packed_items = []
 	order.delivery_dates = []
+	order.delivery_date = ""
 	order.sales_team = []
+	order.coupon_code = ""
+	order.additional_discount_percentage = 0
+	order.discount_amount = 0
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
@@ -151,12 +157,13 @@ def update_draft_order(order_id, data):
 	if "addresses" in clean_data:
 		order.addresses = []
 
+	order.update(clean_data)
+
 	sales_order_delivery(order)
 
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
-	order.update(clean_data)
 	order.save()
 	frappe.db.commit()
 
@@ -184,10 +191,11 @@ def validate_draft_order(order_id, data):
 	if "addresses" in clean_data:
 		order.addresses = []
 
+	order.update(clean_data)
+
 	sales_order_delivery(order)
 
 	order.flags.ignore_permissions = True
-	order.update(clean_data)
 	order.save()
 	frappe.db.commit()
 
@@ -273,7 +281,13 @@ def add_items(order_id, items):
 
 	order.items = []
 
-	# Add all items from the payload
+	dish_plan = frappe.get_cached_doc("Dish Plan", order.dish_plan)
+	meals = {}
+
+	for m in dish_plan.meals:
+		meals[m.meal] = m
+
+	dates = []
 	for v in items:
 		row = order.append("items")
 		row.item_code = v["item_code"]
@@ -286,8 +300,25 @@ def add_items(order_id, items):
 		if row.meal:
 			row.rate = pricing_plan_meals.get(row.meal)
 
+		if row.delivery_date not in dates:
+			dates.append(row.delivery_date)
+
+	for d in order.delivery_dates:
+		if not getdate(d.delivery_date) in dates:
+			for m in order.meals:
+				qty = meals[m.meal].min_qty
+				if qty > 0:
+					row = order.append("items")
+					row.item_code = "Item Not Selected"
+					row.meal = m.meal
+					row.delivery_date = getdate(d.delivery_date)
+					row.qty = qty
+					row.rate = pricing_plan_meals.get(row.meal)
+
+
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
+	order.flags.ignore_addresses = True
 	order.save()
 	frappe.db.commit()
 
@@ -376,7 +407,14 @@ def verify_addresses(order_id):
 	if isinstance(order, dict):
 		return order
 
-	return validate_addresses(order, throw=False)
+	data = validate_addresses(order, throw=False)
+	if data["status"] == "success":
+		order = data["data"]
+		order.flags.ignore_permissions = True
+		order.save()
+		frappe.db.commit()
+
+	return data
 
 @frappe.whitelist(methods=["POST"])
 def update_contact_information(order_id, data):
@@ -398,6 +436,12 @@ def update_contact_information(order_id, data):
 
 	if "phone" in clean_data:
 		order.contact_phone = clean_data["phone"]
+
+	if not order.contact_person_name:
+		order.contact_person_name = user.full_name
+
+	if not order.contact_phone:
+		order.contact_phone = user.mobile_no
 
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True

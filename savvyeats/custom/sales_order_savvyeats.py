@@ -12,6 +12,8 @@ WEEKDAY_MAP = {
 
 def validate(self, method):
 	sales_order_delivery(self)
+	if not self.flags.ignore_addresses:
+		validate_addresses(self)
 
 def before_submit(self, method):
 	validate_addresses(self)
@@ -90,6 +92,8 @@ def validate_addresses(self, throw=True):
 				}
 				return send_error_response(message_en, message_ar, errors)
 		d.address = days[d.day]
+
+	self.customer_address = self.addresses[0].address
 
 	if throw:
 		return self

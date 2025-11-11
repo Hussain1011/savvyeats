@@ -182,8 +182,8 @@ doc_events = {
 
 scheduler_events = {
 	"hourly": [
-		"savvyeats.background_jobs.remove_expired_otp"
-		#"savvyeats.background_jobs.remove_old_location"
+		"savvyeats.background_jobs.remove_expired_otp",
+		"savvyeats.background_jobs.remove_old_location"
 	]
 }
 
