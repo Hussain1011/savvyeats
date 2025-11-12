@@ -22,8 +22,8 @@ def get_plan_items(order_id):
 		schedule[getdate(d.date)] = d
 	count = 1
 	for d in order.delivery_dates:
-		if count > counter:
-			break
+		# if count > counter:
+		# 	break
 		count += 1
 		data[get_date_str(d.delivery_date)] = {}
 		if getdate(d.delivery_date) in schedule:
