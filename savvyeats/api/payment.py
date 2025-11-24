@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import getdate
+from frappe.utils import getdate, nowdate, cint
 from savvyeats.api.user import send_error_response, send_success_response
 import json
 from erpnext.accounts.doctype.payment_entry.payment_entry import (
@@ -130,6 +130,7 @@ def verify_payment(order_id):
 	pe.submit()
 	frappe.db.set_value("Payment Log", pl[0].name, "payment_updated", 1)
 	frappe.db.commit()
+	increment_users_subscribed_if_new_customer(order.customer)
 
 	message_en = "Payment verified successfully."
 	message_ar = "تم التحقق من الدفع بنجاح."
@@ -150,3 +151,50 @@ def process_payment(order_id):
 		return send_error_response(message_en, message_ar, errors)
 
 	order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
+
+
+
+
+def increment_users_subscribed_if_new_customer(customer):
+
+	if not customer:
+		return
+
+	try:
+		app_settings = frappe.get_single("App Settings")
+	except Exception:
+		return
+
+	if not app_settings.get("waiting_list"):
+		return
+
+	from_date_raw = app_settings.get("from_date")
+	to_date_raw = app_settings.get("to_date")
+
+	if not (from_date_raw and to_date_raw):
+		return
+
+	from_date = getdate(from_date_raw)
+	to_date = getdate(to_date_raw)
+	today = getdate(nowdate())
+	if not (from_date <= today <= to_date):
+		return
+
+	exists = frappe.db.sql(
+		"""
+		SELECT name
+		FROM `tabSales Order`
+		WHERE docstatus = 1
+		  AND subscription_status = 'Active'
+		  AND customer = %s
+		  AND DATE(creation) BETWEEN %s AND %s
+		LIMIT 1
+		""",
+		(customer, from_date, to_date),
+	)
+
+	if exists:
+		return
+	current = cint(app_settings.get("users_subscribed") or 0)
+	app_settings.users_subscribed = current + 1
+	app_settings.save(ignore_permissions=True)

@@ -20,7 +20,17 @@
   "section_break_djtx",
   "max_months",
   "column_break_cnfj",
-  "max_weeks"
+  "max_weeks",
+  "section_break_xwar",
+  "buffer_days",
+  "subscriptions_section",
+  "column_break_tapl",
+  "waiting_list",
+  "max_subscriptions_count",
+  "users_subscribed",
+  "column_break_itmv",
+  "from_date",
+  "to_date"
  ],
  "fields": [
   {
@@ -98,12 +108,63 @@
   {
    "fieldname": "column_break_cnfj",
    "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "subscriptions_section",
+   "fieldtype": "Section Break",
+   "label": "Subscriptions"
+  },
+  {
+   "default": "0",
+   "fieldname": "waiting_list",
+   "fieldtype": "Check",
+   "label": "Waiting List"
+  },
+  {
+   "fieldname": "column_break_tapl",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval:doc.waiting_list == 1;",
+   "fieldname": "max_subscriptions_count",
+   "fieldtype": "Int",
+   "label": "Max Subscriptions Count"
+  },
+  {
+   "fieldname": "column_break_itmv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "users_subscribed",
+   "fieldtype": "Int",
+   "label": "Users Subscribed"
+  },
+  {
+   "depends_on": "eval:doc.waiting_list == 1;",
+   "fieldname": "from_date",
+   "fieldtype": "Date",
+   "label": "From Date"
+  },
+  {
+   "depends_on": "eval:doc.waiting_list == 1;",
+   "fieldname": "to_date",
+   "fieldtype": "Date",
+   "label": "To Date"
+  },
+  {
+   "fieldname": "section_break_xwar",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "buffer_days",
+   "fieldtype": "Int",
+   "label": "Buffer Days"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-11 17:42:22.860313",
+ "modified": "2025-11-24 14:54:13.883728",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "App Settings",
@@ -120,6 +181,7 @@
    "write": 1
   }
  ],
+ "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

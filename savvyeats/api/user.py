@@ -1,6 +1,6 @@
 import frappe
 import random
-from frappe.utils import add_to_date, now_datetime, escape_html
+from frappe.utils import add_to_date, now_datetime, escape_html, nowdate, getdate, cint
 from frappe.core.doctype.sms_settings.sms_settings import send_sms
 
 
@@ -105,11 +105,15 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 		user.api_key = api_key
 	user.api_secret = api_secret
 	user.save()
+
+	on_waiting_list = apply_waiting_list_logic(user)
+
 	message_en = "OTP verified successfully."
 	message_ar = "تم التحقق من رمز التحقق بنجاح."
 	data={
 		"api_key": api_key,
-		"api_secret": api_secret
+		"api_secret": api_secret,
+		"on_waiting_list": on_waiting_list
 	}
 	return send_success_response(message_en, message_ar, data)
 
@@ -256,6 +260,8 @@ def login(email: str, password: str):
 		api_secret = user.get_password("api_secret")
 
 		customer = frappe.db.get_value("Customer", {"user": frappe.session.user})
+	
+		on_waiting_list = cint(user.get("on_waiting_list") or 0)
 
 		message_en = "Login successful. Welcome back!"
 		message_ar = "تم تسجيل الدخول بنجاح. مرحبًا بعودتك!"
@@ -263,7 +269,8 @@ def login(email: str, password: str):
 			"api_key": user.api_key,
 			"api_secret": api_secret,
 			"doc": user,
-			"new": False if customer else True
+			"new": False if customer else True,
+			"on_waiting_list": on_waiting_list
 		}
 		return send_success_response(message_en, message_ar, data)
 
@@ -323,3 +330,36 @@ def send_success_response(message_en, message_ar, data={}):
 		"message_ar": message_ar,
 		"data": data
 	}
+
+
+
+def apply_waiting_list_logic(user):
+	try:
+		app_settings = frappe.get_single("App Settings")
+	except Exception:
+		return 0
+	if not app_settings.get("waiting_list"):
+		return 0
+
+	from_date_raw = app_settings.get("from_date")
+	to_date_raw = app_settings.get("to_date")
+	max_count = app_settings.get("max_subscriptions_count") or 0
+
+	if not (from_date_raw and to_date_raw and max_count):
+		return 0
+
+	from_date = getdate(from_date_raw)
+	to_date = getdate(to_date_raw)
+	today = getdate(nowdate())
+
+	if not (from_date <= today <= to_date):
+		return 0
+
+	current_count = cint(app_settings.get("users_subscribed") or 0)
+
+	if current_count > int(max_count):
+		user.db_set("on_waiting_list", 1, update_modified=False)
+		return 1
+
+	return 0
+
