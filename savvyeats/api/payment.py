@@ -127,10 +127,11 @@ def verify_payment(order_id):
 
 	pe.set_missing_values()
 	pe.flags.ignore_permissions = True
+	increment_users_subscribed_if_new_customer(order.customer)
 	pe.submit()
 	frappe.db.set_value("Payment Log", pl[0].name, "payment_updated", 1)
 	frappe.db.commit()
-	increment_users_subscribed_if_new_customer(order.customer)
+	
 
 	message_en = "Payment verified successfully."
 	message_ar = "تم التحقق من الدفع بنجاح."
@@ -181,17 +182,25 @@ def increment_users_subscribed_if_new_customer(customer):
 		return
 
 	exists = frappe.db.sql(
-		"""
-		SELECT name
-		FROM `tabSales Order`
-		WHERE docstatus = 1
-		  AND subscription_status = 'Active'
-		  AND customer = %s
-		  AND DATE(creation) BETWEEN %s AND %s
-		LIMIT 1
-		""",
-		(customer, from_date, to_date),
-	)
+    """
+    SELECT so.name
+    FROM `tabSales Order` so
+    WHERE so.docstatus = 1
+      AND so.subscription_status = 'Active'
+      AND so.customer = %s
+      AND DATE(so.creation) BETWEEN %s AND %s
+      AND EXISTS (
+          SELECT 1
+          FROM `tabPayment Entry Reference` per
+          JOIN `tabPayment Entry` pe ON pe.name = per.parent
+          WHERE per.reference_doctype = 'Sales Order'
+            AND per.reference_name = so.name
+            AND pe.docstatus = 1
+      )
+    LIMIT 1
+    """,
+    (customer, from_date, to_date),
+)
 
 	if exists:
 		return

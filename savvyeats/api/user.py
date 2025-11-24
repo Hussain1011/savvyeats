@@ -356,8 +356,7 @@ def apply_waiting_list_logic(user):
 		return 0
 
 	current_count = cint(app_settings.get("users_subscribed") or 0)
-
-	if current_count > int(max_count):
+	if current_count >= int(max_count):
 		user.db_set("on_waiting_list", 1, update_modified=False)
 		return 1
 
