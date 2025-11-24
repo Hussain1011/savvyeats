@@ -288,6 +288,7 @@ def add_items(order_id, items):
 		meals[m.meal] = m
 
 	dates = []
+	dates_data = {}
 	for v in items:
 		row = order.append("items")
 		row.item_code = v["item_code"]
@@ -303,6 +304,18 @@ def add_items(order_id, items):
 		if row.delivery_date not in dates:
 			dates.append(row.delivery_date)
 
+		if not row.meal:
+			continue
+
+		if row.delivery_date not in dates_data:
+			dates_data[row.delivery_date] = {}
+
+		if row.meal not in dates_data[row.delivery_date]:
+			dates_data[row.delivery_date][row.meal] = 0
+
+		dates_data[row.delivery_date][row.meal] += 1
+
+
 	for d in order.delivery_dates:
 		if not getdate(d.delivery_date) in dates:
 			for m in order.meals:
@@ -315,6 +328,17 @@ def add_items(order_id, items):
 					row.qty = qty
 					row.rate = pricing_plan_meals.get(row.meal)
 
+		else:
+			dd = dates_data[d.delivery_date]
+
+			for i,v in dd.items():
+				for r in range(0, meals[i].max_qty - v):
+					row = order.append("items")
+					row.item_code = "Item Not Selected"
+					row.meal = i
+					row.delivery_date = getdate(d.delivery_date)
+					row.qty = 1
+					row.rate = pricing_plan_meals.get(i)
 
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
