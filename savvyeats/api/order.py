@@ -273,8 +273,63 @@ def add_items(order_id, items):
 	if isinstance(order, dict):
 		return order
 
-	if not order.dish_plan_pricing:
-		order.dish_plan_pricing = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
+	def get_pricing_for_required_meals(dish_plan, selected_meals):
+		"""Return name of Dish Plan Pricing whose mandatory meals set matches selected_meals."""
+		if not dish_plan or not selected_meals:
+			return None
+
+		# get all enabled pricing for this dish plan
+		pricing_names = frappe.get_all(
+			"Dish Plan Pricing",
+			filters={
+				"dish_plan": dish_plan,
+				"enabled": 1,
+				"docstatus": ["<", 2],
+			},
+			pluck="name",
+		)
+
+		matches = []
+
+		for name in pricing_names:
+			pricing = frappe.get_cached_doc("Dish Plan Pricing", name)
+
+			# required meals for this pricing = those with mandatory == 1
+			required_meals = {row.meal for row in pricing.meals}
+
+			if required_meals == selected_meals:
+				matches.append(name)
+
+		if not matches:
+			return None
+
+		if len(matches) > 1:
+			# Ideally this never happens if you enforce uniqueness in Dish Plan Pricing
+			frappe.throw(
+				_(
+					"Multiple Dish Plan Pricings found for Dish Plan {dish_plan} "
+					"with required meals: {meals}. Please fix duplicates."
+				).format(
+					dish_plan=dish_plan,
+					meals=", ".join(sorted(selected_meals)),
+				)
+			)
+
+		return matches[0]
+
+
+	
+	selected_meals = {m.meal for m in order.meals if m.meal}
+
+	pricing_name = None
+	if selected_meals:
+		pricing_name = get_pricing_for_required_meals(order.dish_plan, selected_meals)
+
+	if not pricing_name:
+		pricing_name = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
+
+	order.dish_plan_pricing = pricing_name
+
 	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
 
 	pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
