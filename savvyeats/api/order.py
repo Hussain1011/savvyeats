@@ -267,6 +267,28 @@ def apply_voucher_code(order_id, voucher_code):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
+
+
+@frappe.whitelist(methods=["POST"])
+def update_items(order_id, items):
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
+
+	for d in items:
+		frappe.db.set_value("Sales Order Item", d["name"], "item_code", d["item_code"])
+		item = frappe.get_doc("Item", d["item_code"])
+		frappe.db.set_value("Sales Order Item", d["name"], "item_name", item.item_name)
+		frappe.db.set_value("Sales Order Item", d["name"], "description", item.description)
+
+	frappe.db.commit()
+
+	message_en = "Order updated successfully."
+	message_ar = "تم تحديث الطلب بنجاح."
+
+	return send_success_response(message_en, message_ar, order)
+
+
 @frappe.whitelist(methods=["POST"])
 def add_items(order_id, items):
 	order = validate_sales_order(order_id)
