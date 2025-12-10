@@ -398,18 +398,20 @@ def add_items(order_id, items):
 			for m in order.meals:
 				qty = meals[m.meal].min_qty
 				if qty > 0:
-					row = order.append("items")
-					row.item_code = "Item Not Selected"
-					row.meal = m.meal
-					row.delivery_date = getdate(d.delivery_date)
-					row.qty = qty
-					row.rate = pricing_plan_meals.get(row.meal)
+					for r in range(0, qty):
+						row = order.append("items")
+						row.item_code = "Item Not Selected"
+						row.meal = m.meal
+						row.delivery_date = getdate(d.delivery_date)
+						row.qty = 1
+						row.rate = pricing_plan_meals.get(row.meal)
 
 		else:
 			dd = dates_data[d.delivery_date]
 
 			for i,v in dd.items():
 				for r in range(0, meals[i].max_qty - v):
+					print([d.delivery_date,r])
 					row = order.append("items")
 					row.item_code = "Item Not Selected"
 					row.meal = i
