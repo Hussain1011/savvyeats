@@ -54,13 +54,13 @@ function render_deliveries_section(frm) {
   if (!html_field || !html_field.$wrapper) return;
 
   const items = (frm.doc.items || []).slice();
-  const MEAL_ORDER = ['Breakfast','Lunch','Dinner','Snack 1','Snack 2','Add-ons'];
+  const MEAL_ORDER = ['Breakfast','Meals', 'Snacks','Add-ons'];
 
   // -------- Aggregations --------
   const by_so = {};
   const dn_by_so = {};
   const unique_users = new Set();
-  const meal_counts = { 'Breakfast':0,'Lunch':0,'Dinner':0,'Snack 1':0,'Snack 2':0,'Add-ons':0 };
+  const meal_counts = { 'Breakfast':0,'Meals':0,'Snacks':0, 'Add-ons':0 };
 
   for (const it of items) {
     if (it.customer) unique_users.add(it.customer);
@@ -77,8 +77,7 @@ function render_deliveries_section(frm) {
     if (it.delivery_note) dn_by_so[so].add(it.delivery_note);
   }
 
-  const total_meal_items = meal_counts['Breakfast'] + meal_counts['Lunch'] + meal_counts['Dinner']
-                         + meal_counts['Snack 1'] + meal_counts['Snack 2'];
+  const total_meal_items = meal_counts['Breakfast'] + meal_counts['Meals'] + meal_counts['Snacks'];
   const total_addons = meal_counts['Add-ons'];
   const total_users = unique_users.size;
 

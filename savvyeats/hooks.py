@@ -184,7 +184,12 @@ scheduler_events = {
 	"hourly": [
 		"savvyeats.background_jobs.remove_expired_otp",
 		"savvyeats.background_jobs.remove_old_location"
-	]
+	],
+	"cron": {
+		"0 17 * * *": [
+			"savvyeats.background_jobs.create_subscription_delivery"
+		]
+	}
 }
 
 # Testing
