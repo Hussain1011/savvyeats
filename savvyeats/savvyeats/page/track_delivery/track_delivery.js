@@ -418,7 +418,7 @@ frappe.pages['track-delivery'].on_page_load = function (wrapper) {
   }
 
   // ------- Google loader -------
-  const GMAPS_API_KEY = 'AIzaSyDRg_M7g7y3L3wSqPEcteVah14LEcwNIFg';
+  const GMAPS_API_KEY = 'AIzaSyBPPNWFZnZobn7qSzM7tF1mxshuvEVbBJg';
   function ensureGoogle(cb) {
     if (window.google && window.google.maps) return cb();
     if (window.__td_maps_loading) {
