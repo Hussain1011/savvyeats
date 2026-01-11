@@ -1,5 +1,6 @@
 import frappe
-from frappe.utils import now_datetime, getdate, add_days
+from frappe.utils import now_datetime, getdate, add_days, add_to_date
+from savvyeats.api.payment import verify_payment
 
 def remove_expired_otp():
 	frappe.db.sql("""
@@ -11,6 +12,17 @@ def remove_old_location():
 	frappe.db.sql("""
 		delete from `tabDriver Location` where DATE(creation) < %(date)s
 	""", {"date": getdate()})
+
+
+def update_payment_logs():
+	time = add_to_date(None, minutes=-2)
+	pay_logs = frappe.get_all("Payment Log", filters={"modified": ["<=", time], "decision": "ACCEPT", "payment_updated": 1, "document_type": "Sales Order"}, fields=["reference_doc"])
+	for d in pay_logs:
+		try:
+			verify_payment(d.reference_doc)
+		except Exception as e:
+			pass
+
 
 def create_subscription_delivery():
 	target_date = getdate(add_days(getdate(), 2))

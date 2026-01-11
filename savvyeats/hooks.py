@@ -188,6 +188,9 @@ scheduler_events = {
 	"cron": {
 		"0 17 * * *": [
 			"savvyeats.background_jobs.create_subscription_delivery"
+		],
+		"*/5 * * * *": [
+			"savvyeats.background_jobs.update_payment_logs"
 		]
 	}
 }
