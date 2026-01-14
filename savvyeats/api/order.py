@@ -30,7 +30,7 @@ def validate_sales_order(order_id):
 def get_draft_order(new=False):
 	customer = frappe.get_all("Customer", filters={"user": frappe.session.user})
 
-	order_filters = {"docstatus": 0, "is_online": 1}
+	order_filters = {"docstatus": 0, "is_online": 1, "expired": 0}
 
 	if customer:
 		order_filters["customer"] = customer[0].name
@@ -66,6 +66,7 @@ def _reset_sales_order_in_place(order):
 	order.po_no = None
 	order.po_date = None
 	order.is_online = 1
+	order.expired = 0
 	order.shipping_address_name = None
 	order.shipping_address = None
 	order.billing_address_name = None

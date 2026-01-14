@@ -7,6 +7,29 @@ def remove_expired_otp():
 		delete from `tabOTP Verification` where expiry < %(time)s
 	""", {"time": now_datetime()})
 
+def update_expired_orders():
+	buffer_days = frappe.db.get_single_value("App Settings", "buffer_days")
+	buffer_date = getdate(add_days(getdate(), buffer_days or 0))
+	rows = frappe.db.sql("""
+		SELECT sod.parent AS sales_order
+			FROM `tabSales Order Delivery Days` sod
+			JOIN `tabSales Order` so ON so.name = sod.parent
+		WHERE
+			so.docstatus = 0
+			so.expired = 0
+			AND sod.parenttype = 'Sales Order'
+			AND sod.delivery_date IS NOT NULL
+		GROUP BY sod.parent
+		HAVING %(buffer_date)s > MIN(sod.delivery_date)
+	""", {
+		"buffer_date": buffer_date
+	}, as_dict=True)
+
+	for r in rows:
+		frappe.db.set_value("Sales Order", r.sales_order, "expired", 1)
+
+	frappe.db.commit()
+
 
 def remove_old_location():
 	frappe.db.sql("""

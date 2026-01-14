@@ -38,11 +38,22 @@ def sales_order_delivery(self):
 		days = [d.day for d in week_plan.days]
 		dates, self.delivery_days = delivery_schedule(self.start_date, self.end_date, days, inclusive=True)
 		self.delivery_dates = []
+		idx = 0
 		for d in dates:
 			self.append("delivery_dates", {"delivery_date": d, "day": d.strftime("%A"), "status": "Pending"})
+			self.end_date = d
+			if idx == 0:
+				self.actual_start_date = d
+
+			self.actual_end_date = d
+			idx += 1
 	
 	if self.pause_start_date and self.pause_end_date:
 		pass
+
+
+
+
 
 
 def validate_addresses(self, throw=True):
