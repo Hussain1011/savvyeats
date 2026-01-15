@@ -16,7 +16,7 @@ def update_expired_orders():
 			JOIN `tabSales Order` so ON so.name = sod.parent
 		WHERE
 			so.docstatus = 0
-			so.expired = 0
+			AND so.expired = 0
 			AND sod.parenttype = 'Sales Order'
 			AND sod.delivery_date IS NOT NULL
 		GROUP BY sod.parent
