@@ -53,7 +53,7 @@ def send_otp(email: str, mobile_no: str, test=False):
 
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
-def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: str):
+def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: str, last_name: str = None):
 	user = frappe.db.get("User", {"email": email})
 	if user:
 		message_en = "An account with this email already exists."
@@ -89,6 +89,7 @@ def verify_otp(otp: int, email: str, mobile_no: str, full_name: str, password: s
 			"mobile_no": mobile_no,
 			"mobile_verified": 1,
 			"first_name": escape_html(full_name),
+			"last_name": escape_html(last_name or ""),
 			"enabled": 1,
 			"new_password": password,
 			"user_type": "Website User",
