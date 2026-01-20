@@ -6,6 +6,8 @@ from frappe import _
 from frappe.model.document import Document
 from frappe.utils import getdate, get_datetime_str, get_datetime
 from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
+import urllib.parse
+import json
 
 
 class SubscriptionDelivery(Document):
@@ -18,6 +20,26 @@ class SubscriptionDelivery(Document):
 		exists = frappe.get_all("Subscription Delivery", filters={"delivery_date": self.delivery_date, "name": ["!=", self.name], "docstatus": ["!=", 2]})
 		if exists:
 			frappe.throw(_("Subscription Delivery already exists for Date: <b>{0}</b>".format(self.get_formatted("delivery_date"))))
+
+	@frappe.whitelist()
+	def get_letter_menu_url(self):
+		delivery_notes = []
+		for d in self.items:
+			if d.delivery_note and not d.delivery_note in delivery_notes:
+				delivery_notes.append(d.delivery_note)
+
+		params = {
+			"doctype": "Delivery Note",
+			"name": json.dumps(delivery_notes),
+			"format": "Letter Menu",
+			"no_letterhead": "0",
+			"letterhead":"",
+			"options": json.dumps({"page-size": "A5"})
+		}
+
+		query = urllib.parse.urlencode(params)
+		url = f"/api/method/frappe.utils.print_format.download_multi_pdf?{query}"
+		return url
 
 	@frappe.whitelist()
 	def lock_delivery(self):

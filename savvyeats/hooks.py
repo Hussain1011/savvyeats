@@ -186,10 +186,11 @@ scheduler_events = {
 		"savvyeats.background_jobs.remove_old_location"
 	],
 	"daily": [
-		"savvyeats.background_jobs.update_expired_orders"
+		"savvyeats.background_jobs.update_expired_orders",
+		"savvyeats.background_jobs.auto_complete_active_orders"
 	],
 	"cron": {
-		"0 17 * * *": [
+		"0 15 * * *": [
 			"savvyeats.background_jobs.create_subscription_delivery"
 		],
 		"*/5 * * * *": [

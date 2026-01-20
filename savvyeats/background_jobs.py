@@ -31,6 +31,16 @@ def update_expired_orders():
 	frappe.db.commit()
 
 
+def auto_complete_active_orders():
+	orders = frappe.get_all("Sales Order", filters={"docstatus": 1, "actual_end_date": ["<", getdate()], "subscription_status": "Active"})
+	for d in orders:
+		frappe.db.set_value("Sales Order", d.name, "status", "Completed")
+		frappe.db.set_value("Sales Order", d.name, "subscription_status", "Completed")
+
+	frappe.db.commit()
+
+
+
 def remove_old_location():
 	frappe.db.sql("""
 		delete from `tabDriver Location` where DATE(creation) < %(date)s
@@ -57,9 +67,8 @@ def create_subscription_delivery():
 
 	doc = frappe.new_doc("Subscription Delivery")
 	doc.delivery_date = target_date
-	doc.insert(ignore_permissions=True)
-
-	# This will create draft Delivery Notes + now also auto-replace placeholders
+	doc.flags.ignore_permissions = True
+	doc.insert()
 	doc.fetch_deliveries()
-	doc.save(ignore_permissions=True)
-	doc.submit(ignore_permissions=True)
+	doc.save()
+	doc.submit()

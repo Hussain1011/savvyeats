@@ -16,9 +16,25 @@ frappe.ui.form.on("Subscription Delivery", {
 				  frm.trigger("fetch_deliveries");
 			 }).addClass("btn-warning");
       }
+      if(frm.doc.items.length > 0){
+         frm.add_custom_button(__("Print Letter Menu"), function(){
+          frm.trigger("print_letter_menu");
+       }).addClass("btn-primary");
+      }
 		  render_deliveries_section(frm);
 		}
 	},
+  print_letter_menu: function(frm){
+    frm.call({
+      method: "get_letter_menu_url",
+      doc: frm.doc,
+      freeze: true,
+      freeze_message: __("Printing Letter Menu"),
+      callback: function(r){
+        window.open(r.message);
+      }
+    })
+  },
 	fetch_deliveries: function(frm){
 		frm.call({
 			method: "fetch_deliveries",
