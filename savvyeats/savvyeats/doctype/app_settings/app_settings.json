@@ -14,6 +14,7 @@
   "section_break_veih",
   "force_update",
   "start_date",
+  "ui_type",
   "column_break_gfll",
   "ios_version",
   "android_version",
@@ -159,12 +160,19 @@
    "fieldname": "buffer_days",
    "fieldtype": "Int",
    "label": "Buffer Days"
+  },
+  {
+   "default": "Standard",
+   "fieldname": "ui_type",
+   "fieldtype": "Select",
+   "label": "UI Type",
+   "options": "Standard\nDish Plan Type"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-11-24 14:54:13.883728",
+ "modified": "2026-01-21 13:21:03.722768",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "App Settings",
@@ -181,7 +189,6 @@
    "write": 1
   }
  ],
- "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": [],

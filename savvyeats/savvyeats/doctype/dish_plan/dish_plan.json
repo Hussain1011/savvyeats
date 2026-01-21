@@ -13,18 +13,27 @@
   "plan_description",
   "sorting_order",
   "column_break_xatb",
+  "dish_plan_type",
   "default_pricing_plan",
   "week_plans",
-  "parent_dish_plan",
+  "ui_type",
   "section_break_gezu",
   "min_calories",
   "column_break_zlhp",
   "max_calories",
   "section_break_opyl",
   "background_image",
+  "full_background_image",
   "details_background_image",
   "column_break_eoen",
   "dish_image",
+  "description",
+  "section_break_iyhs",
+  "has_date_limit",
+  "section_break_rtdb",
+  "start_date",
+  "column_break_ineb",
+  "end_date",
   "meals_tab",
   "meals"
  ],
@@ -145,10 +154,58 @@
    "label": "Is Group"
   },
   {
-   "fieldname": "parent_dish_plan",
+   "fieldname": "section_break_iyhs",
+   "fieldtype": "Section Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "has_date_limit",
+   "fieldtype": "Check",
+   "label": "Has Date Limit"
+  },
+  {
+   "depends_on": "has_date_limit",
+   "fieldname": "section_break_rtdb",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date",
+   "mandatory_depends_on": "has_date_limit"
+  },
+  {
+   "fieldname": "column_break_ineb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date",
+   "mandatory_depends_on": "has_date_limit"
+  },
+  {
+   "fieldname": "full_background_image",
+   "fieldtype": "Attach Image",
+   "label": "Full Background Image"
+  },
+  {
+   "default": "Standard",
+   "fieldname": "ui_type",
+   "fieldtype": "Select",
+   "label": "UI Type",
+   "options": "Standard\nRamadan"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "HTML Editor",
+   "label": "Description"
+  },
+  {
+   "fieldname": "dish_plan_type",
    "fieldtype": "Link",
-   "label": "Parent Dish Plan",
-   "options": "Dish Plan"
+   "label": "Dish Plan Type",
+   "options": "Dish Plan Type"
   }
  ],
  "image_field": "dish_image",
@@ -160,7 +217,7 @@
    "link_fieldname": "dish_plan"
   }
  ],
- "modified": "2026-01-14 16:34:42.232640",
+ "modified": "2026-01-21 13:21:26.461805",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",
