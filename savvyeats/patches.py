@@ -13,3 +13,20 @@ def update_actual_date_sales_order():
 
 	frappe.db.commit()
 
+
+def update_item_kitchen_name():
+	items = frappe.get_all("Item", filters={"variant_of": ["!=", ""]})
+	attributes = frappe.get_doc("Item Attribute", "Dish Plan")
+	att_dict = {}
+	for at in attributes.item_attribute_values:
+		att_dict[at.attribute_value] = at
+
+	for d in items:
+		doc = frappe.get_doc("Item", d.name)
+		for a in doc.attributes:
+			if a.attribute == "Dish Plan":
+				doc.kitchen_name = "{0} - {1}".format(doc.variant_of, att_dict[a.attribute_value].abbr)
+				break
+
+		frappe.db.set_value("Item", doc.name, "kitchen_name", doc.kitchen_name)
+		frappe.db.commit()

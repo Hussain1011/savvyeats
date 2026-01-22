@@ -10,6 +10,7 @@
   "is_group",
   "section_break_dlwc",
   "plan_name",
+  "display_plan_name",
   "plan_description",
   "sorting_order",
   "column_break_xatb",
@@ -206,6 +207,14 @@
    "fieldtype": "Link",
    "label": "Dish Plan Type",
    "options": "Dish Plan Type"
+  },
+  {
+   "fieldname": "display_plan_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Display Plan Name",
+   "reqd": 1,
+   "translatable": 1
   }
  ],
  "image_field": "dish_image",
@@ -217,7 +226,7 @@
    "link_fieldname": "dish_plan"
   }
  ],
- "modified": "2026-01-21 13:21:26.461805",
+ "modified": "2026-01-22 15:59:33.508312",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",
