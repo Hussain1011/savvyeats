@@ -365,12 +365,19 @@ def add_items(order_id, items):
 	for m in dish_plan.meals:
 		meals[m.meal] = m
 
+	meals_list = [d.meal for d in order.meals]
+
 	dates = []
 	dates_data = {}
 	for v in items:
+		meal = v.get("meal", "")
+		if meal and meal not in meals_list:
+			continue
+
 		row = order.append("items")
 		row.item_code = v["item_code"]
 		row.meal = v.get("meal", "")
+
 		row.delivery_date = getdate(v["delivery_date"])
 		row.note = v.get("note", "")
 		row.qty = int(v["qty"]) if v.get("qty") and int(v["qty"]) > 1 else 1
@@ -412,7 +419,6 @@ def add_items(order_id, items):
 
 			for i,v in dd.items():
 				for r in range(0, meals[i].max_qty - v):
-					print([d.delivery_date,r])
 					row = order.append("items")
 					row.item_code = "Item Not Selected"
 					row.meal = i
