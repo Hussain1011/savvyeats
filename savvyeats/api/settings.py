@@ -86,7 +86,7 @@ def get_setup_data_v2():
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_setup_data():
-	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1}, order_by="sorting_order asc")
+	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1, "dish_plan_type": "Standard SAVVY"}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
 	improved_suggestions = frappe.get_all("Improved Suggestions", filters={"enabled": 1}, order_by="improved_suggestion asc")
 	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"], order_by="sorting_order asc")
