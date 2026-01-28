@@ -34,6 +34,9 @@ def get_customer_support_details():
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_setup_data_v2():
 	app_settings = frappe.get_cached_doc("App Settings", "App Settings", ignore_permmission=True)
+
+
+
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1},order_by="sorting_order asc")
 	dish_plan_types = frappe.get_all("Dish Plan Type", fields=["*"], filters={"enabled": 1}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
@@ -71,7 +74,7 @@ def get_setup_data_v2():
 
 		for d in dish_plan.meals:
 			d.doc = frappe.get_cached_doc("Meal", d.meal, ignore_permmission=True)
-		if app_settings.ui_type == "Standard":
+		if app_settings.ui_type == "Standard" and dish_plan.ui_type == "Standard":
 			data["dish_plans"].append(dish_plan)
 		elif app_settings.ui_type == "Dish Plan Type":
 			if dish_plan.dish_plan_type and dish_plan.dish_plan_type in dish_plan_types_dict:
