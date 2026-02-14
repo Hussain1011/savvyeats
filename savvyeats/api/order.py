@@ -8,7 +8,7 @@ from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validat
 def validate_sales_order(order_id):
 	try:
 		order = frappe.get_doc("Sales Order", order_id, ignore_permmission=True)
-		if order.owner != frappe.session.user:
+		if order.owner != frappe.session.user and frappe.session.user != "Administrator":
 			message_en = "Access denied. This order does not belong to your account."
 			message_ar = "تم رفض الوصول. هذا الطلب لا يخص حسابك."
 
