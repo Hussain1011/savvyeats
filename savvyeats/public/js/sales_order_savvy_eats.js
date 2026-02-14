@@ -6,9 +6,17 @@ frappe.ui.form.on('Sales Order', {
     if (!frm.is_new()) {
       // frm.add_custom_button('Plan Meals', () => open_meal_dialog(frm)).addClass("btn-primary");
 
-      frm.add_custom_button("Update Meals", function() {
+      // frm.add_custom_button("Update Meals", function() {
         
-      }, __("Dish Plan Meals"));
+      // }, __("Dish Plan Meals"));
+
+      if(frm.doc.docstatus == 0){
+        frm.add_custom_button("Copy Payment Link", function() {
+          var link = `https://app.savvyeats.com/skip-cash/${frm.doc.name}`;
+          frappe.utils.copy_to_clipboard(link);
+        }).addClass("btn-danger");
+      }
+
 
       frm.add_custom_button('Update Owner', function(){
         frm.trigger("update_owner");

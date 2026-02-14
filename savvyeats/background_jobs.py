@@ -49,7 +49,7 @@ def remove_old_location():
 
 def update_payment_logs():
 	time = add_to_date(None, minutes=-2)
-	pay_logs = frappe.get_all("Payment Log", filters={"modified": ["<=", time], "decision": "ACCEPT", "payment_updated": 1, "document_type": "Sales Order"}, fields=["reference_doc"])
+	pay_logs = frappe.get_all("Payment Log", filters={"modified": ["<=", time], "decision": "ACCEPT", "payment_updated": 0, "document_type": "Sales Order"}, fields=["reference_doc"])
 	for d in pay_logs:
 		try:
 			verify_payment(d.reference_doc)
