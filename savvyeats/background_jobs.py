@@ -52,6 +52,12 @@ def update_payment_logs():
 	pay_logs = frappe.get_all("Payment Log", filters={"modified": ["<=", time], "decision": "ACCEPT", "payment_updated": 0, "document_type": "Sales Order"}, fields=["reference_doc"])
 	for d in pay_logs:
 		try:
+			customer = frappe.db.get_value("Sales Order", d.reference_doc, "customer")
+			if customer == "Online Customer":
+				frappe.set_user(frappe.db.get_value("Sales Order", d.reference_doc, "owner"))
+			else:
+				user = frappe.db.get_value("Customer", customer, "user") or "Administrator"
+				frappe.set_user(user)
 			verify_payment(d.reference_doc)
 		except Exception as e:
 			pass
