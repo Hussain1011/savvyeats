@@ -83,7 +83,7 @@ def send_fcm_to_token(device_token: str, title: str, body: str, data: dict | Non
 	if r.status_code >= 300:
 		# Log full response for debugging
 		frappe.log_error(title="FCM Send Failed", message=r.text)
-		frappe.throw(f"FCM send failed: {r.status_code} - {r.text}")
+		# frappe.throw(f"FCM send failed: {r.status_code} - {r.text}")
 
 	return r.json()
 
