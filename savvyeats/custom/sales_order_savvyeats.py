@@ -49,7 +49,8 @@ def sales_order_delivery(self):
 			idx += 1
 	
 	if self.pause_start_date and self.pause_end_date:
-		pass
+		if getdate(self.pause_end_date) <= getdate(self.pause_start_date):
+			frappe.throw(_("Pause End Date must be after Pause Start Date"))
 
 
 
