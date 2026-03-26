@@ -33,7 +33,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Status",
-   "options": "Pending\nOn Hold\nScheduled\nDelivered",
+   "options": "Pending\nOn Hold\nPaused\nScheduled\nDelivered",
    "reqd": 1
   },
   {

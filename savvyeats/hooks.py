@@ -187,7 +187,8 @@ scheduler_events = {
 	],
 	"daily": [
 		"savvyeats.background_jobs.update_expired_orders",
-		"savvyeats.background_jobs.auto_complete_active_orders"
+		"savvyeats.background_jobs.auto_complete_active_orders",
+		"savvyeats.background_jobs.auto_resume_paused_subscriptions"
 	],
 	"cron": {
 		"0 15 * * *": [
@@ -195,6 +196,12 @@ scheduler_events = {
 		],
 		"*/5 * * * *": [
 			"savvyeats.background_jobs.update_payment_logs"
+		],
+		"0 * * * *": [
+			"savvyeats.background_jobs.notify_incomplete_meal_plans"
+		],
+		"0 0 * * *": [
+			"savvyeats.background_jobs.clear_paused_delivery_items"
 		]
 	}
 }
