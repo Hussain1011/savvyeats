@@ -94,6 +94,9 @@ def create_subscription_delivery():
 	doc.flags.ignore_permissions = True
 	doc.insert()
 	doc.fetch_deliveries()
+	if not doc.items:
+		doc.delete()
+		return
 	doc.save()
 	doc.submit()
 

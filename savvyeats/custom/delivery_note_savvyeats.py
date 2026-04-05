@@ -34,6 +34,8 @@ def validate(self, method):
 			d.delivery_date = item_doc.delivery_date
 
 	self.subscription = sales_order
+	if not self.subscription:
+		frappe.throw(_("No Sales Order found in Delivery Note items."))
 	order = frappe.get_doc("Sales Order", self.subscription)
 	self.dish_plan = order.dish_plan
 	address = None

@@ -59,14 +59,18 @@ class SubscriptionDelivery(Document):
 			if not delivery:
 				continue
 
-			if not frappe.db.exists("Delivery Note", {"subscription": self.name, "posting_date": self.delivery_date, "docstatus": 0}):
-				frappe.flags.args = frappe._dict({"delivery_dates":[self.delivery_date],"for_reserved_stock":True})
-				dn = make_delivery_note(d.name, kwargs={"delivery_dates":[self.delivery_date],"for_reserved_stock":True})
+			existing_dn = frappe.db.get_value("Delivery Note", {"subscription": d.name, "posting_date": self.delivery_date, "docstatus": ["!=", 2]})
+			if not existing_dn:
+				delivery_date_str = str(self.delivery_date)
+				frappe.flags.args = frappe._dict({"delivery_dates":[delivery_date_str],"for_reserved_stock":True})
+				dn = make_delivery_note(d.name, kwargs={"delivery_dates":[delivery_date_str],"for_reserved_stock":True})
+				if not dn.items:
+					continue
 				dn.set_posting_time = 1
 				dn.posting_date = self.delivery_date
 				dn.save()
 			else:
-				dn = frappe.db.get("Delivery Note", {"subscription": self.name, "posting_date": self.delivery_date, "docstatus": 0})
+				dn = frappe.get_doc("Delivery Note", existing_dn)
 
 			for i in dn.items:
 				self.append("items",{"customer": so.customer, "sales_order": so.name, "sales_order_item": i.so_detail, "item_code": i.item_code, "item_name": i.item_name, "uom": i.uom, "meal": i.meal, "note": i.note, "qty": i.qty, "delivery_note": dn.name, "delivery_note_item": i.name})
