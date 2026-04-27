@@ -385,6 +385,7 @@ def add_items(order_id, items):
 
 		if row.meal:
 			row.rate = pricing_plan_meals.get(row.meal)
+			row.price_list_rate = row.rate
 
 		if row.delivery_date not in dates:
 			dates.append(row.delivery_date)
@@ -413,6 +414,7 @@ def add_items(order_id, items):
 						row.delivery_date = getdate(d.delivery_date)
 						row.qty = 1
 						row.rate = pricing_plan_meals.get(row.meal)
+						row.price_list_rate = row.rate
 
 		else:
 			dd = dates_data[d.delivery_date]
@@ -425,11 +427,13 @@ def add_items(order_id, items):
 					row.delivery_date = getdate(d.delivery_date)
 					row.qty = 1
 					row.rate = pricing_plan_meals.get(i)
+					row.price_list_rate = row.rate
 
 	order.ignore_pricing_rule = 1
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
 	order.flags.ignore_addresses = True
+	order.flags.rates_set_by_api = True
 	order.save()
 	frappe.db.commit()
 
