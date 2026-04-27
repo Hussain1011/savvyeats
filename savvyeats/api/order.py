@@ -116,6 +116,7 @@ def _reset_sales_order_in_place(order):
 	order.transaction_date = frappe.utils.nowdate()
 	order.pricing_rules = []
 	order.allergens = []
+	order.health_goals = []
 	order.items = []
 	order.meals = []
 	order.taxes = []
