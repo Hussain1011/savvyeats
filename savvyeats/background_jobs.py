@@ -82,7 +82,10 @@ def update_payment_logs():
 
 
 def create_subscription_delivery():
-	target_date = getdate(add_days(getdate(), 2))
+	delivery_creation_days = frappe.db.get_single_value("App Settings", "delivery_creation_days")
+	if delivery_creation_days is None:
+		delivery_creation_days = 2
+	target_date = getdate(add_days(getdate(), delivery_creation_days))
 
 	# If already exists (not cancelled), do nothing
 	exists = frappe.db.exists("Subscription Delivery", {"delivery_date": target_date, "docstatus": ["!=", 2]})
