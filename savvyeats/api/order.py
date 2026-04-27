@@ -426,6 +426,7 @@ def add_items(order_id, items):
 					row.qty = 1
 					row.rate = pricing_plan_meals.get(i)
 
+	order.ignore_pricing_rule = 1
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
 	order.flags.ignore_addresses = True
