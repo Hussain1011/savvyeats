@@ -296,3 +296,84 @@ def notify_incomplete_meal_plans():
 			pass
 
 	frappe.db.commit()
+
+
+def notify_subscription_ending():
+	if not frappe.db.get_single_value("App Settings", "enable_subscription_end_reminder"):
+		return
+
+	reminder_days = frappe.db.get_single_value("App Settings", "subscription_end_reminder_days") or 2
+	today = getdate()
+	target_date = getdate(add_days(today, reminder_days))
+
+	orders = frappe.get_all("Sales Order", filters={
+		"docstatus": 1,
+		"subscription_status": "Active",
+		"actual_end_date": target_date,
+	}, fields=["name", "owner", "customer_name", "actual_end_date"])
+
+	for order in orders:
+		user = order.owner
+
+		# Skip if already notified today
+		already_notified = frappe.db.exists("Notification Log", {
+			"for_user": user,
+			"type": "Alert",
+			"subject": ["like", f"%subscription ending%{order.name}%"],
+			"creation": [">=", today],
+		})
+		if already_notified:
+			continue
+
+		end_date = getdate(order.actual_end_date)
+		title_en = "Subscription Ending Soon"
+		body_en = f"Your subscription {order.name} is ending on {end_date}. Renew now to continue enjoying your meals without interruption."
+
+		notification = frappe.new_doc("Notification Log")
+		notification.for_user = user
+		notification.type = "Alert"
+		notification.subject = f"Your subscription ending soon - {order.name}"
+		notification.email_content = body_en
+		notification.flags.ignore_permissions = True
+		notification.insert()
+
+		# FCM push notification to user
+		try:
+			send_notification_to_user(user, title_en, body_en)
+		except Exception:
+			pass
+
+		# Email to user (customer)
+		try:
+			frappe.sendmail(
+				recipients=[user],
+				subject=f"Subscription Ending Soon - {order.name}",
+				message=f"""Dear {order.customer_name},<br><br>
+Your subscription <a href="https://app.savvyeats.com/app/sales-order/{order.name}">{order.name}</a> is ending on {end_date}.<br>
+Renew now to continue enjoying your meals without interruption.""",
+				now=True,
+			)
+		except Exception:
+			frappe.log_error("Subscription End User Email Failed")
+
+		# Email to System Managers
+		try:
+			system_managers = frappe.get_all(
+				"Has Role",
+				filters={"role": "System Manager", "parenttype": "User"},
+				pluck="parent",
+			)
+			system_managers = [u for u in system_managers if frappe.db.get_value("User", u, "enabled")]
+			if system_managers:
+				frappe.sendmail(
+					recipients=system_managers,
+					subject=f"Subscription Ending Soon - {order.name}",
+					message=f"""Subscription ending soon <a href="https://app.savvyeats.com/app/sales-order/{order.name}">{order.name}</a><br><br>
+Customer Name: {order.customer_name}<br>
+End Date: {end_date}""",
+					now=True,
+				)
+		except Exception:
+			frappe.log_error("Subscription End System Manager Email Failed")
+
+	frappe.db.commit()
