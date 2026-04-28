@@ -40,9 +40,10 @@ def get_setup_data_v2():
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1},order_by="sorting_order asc")
 	dish_plan_types = frappe.get_all("Dish Plan Type", fields=["*"], filters={"enabled": 1}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
+	health_goals = frappe.get_all("Health Goal", filters={"enabled": 1}, order_by="health_goal asc")
 	improved_suggestions = frappe.get_all("Improved Suggestions", filters={"enabled": 1}, order_by="improved_suggestion asc")
 	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"], order_by="sorting_order asc")
-	data = {"allergens": allergens, "delivery_time_slots": delivery_time_slots, "dish_plans": [], "improved_suggestions": improved_suggestions, "dish_plan_types": []}
+	data = {"allergens": allergens, "health_goals": health_goals, "delivery_time_slots": delivery_time_slots, "dish_plans": [], "improved_suggestions": improved_suggestions, "dish_plan_types": []}
 
 	def get_pricing(dish_plan_pricing):
 		if not dish_plan_pricing:
@@ -91,9 +92,10 @@ def get_setup_data_v2():
 def get_setup_data():
 	dish_plans = frappe.get_all("Dish Plan", filters={"enabled": 1, "dish_plan_type": "Standard SAVVY"}, order_by="sorting_order asc")
 	allergens = frappe.get_all("Allergen", filters={"enabled": 1}, order_by="allergen asc")
+	health_goals = frappe.get_all("Health Goal", filters={"enabled": 1}, order_by="health_goal asc")
 	improved_suggestions = frappe.get_all("Improved Suggestions", filters={"enabled": 1}, order_by="improved_suggestion asc")
 	delivery_time_slots = frappe.get_all("Delivery Time Slot", filters={"enabled": 1}, fields=["*"], order_by="sorting_order asc")
-	data = {"allergens": allergens, "delivery_time_slots": delivery_time_slots, "dish_plans": [], "improved_suggestions": improved_suggestions}
+	data = {"allergens": allergens, "health_goals": health_goals, "delivery_time_slots": delivery_time_slots, "dish_plans": [], "improved_suggestions": improved_suggestions}
 
 	def get_pricing(dish_plan_pricing):
 		if not dish_plan_pricing:

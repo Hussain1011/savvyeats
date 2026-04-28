@@ -193,6 +193,8 @@ def pause_subscription(order_id, pause_start_date, pause_end_date):
 
 	frappe.db.commit()
 
+	send_pause_notification(order, pause_start, pause_end)
+
 	order.reload()
 	return send_success_response(
 		"Subscription paused successfully.",
@@ -255,3 +257,29 @@ def resume_subscription(order_id):
 		"تم استئناف الاشتراك بنجاح.",
 		order
 	)
+
+
+def send_pause_notification(order, pause_start, pause_end):
+	if not frappe.db.get_single_value("App Settings", "enable_pause_notifications"):
+		return
+
+	# Email to System Managers
+	try:
+		system_managers = frappe.get_all(
+			"Has Role",
+			filters={"role": "System Manager", "parenttype": "User"},
+			pluck="parent",
+		)
+		system_managers = [u for u in system_managers if frappe.db.get_value("User", u, "enabled")]
+		if system_managers:
+			frappe.sendmail(
+				recipients=system_managers,
+				subject=f"Subscription Paused {order.name}",
+				message=f"""Subscription Paused <a href="https://app.savvyeats.com/app/sales-order/{order.name}">{order.name}</a><br><br>
+Customer Name: {order.customer_name}<br>
+Pause Start Date: {pause_start}<br>
+Pause End Date: {pause_end}""",
+				now=True,
+			)
+	except Exception:
+		frappe.log_error("Pause Subscription Email Failed")

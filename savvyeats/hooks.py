@@ -200,6 +200,9 @@ scheduler_events = {
 		"0 * * * *": [
 			"savvyeats.background_jobs.notify_incomplete_meal_plans"
 		],
+		"0 8 * * *": [
+			"savvyeats.background_jobs.notify_subscription_ending"
+		],
 		"0 0 * * *": [
 			"savvyeats.background_jobs.clear_paused_delivery_items"
 		]

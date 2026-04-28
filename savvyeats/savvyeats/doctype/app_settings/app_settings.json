@@ -24,13 +24,19 @@
   "max_weeks",
   "section_break_xwar",
   "buffer_days",
+  "delivery_creation_days",
   "meal_notifications_section",
   "enable_meal_notifications",
   "meal_reminder_threshold",
+  "meal_reminder_days_before",
   "column_break_meal_notif",
   "meal_reminder_time",
+  "subscription_end_notifications_section",
+  "enable_subscription_end_reminder",
+  "subscription_end_reminder_days",
   "subscriptions_section",
   "enable_pause_subscription_feature",
+  "enable_pause_notifications",
   "max_pause_count",
   "column_break_tapl",
   "waiting_list",
@@ -140,6 +146,14 @@
   },
   {
    "default": "0",
+   "depends_on": "eval:doc.enable_pause_subscription_feature == 1",
+   "description": "Send email notification to System Managers when a subscription is paused.",
+   "fieldname": "enable_pause_notifications",
+   "fieldtype": "Check",
+   "label": "Enable Pause Notifications"
+  },
+  {
+   "default": "0",
    "fieldname": "waiting_list",
    "fieldtype": "Check",
    "label": "Waiting List"
@@ -185,6 +199,14 @@
    "label": "Buffer Days"
   },
   {
+   "default": "2",
+   "description": "Number of days ahead to create subscription deliveries.",
+   "fieldname": "delivery_creation_days",
+   "fieldtype": "Int",
+   "label": "Delivery Creation Days",
+   "non_negative": 1
+  },
+  {
    "fieldname": "meal_notifications_section",
    "fieldtype": "Section Break",
    "label": "Meal Notifications"
@@ -205,6 +227,15 @@
    "label": "Meal Reminder Threshold (Days)"
   },
   {
+   "default": "1",
+   "depends_on": "eval:doc.enable_meal_notifications == 1",
+   "description": "Send meal reminder this many days before the delivery date.",
+   "fieldname": "meal_reminder_days_before",
+   "fieldtype": "Int",
+   "label": "Meal Reminder Days Before Delivery",
+   "non_negative": 1
+  },
+  {
    "fieldname": "column_break_meal_notif",
    "fieldtype": "Column Break"
   },
@@ -215,6 +246,27 @@
    "fieldname": "meal_reminder_time",
    "fieldtype": "Time",
    "label": "Meal Reminder Time"
+  },
+  {
+   "fieldname": "subscription_end_notifications_section",
+   "fieldtype": "Section Break",
+   "label": "Subscription End Notifications"
+  },
+  {
+   "default": "0",
+   "description": "Send a reminder notification to users before their subscription ends.",
+   "fieldname": "enable_subscription_end_reminder",
+   "fieldtype": "Check",
+   "label": "Enable Subscription End Reminder"
+  },
+  {
+   "default": "2",
+   "depends_on": "eval:doc.enable_subscription_end_reminder == 1",
+   "description": "Number of days before subscription end date to send the reminder.",
+   "fieldname": "subscription_end_reminder_days",
+   "fieldtype": "Int",
+   "label": "Subscription End Reminder Days Before",
+   "non_negative": 1
   },
   {
    "default": "Standard",

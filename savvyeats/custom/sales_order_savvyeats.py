@@ -11,9 +11,18 @@ WEEKDAY_MAP = {
 }
 
 def validate(self, method):
+	if not self.flags.rates_set_by_api:
+		preserve_custom_rates(self)
 	sales_order_delivery(self)
 	if not self.flags.ignore_addresses:
 		validate_addresses(self)
+
+def preserve_custom_rates(self):
+	for item in self.items:
+		if item.rate and (not item.price_list_rate or item.price_list_rate != item.rate):
+			item.price_list_rate = item.rate
+			item.discount_percentage = 0
+			item.discount_amount = 0
 
 def before_submit(self, method):
 	validate_addresses(self)
