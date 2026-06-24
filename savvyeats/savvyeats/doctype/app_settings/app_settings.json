@@ -34,6 +34,11 @@
   "subscription_end_notifications_section",
   "enable_subscription_end_reminder",
   "subscription_end_reminder_days",
+  "next_delivery_reminder_section",
+  "enable_next_delivery_meal_reminder",
+  "next_delivery_reminder_days_before",
+  "column_break_next_delivery",
+  "next_delivery_reminder_time",
   "subscriptions_section",
   "enable_pause_subscription_feature",
   "enable_pause_notifications",
@@ -260,13 +265,46 @@
    "label": "Enable Subscription End Reminder"
   },
   {
-   "default": "2",
+   "default": "3",
    "depends_on": "eval:doc.enable_subscription_end_reminder == 1",
    "description": "Number of days before subscription end date to send the reminder.",
    "fieldname": "subscription_end_reminder_days",
    "fieldtype": "Int",
    "label": "Subscription End Reminder Days Before",
    "non_negative": 1
+  },
+  {
+   "fieldname": "next_delivery_reminder_section",
+   "fieldtype": "Section Break",
+   "label": "Upcoming Delivery Meal Reminder"
+  },
+  {
+   "default": "0",
+   "description": "Remind users when an upcoming delivery has no meals selected (all items still unselected). This is separate from the meal reminder threshold above.",
+   "fieldname": "enable_next_delivery_meal_reminder",
+   "fieldtype": "Check",
+   "label": "Enable Upcoming Delivery Meal Reminder"
+  },
+  {
+   "default": "1",
+   "depends_on": "eval:doc.enable_next_delivery_meal_reminder == 1",
+   "description": "Send the reminder this many days before the delivery date (e.g. 1 = remind the day before).",
+   "fieldname": "next_delivery_reminder_days_before",
+   "fieldtype": "Int",
+   "label": "Reminder Days Before Delivery",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "column_break_next_delivery",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "18:00",
+   "depends_on": "eval:doc.enable_next_delivery_meal_reminder == 1",
+   "description": "Time of day to send the upcoming delivery reminder (HH:MM, 24-hour format).",
+   "fieldname": "next_delivery_reminder_time",
+   "fieldtype": "Time",
+   "label": "Reminder Time"
   },
   {
    "default": "Standard",

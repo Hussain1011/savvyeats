@@ -198,7 +198,8 @@ scheduler_events = {
 			"savvyeats.background_jobs.update_payment_logs"
 		],
 		"0 * * * *": [
-			"savvyeats.background_jobs.notify_incomplete_meal_plans"
+			"savvyeats.background_jobs.notify_incomplete_meal_plans",
+			"savvyeats.background_jobs.notify_unselected_next_delivery"
 		],
 		"0 8 * * *": [
 			"savvyeats.background_jobs.notify_subscription_ending"

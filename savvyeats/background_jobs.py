@@ -302,25 +302,28 @@ def notify_subscription_ending():
 	if not frappe.db.get_single_value("App Settings", "enable_subscription_end_reminder"):
 		return
 
-	reminder_days = frappe.db.get_single_value("App Settings", "subscription_end_reminder_days") or 2
+	reminder_days = frappe.db.get_single_value("App Settings", "subscription_end_reminder_days") or 3
 	today = getdate()
 	target_date = getdate(add_days(today, reminder_days))
 
+	# Use a date range (today .. target_date) instead of an exact match so that a
+	# subscription is still caught even if the scheduler missed a day. Each
+	# subscription is reminded only once (see de-dup below).
 	orders = frappe.get_all("Sales Order", filters={
 		"docstatus": 1,
 		"subscription_status": "Active",
-		"actual_end_date": target_date,
+		"actual_end_date": ["between", [today, target_date]],
 	}, fields=["name", "owner", "customer_name", "actual_end_date"])
 
 	for order in orders:
 		user = order.owner
 
-		# Skip if already notified today
+		# Skip if this subscription was already reminded (one reminder per subscription,
+		# regardless of which day the job ran).
 		already_notified = frappe.db.exists("Notification Log", {
 			"for_user": user,
 			"type": "Alert",
 			"subject": ["like", f"%subscription ending%{order.name}%"],
-			"creation": [">=", today],
 		})
 		if already_notified:
 			continue
@@ -375,5 +378,94 @@ End Date: {end_date}""",
 				)
 		except Exception:
 			frappe.log_error("Subscription End System Manager Email Failed")
+
+	frappe.db.commit()
+
+
+def notify_unselected_next_delivery():
+	"""Remind users when an UPCOMING delivery has no meals selected.
+
+	This is a separate feature from `notify_incomplete_meal_plans` (which is a
+	"running low on planned days" nudge based on a total count). This one targets a
+	single upcoming delivery date and reminds the user only if every item for that
+	date is still 'Item Not Selected'. Each delivery date triggers at most one reminder.
+	"""
+	if not frappe.db.get_single_value("App Settings", "enable_next_delivery_meal_reminder"):
+		return
+
+	# Only run during the configured hour (job is scheduled hourly).
+	reminder_time = frappe.db.get_single_value("App Settings", "next_delivery_reminder_time")
+	if reminder_time:
+		now = now_datetime()
+		time_parts = str(reminder_time).split(":")
+		target_hour = int(time_parts[0])
+		if now.hour != target_hour:
+			return
+
+	days_before = frappe.db.get_single_value("App Settings", "next_delivery_reminder_days_before")
+	if days_before is None:
+		days_before = 1
+	target_date = getdate(add_days(getdate(), days_before))
+
+	orders = frappe.get_all("Sales Order", filters={
+		"docstatus": 1,
+		"subscription_status": "Active",
+	}, fields=["name", "owner"])
+
+	for order in orders:
+		# Does this subscription have a delivery on the target date at all?
+		has_delivery = frappe.db.exists("Sales Order Item", {
+			"parent": order.name,
+			"delivery_date": target_date,
+		})
+		if not has_delivery:
+			continue
+
+		# Has the user selected at least one real item for that delivery?
+		selected = frappe.db.sql("""
+			SELECT COUNT(*) AS cnt
+			FROM `tabSales Order Item`
+			WHERE parent = %(order)s
+			  AND delivery_date = %(date)s
+			  AND item_code != 'Item Not Selected'
+		""", {"order": order.name, "date": target_date}, as_dict=True)[0].cnt
+
+		if selected:
+			continue  # already chose meals for that delivery
+
+		user = order.owner
+
+		# One reminder per delivery date (de-dup across all runs).
+		already_notified = frappe.db.exists("Notification Log", {
+			"for_user": user,
+			"type": "Alert",
+			"subject": ["like", f"%select your meals%{target_date}%"],
+		})
+		if already_notified:
+			continue
+
+		title_en = "Select Your Meals"
+		body_en = (
+			f"You haven't selected your meals for your delivery on {target_date}. "
+			"Please choose your meals before the cutoff so your delivery isn't missed."
+		)
+		body_ar = (
+			f"لم تقم باختيار وجباتك لتوصيلة يوم {target_date}. "
+			"يرجى اختيار وجباتك قبل الموعد النهائي حتى لا تفوتك التوصيلة."
+		)
+
+		notification = frappe.new_doc("Notification Log")
+		notification.for_user = user
+		notification.type = "Alert"
+		notification.subject = f"Please select your meals for {target_date}"
+		notification.email_content = body_en
+		notification.flags.ignore_permissions = True
+		notification.insert()
+
+		# Send FCM push notification (best effort)
+		try:
+			send_notification_to_user(user, title_en, body_en)
+		except Exception:
+			pass
 
 	frappe.db.commit()
