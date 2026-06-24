@@ -47,35 +47,100 @@ class SubscriptionDelivery(Document):
 
 	@frappe.whitelist()
 	def fetch_deliveries(self):
-		sales_order = frappe.get_all("Sales Order", filters={"subscription_status": "Active", "docstatus": 1}, fields=["*"], order_by="creation asc")
+		sales_orders = frappe.get_all(
+			"Sales Order",
+			filters={"subscription_status": "Active", "docstatus": 1},
+			pluck="name",
+			order_by="creation asc",
+		)
 
 		self.items = []
-		for d in sales_order:
-			so = frappe.get_doc("Sales Order", d.name)
-			delivery = False
-			for i in so.items:
-				if getdate(i.delivery_date) == getdate(self.delivery_date):
-					delivery = True
-			if not delivery:
-				continue
+		failed_orders = []
 
-			existing_dn = frappe.db.get_value("Delivery Note", {"subscription": d.name, "posting_date": self.delivery_date, "docstatus": ["!=", 2]})
-			if not existing_dn:
-				delivery_date_str = str(self.delivery_date)
-				frappe.flags.args = frappe._dict({"delivery_dates":[delivery_date_str],"for_reserved_stock":True})
-				dn = make_delivery_note(d.name, kwargs={"delivery_dates":[delivery_date_str],"for_reserved_stock":True})
-				if not dn.items:
-					continue
-				dn.set_posting_time = 1
-				dn.posting_date = self.delivery_date
-				dn.save()
-			else:
-				dn = frappe.get_doc("Delivery Note", existing_dn)
+		for so_name in sales_orders:
+			# Process each subscription in its own savepoint so that one bad order
+			# does not abort the whole day's delivery batch and does not leave any
+			# partial writes (e.g. a half-created Delivery Note) behind.
+			savepoint = "sd_" + frappe.generate_hash(length=8)
+			frappe.db.savepoint(savepoint)
+			try:
+				rows = self._fetch_delivery_rows_for_order(so_name)
+				for row in rows:
+					self.append("items", row)
+			except Exception:
+				frappe.db.rollback(save_point=savepoint)
+				failed_orders.append(so_name)
+				frappe.log_error(
+					title="Subscription Delivery: order skipped",
+					message="Delivery Date: {0}\nSales Order: {1}\n\n{2}".format(
+						self.delivery_date, so_name, frappe.get_traceback()
+					),
+				)
 
-			for i in dn.items:
-				self.append("items",{"customer": so.customer, "sales_order": so.name, "sales_order_item": i.so_detail, "item_code": i.item_code, "item_name": i.item_name, "uom": i.uom, "meal": i.meal, "note": i.note, "qty": i.qty, "delivery_note": dn.name, "delivery_note_item": i.name})
+		if failed_orders:
+			frappe.log_error(
+				title="Subscription Delivery: orders skipped summary",
+				message="Delivery Date {0}: {1} subscription(s) failed and were skipped:\n{2}".format(
+					self.delivery_date, len(failed_orders), ", ".join(failed_orders)
+				),
+			)
+			# Surface to the operator when run interactively (manual "Fetch Deliveries").
+			if frappe.request:
+				frappe.msgprint(
+					_("{0} subscription(s) were skipped due to errors and need attention: {1}").format(
+						len(failed_orders), ", ".join(failed_orders)
+					),
+					indicator="orange",
+				)
 
-	
+	def _fetch_delivery_rows_for_order(self, so_name):
+		"""Build the delivery item rows for a single subscription on this delivery date.
+
+		Returns a list of row dicts (empty if the order has nothing due on this date).
+		Raises on failure so the caller can isolate and skip the order.
+		"""
+		so = frappe.get_doc("Sales Order", so_name)
+
+		has_delivery = any(
+			getdate(i.delivery_date) == getdate(self.delivery_date) for i in so.items
+		)
+		if not has_delivery:
+			return []
+
+		existing_dn = frappe.db.get_value(
+			"Delivery Note",
+			{"subscription": so_name, "posting_date": self.delivery_date, "docstatus": ["!=", 2]},
+		)
+		if not existing_dn:
+			delivery_date_str = str(self.delivery_date)
+			frappe.flags.args = frappe._dict({"delivery_dates": [delivery_date_str], "for_reserved_stock": True})
+			dn = make_delivery_note(so_name, kwargs={"delivery_dates": [delivery_date_str], "for_reserved_stock": True})
+			if not dn.items:
+				return []
+			dn.set_posting_time = 1
+			dn.posting_date = self.delivery_date
+			dn.save()
+		else:
+			dn = frappe.get_doc("Delivery Note", existing_dn)
+
+		rows = []
+		for i in dn.items:
+			rows.append({
+				"customer": so.customer,
+				"sales_order": so.name,
+				"sales_order_item": i.so_detail,
+				"item_code": i.item_code,
+				"item_name": i.item_name,
+				"uom": i.uom,
+				"meal": i.meal,
+				"note": i.note,
+				"qty": i.qty,
+				"delivery_note": dn.name,
+				"delivery_note_item": i.name,
+			})
+		return rows
+
+
 	def before_submit(self):
 		self.status = "Locked"
 

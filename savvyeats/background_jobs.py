@@ -85,9 +85,28 @@ def create_subscription_delivery():
 	delivery_creation_days = frappe.db.get_single_value("App Settings", "delivery_creation_days")
 	if delivery_creation_days is None:
 		delivery_creation_days = 2
-	target_date = getdate(add_days(getdate(), delivery_creation_days))
 
-	# If already exists (not cancelled), do nothing
+	today = getdate()
+
+	# Ensure a Subscription Delivery exists for EVERY date from today up to
+	# today + delivery_creation_days. This makes the daily automation self-healing:
+	# if the scheduler missed a run (server/worker down), the gap is backfilled on
+	# the next run instead of permanently skipping a delivery day. Each date is
+	# handled independently so one bad date cannot block the others.
+	for offset in range(0, int(delivery_creation_days) + 1):
+		target_date = getdate(add_days(today, offset))
+		try:
+			_create_delivery_for_date(target_date)
+		except Exception:
+			frappe.db.rollback()
+			frappe.log_error(
+				title="Subscription Delivery: daily creation failed",
+				message="Delivery Date: {0}\n\n{1}".format(target_date, frappe.get_traceback()),
+			)
+
+
+def _create_delivery_for_date(target_date):
+	# If one already exists (not cancelled) for this date, do nothing.
 	exists = frappe.db.exists("Subscription Delivery", {"delivery_date": target_date, "docstatus": ["!=", 2]})
 	if exists:
 		return
@@ -99,9 +118,11 @@ def create_subscription_delivery():
 	doc.fetch_deliveries()
 	if not doc.items:
 		doc.delete()
+		frappe.db.commit()
 		return
 	doc.save()
 	doc.submit()
+	frappe.db.commit()
 
 
 def clear_paused_delivery_items(simulate_date=None):
