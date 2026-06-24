@@ -41,7 +41,7 @@ class SkipCash(Document):
 		reference_number = "{0}/{1}".format(doc.doctype, doc.name)
 		amount = 0
 		if doc.doctype in ("Sales Order", "Sales Invoice"):
-			amount = format(float(doc.rounded_total), '.2f')
+			charge_amount = doc.rounded_total
 
 			if doc.doctype == "Sales Order":
 				if doc.advance_paid == doc.rounded_total:
@@ -49,19 +49,30 @@ class SkipCash(Document):
 					frappe.local.response["location"] = "/payment-response/error/{0}".format(doc.name)
 					raise frappe.Redirect
 
+				# Lock the amount on the first payment initiation so the charged amount
+				# cannot drift afterwards; reuse the locked amount on later attempts.
+				locked = doc.get("locked_amount")
+				if locked and float(locked) > 0:
+					charge_amount = locked
+				else:
+					frappe.db.set_value("Sales Order", doc.name, "locked_amount", doc.rounded_total, update_modified=False)
+					doc.locked_amount = doc.rounded_total
+
+			amount = format(float(charge_amount), '.2f')
+
 
 		currency = doc.currency
 
-		client = frappe.get_doc("User", doc.owner)
+		first_name, last_name, phone, email = self._get_payer_details(doc)
 
 		body = {
 			"uid": transaction_uuid,
 			"keyId": self.key_id,
 			"amount": amount,
-			"firstName": client.first_name,
-			"lastName": client.last_name or client.first_name,
-			"phone": client.mobile_no,
-			"email": client.email,
+			"firstName": first_name,
+			"lastName": last_name or first_name,
+			"phone": phone,
+			"email": email,
 			"street": None,
 			"city": None,
 			"state": None,
@@ -116,6 +127,44 @@ class SkipCash(Document):
 
 
 		return result_obj, result_obj["payUrl"]
+
+	def _get_payer_details(self, doc):
+
+		# Default to the order owner (correct for online self-signup).
+		owner = frappe.db.get_value(
+			"User", doc.owner, ["first_name", "last_name", "mobile_no", "email"], as_dict=True
+		) or frappe._dict()
+		first_name = owner.first_name
+		last_name = owner.last_name or owner.first_name
+		phone = owner.mobile_no
+		email = owner.email
+
+		customer = doc.get("customer")
+		if customer and customer != "Online Customer":
+			cust = frappe.db.get_value(
+				"Customer", customer, ["customer_name", "user", "mobile_no", "email_id"], as_dict=True
+			) or frappe._dict()
+
+			# Name from the order / customer record.
+			display_name = (doc.get("customer_name") or cust.customer_name or "").strip()
+			if display_name:
+				parts = display_name.split(" ", 1)
+				first_name = parts[0]
+				last_name = parts[1] if len(parts) > 1 else parts[0]
+
+			# Contact details: prefer the customer's linked app user, then the Customer
+			# record's own fields, then fall back to the owner's.
+			cust_phone = cust_email = None
+			if cust.user:
+				cust_user = frappe.db.get_value(
+					"User", cust.user, ["mobile_no", "email"], as_dict=True
+				) or frappe._dict()
+				cust_phone = cust_user.mobile_no
+				cust_email = cust_user.email
+			phone = cust_phone or cust.mobile_no or phone
+			email = cust_email or cust.email_id or email
+
+		return first_name, last_name, phone, email
 
 	def b64_hmac_sha256(self, secret: str, data: str) -> str:
 		digest = hmac.new(secret.encode("utf-8"), data.encode("utf-8"), hashlib.sha256).digest()
@@ -248,6 +297,20 @@ def webhook(**kwargs):
 	status_text = STATUS_MAP[data.get("StatusId")]
 	if status_text != "paid":
 		return "OK"
+
+	# Safety net: the amount SkipCash reports as paid should match the amount we locked
+	# for this order. A mismatch means the price drifted or was tampered with after the
+	# payment link was generated — record it for review (non-blocking, money is taken).
+	try:
+		reported_amount = data.get("Amount") or data.get("amount")
+		expected_amount = doc.get("locked_amount") or doc.get("rounded_total")
+		if reported_amount is not None and expected_amount and abs(float(reported_amount) - float(expected_amount)) > 0.01:
+			frappe.log_error(
+				title="SkipCash amount mismatch",
+				message="Order {0}: expected {1}, paid {2}".format(docname, expected_amount, reported_amount),
+			)
+	except Exception:
+		pass
 
 	#{"PaymentId": "c3f65d87-2d5d-4f97-8b85-d93008de3b9d", "Amount": "15.00", "StatusId": 2, "TransactionId": "Sales Order/SAL-ORD-2025-00049", "FinishedDate": "2025-09-22T11:35:18.9133333", "Custom1": "Sales Order", "Custom2": "SAL-ORD-2025-00049", "Custom3": "SkipCash", "Custom4": "SkipCash SandBox", "Custom5": "SkipCash Sandbox", "Custom6": null, "Custom7": null, "Custom8": null, "Custom9": null, "Custom10": null, "VisaId": "7585301175546640804606", "TokenId": "", "CardType": "Credit Card", "CardNubmer": "411111XXXXXX1111", "RecurringSubscriptionId": "00000000-0000-0000-0000-000000000000"}
 
