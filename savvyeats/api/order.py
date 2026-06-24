@@ -1,6 +1,6 @@
 import frappe
 from frappe import _
-from frappe.utils import getdate, today
+from frappe.utils import getdate, today, flt
 from savvyeats.api.user import send_error_response, send_success_response
 import json
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
@@ -213,61 +213,105 @@ def apply_voucher_code(order_id, voucher_code):
 	if isinstance(order, dict):
 		return order
 
-	if not frappe.db.exists("Coupon Code", voucher_code):
-		message_en = "Invalid or missing voucher code."
-		message_ar = "رمز القسيمة غير صالح أو مفقود."
+	if order.docstatus != 0:
+		return send_error_response(
+			"This order can no longer be modified.",
+			"لا يمكن تعديل هذا الطلب بعد الآن.",
+			{"error": ["This order can no longer be modified."]},
+		)
 
-		errors = {
-			"not_found": ["Invalid or missing voucher code."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	if not voucher_code or not frappe.db.exists("Coupon Code", voucher_code):
+		return send_error_response(
+			"Invalid or missing voucher code.",
+			"رمز القسيمة غير صالح أو مفقود.",
+			{"not_found": ["Invalid or missing voucher code."]},
+		)
 
-	coupon = frappe.get_doc("Coupon Code", voucher_code )
+	coupon = frappe.get_doc("Coupon Code", voucher_code)
+	today_date = getdate(today())
 
-	if coupon.valid_from:
-		if coupon.valid_from > getdate(today()):
-			message_en = "Coupon code validity has not started."
-			message_ar = "رمز القسيمة غير صالح أو مفقود."
+	# --- Validation (independent checks, not elif: each condition is its own gate) ---
+	if coupon.valid_from and getdate(coupon.valid_from) > today_date:
+		return send_error_response(
+			"Coupon code validity has not started.",
+			"لم تبدأ صلاحية رمز القسيمة بعد.",
+			{"validity_issue": ["Coupon code validity has not started."]},
+		)
 
-			errors = {
-				"validity_issue": ["Coupon code validity has not started."]
-			}
-			return send_error_response(message_en, message_ar, errors)
-	elif coupon.valid_upto:
-		if coupon.valid_upto < getdate(today()):
-			message_en = "The coupon code has expired."
-			message_ar = "انتهت صلاحية رمز القسيمة."
+	if coupon.valid_upto and getdate(coupon.valid_upto) < today_date:
+		return send_error_response(
+			"The coupon code has expired.",
+			"انتهت صلاحية رمز القسيمة.",
+			{"expired": ["The coupon code has expired."]},
+		)
 
-			errors = {
-				"expired": ["The coupon code has expired."]
-			}
-			return send_error_response(message_en, message_ar, errors)
-	elif coupon.used >= coupon.maximum_use:
-		message_en = "This coupon is no longer valid."
-		message_ar = "لم تعد هذه القسيمة صالحة."
+	if coupon.maximum_use and (coupon.used or 0) >= coupon.maximum_use:
+		return send_error_response(
+			"This coupon is no longer valid.",
+			"لم تعد هذه القسيمة صالحة.",
+			{"expired": ["This coupon is no longer valid."]},
+		)
 
-		errors = {
-			"expired": ["This coupon is no longer valid."]
-		}
-		return send_error_response(message_en, message_ar, errors)
-
+	# --- Apply the discount from the coupon's linked Pricing Rule ---
+	error = _apply_coupon_discount(order, coupon)
+	if error is not None:
+		return error
 
 	try:
-		order.flags.ignore_permissions = True
 		order.coupon_code = coupon.name
+		order.flags.ignore_permissions = True
 		order.save()
 		frappe.db.commit()
-		message_en = "Order updated successfully."
-		message_ar = "تم تحديث الطلب بنجاح."
-		return send_success_response(message_en, message_ar, order)
-	except Exception as e:
-		message_en = "This coupon is no longer valid."
-		message_ar = "لم تعد هذه القسيمة صالحة."
+	except Exception:
+		frappe.log_error("Apply Voucher Failed")
+		return send_error_response(
+			"Could not apply this coupon. Please try again.",
+			"تعذر تطبيق هذه القسيمة. يرجى المحاولة مرة أخرى.",
+			{"error": ["Could not apply this coupon."]},
+		)
 
-		errors = {
-			"expired": ["This coupon is no longer valid."]
-		}
-		return send_error_response(message_en, message_ar, errors)
+	return send_success_response(
+		"Coupon applied successfully.",
+		"تم تطبيق القسيمة بنجاح.",
+		order,
+	)
+
+
+def _apply_coupon_discount(order, coupon):
+	"""Apply the discount from the coupon's linked Pricing Rule as an ORDER-LEVEL
+	discount (additional_discount_percentage / discount_amount).
+
+	Order-level discount fields are used deliberately so the coupon does not disturb
+	the custom per-meal rates from Dish Plan Pricing (saved with ignore_pricing_rule = 1).
+
+	Returns None on success, or an error response dict on failure.
+	"""
+	if not coupon.pricing_rule:
+		return send_error_response(
+			"This coupon is not configured correctly.",
+			"لم يتم إعداد هذه القسيمة بشكل صحيح.",
+			{"error": ["This coupon is not configured correctly (no pricing rule)."]},
+		)
+
+	pricing_rule = frappe.get_cached_doc("Pricing Rule", coupon.pricing_rule)
+
+	# Reset any previous order-level discount before applying the new one.
+	order.apply_discount_on = pricing_rule.apply_discount_on or "Grand Total"
+	order.additional_discount_percentage = 0
+	order.discount_amount = 0
+
+	if pricing_rule.rate_or_discount == "Discount Percentage":
+		order.additional_discount_percentage = min(flt(pricing_rule.discount_percentage), 100)
+	elif pricing_rule.rate_or_discount == "Discount Amount":
+		order.discount_amount = flt(pricing_rule.discount_amount)
+	else:
+		return send_error_response(
+			"This coupon type is not supported.",
+			"نوع القسيمة هذا غير مدعوم.",
+			{"error": ["This coupon discount type is not supported."]},
+		)
+
+	return None
 
 
 
