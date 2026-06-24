@@ -278,14 +278,7 @@ def apply_voucher_code(order_id, voucher_code):
 
 
 def _apply_coupon_discount(order, coupon):
-	"""Apply the discount from the coupon's linked Pricing Rule as an ORDER-LEVEL
-	discount (additional_discount_percentage / discount_amount).
 
-	Order-level discount fields are used deliberately so the coupon does not disturb
-	the custom per-meal rates from Dish Plan Pricing (saved with ignore_pricing_rule = 1).
-
-	Returns None on success, or an error response dict on failure.
-	"""
 	if not coupon.pricing_rule:
 		return send_error_response(
 			"This coupon is not configured correctly.",

@@ -49,7 +49,7 @@ class SubscriptionDelivery(Document):
 	def fetch_deliveries(self):
 		sales_orders = frappe.get_all(
 			"Sales Order",
-			filters={"subscription_status": "Active", "docstatus": 1},
+			filters={"subscription_status": ["in", ["Active", "Paused"]], "docstatus": 1},
 			pluck="name",
 			order_by="creation asc",
 		)
@@ -100,6 +100,10 @@ class SubscriptionDelivery(Document):
 		Raises on failure so the caller can isolate and skip the order.
 		"""
 		so = frappe.get_doc("Sales Order", so_name)
+
+		for dd in so.delivery_dates:
+			if getdate(dd.delivery_date) == getdate(self.delivery_date) and dd.status == "Paused":
+				return []
 
 		has_delivery = any(
 			getdate(i.delivery_date) == getdate(self.delivery_date) for i in so.items
