@@ -420,6 +420,7 @@ def add_items(order_id, items):
 		row.note = v.get("note", "")
 		row.qty = int(v["qty"]) if v.get("qty") and int(v["qty"]) > 1 else 1
 		row.extra_portion = 1 if v.get("extra_portion") and row.qty > 1 else 0
+		row.is_extra = 0
 
 		if row.meal:
 			row.rate = pricing_plan_meals.get(row.meal)
@@ -438,6 +439,13 @@ def add_items(order_id, items):
 			dates_data[row.delivery_date][row.meal] = 0
 
 		dates_data[row.delivery_date][row.meal] += 1
+
+		# Selections beyond the meal's included maximum (max_qty) are allowed but
+		# flagged as extra: they are still charged at the meal's per-day price, while
+		# the app excludes is_extra items from the calorie count.
+		meal_cfg = meals.get(row.meal)
+		if meal_cfg and meal_cfg.max_qty and dates_data[row.delivery_date][row.meal] > meal_cfg.max_qty:
+			row.is_extra = 1
 
 
 	for d in order.delivery_dates:

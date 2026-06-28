@@ -28,5 +28,6 @@ JOIN `tabDelivery Note` dn
     AND dn.docstatus = 1
 LEFT JOIN item_nutrients_view inv
        ON inv.item = d.item_code
+WHERE COALESCE(d.is_extra, 0) = 0
 GROUP BY d.parent, dn.posting_date, dn.customer, dn.customer_name, dn.subscription, d.meal
 ORDER BY dn.posting_date, d.parent, d.meal;

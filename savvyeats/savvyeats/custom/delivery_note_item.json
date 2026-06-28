@@ -314,6 +314,25 @@
    "translatable": 0,
    "unique": 0,
    "width": null
+  },
+  {
+   "dt": "Delivery Note Item",
+   "fieldname": "is_extra",
+   "fieldtype": "Check",
+   "label": "Is Extra",
+   "default": "0",
+   "insert_after": "extra_portion",
+   "module": "SavvyEats",
+   "name": "Delivery Note Item-is_extra",
+   "description": "Item selected beyond the included meal limit. Charged, but excluded from the calorie count.",
+   "in_list_view": 0,
+   "print_hide": 1,
+   "creation": "2026-06-25 00:37:35.962888",
+   "modified": "2026-06-25 00:37:35.962888",
+   "owner": "Administrator",
+   "modified_by": "Administrator",
+   "docstatus": 0,
+   "translatable": 0
   }
  ],
  "custom_perms": [],

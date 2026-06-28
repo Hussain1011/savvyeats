@@ -8,6 +8,7 @@ SELECT
     d.item_code AS item,
     d.meal,
     d.qty,
+    COALESCE(d.is_extra, 0) AS is_extra,
     CASE WHEN COALESCE(d.extra_portion, 0) = 1 THEN 1 ELSE d.qty END AS qty_multiplier,
 
     -- UOMs
