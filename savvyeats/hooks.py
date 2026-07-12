@@ -188,7 +188,8 @@ scheduler_events = {
 	"daily": [
 		"savvyeats.background_jobs.update_expired_orders",
 		"savvyeats.background_jobs.auto_complete_active_orders",
-		"savvyeats.background_jobs.auto_resume_paused_subscriptions"
+		"savvyeats.background_jobs.auto_resume_paused_subscriptions",
+		"savvyeats.background_jobs.activate_scheduled_subscriptions"
 	],
 	"cron": {
 		"0 15 * * *": [
@@ -206,6 +207,9 @@ scheduler_events = {
 		],
 		"0 0 * * *": [
 			"savvyeats.background_jobs.clear_paused_delivery_items"
+		],
+		"0 20 * * *": [
+			"savvyeats.background_jobs.send_renewal_reminders"
 		]
 	}
 }

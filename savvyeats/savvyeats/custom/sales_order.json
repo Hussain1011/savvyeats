@@ -2476,6 +2476,25 @@
    "modified_by": "Administrator",
    "docstatus": 0,
    "translatable": 0
+  },
+  {
+   "dt": "Sales Order",
+   "fieldname": "renewal_of",
+   "fieldtype": "Link",
+   "options": "Sales Order",
+   "label": "Renewal Of",
+   "insert_after": "subscription_status",
+   "module": "SavvyEats",
+   "name": "Sales Order-renewal_of",
+   "read_only": 1,
+   "no_copy": 1,
+   "description": "For a renewal subscription, links back to the parent (previous) subscription.",
+   "creation": "2026-07-10 02:47:02.062752",
+   "modified": "2026-07-10 02:47:02.062752",
+   "owner": "Administrator",
+   "modified_by": "Administrator",
+   "docstatus": 0,
+   "translatable": 0
   }
  ],
  "custom_perms": [],

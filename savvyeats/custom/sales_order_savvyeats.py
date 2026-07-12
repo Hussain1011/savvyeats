@@ -26,7 +26,17 @@ def preserve_custom_rates(self):
 
 def before_submit(self, method):
 	validate_addresses(self)
-	self.subscription_status = "Active"
+	# Date-aware status: a subscription that starts in the future is "Pending"
+	# (a scheduled pre-renewal); one starting today or earlier is "Active".
+	# This is the single source of truth for subscription_status on submit.
+	# Gated by enable_pre_renewal: while the feature is OFF, everything is Active
+	# (unchanged behaviour) — otherwise a future-dated order would be stuck Pending
+	# because the activation job is also gated by the flag.
+	pre_renewal_on = frappe.db.get_single_value("App Settings", "enable_pre_renewal")
+	if pre_renewal_on and self.start_date and getdate(self.start_date) > getdate():
+		self.subscription_status = "Pending"
+	else:
+		self.subscription_status = "Active"
 
 @frappe.whitelist()
 def update_owner(sales_order, owner):

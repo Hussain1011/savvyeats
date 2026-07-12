@@ -49,7 +49,7 @@ class SubscriptionDelivery(Document):
 	def fetch_deliveries(self):
 		sales_orders = frappe.get_all(
 			"Sales Order",
-			filters={"subscription_status": ["in", ["Active", "Paused"]], "docstatus": 1},
+			filters={"subscription_status": ["in", ["Active", "Paused", "Pending"]], "docstatus": 1},
 			pluck="name",
 			order_by="creation asc",
 		)

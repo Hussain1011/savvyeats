@@ -260,10 +260,11 @@ def notify_incomplete_meal_plans():
 	threshold = frappe.db.get_single_value("App Settings", "meal_reminder_threshold") or 2
 	today = getdate()
 
-	# All active submitted subscriptions
+	# Active and Pending (scheduled renewal) subscriptions — so customers are reminded
+	# to select meals for an upcoming renewal's first deliveries too.
 	orders = frappe.get_all("Sales Order", filters={
 		"docstatus": 1,
-		"subscription_status": "Active",
+		"subscription_status": ["in", ["Active", "Pending"]],
 	}, fields=["name", "owner"])
 
 	for order in orders:
@@ -430,7 +431,7 @@ def notify_unselected_next_delivery():
 
 	orders = frappe.get_all("Sales Order", filters={
 		"docstatus": 1,
-		"subscription_status": "Active",
+		"subscription_status": ["in", ["Active", "Pending"]],
 	}, fields=["name", "owner"])
 
 	for order in orders:
@@ -486,6 +487,93 @@ def notify_unselected_next_delivery():
 		# Send FCM push notification (best effort)
 		try:
 			send_notification_to_user(user, title_en, body_en)
+		except Exception:
+			pass
+
+	frappe.db.commit()
+
+
+def activate_scheduled_subscriptions():
+	"""Pre-Renewal (Issue 9): on its start date, flip a scheduled renewal from
+	Pending -> Active. The previous subscription is completed by
+	auto_complete_active_orders once its actual_end_date passes."""
+	if not frappe.db.get_single_value("App Settings", "enable_pre_renewal"):
+		return
+
+	today = getdate()
+	pending = frappe.get_all("Sales Order", filters={
+		"docstatus": 1,
+		"subscription_status": "Pending",
+		"start_date": ["<=", today],
+	}, pluck="name")
+
+	for name in pending:
+		frappe.db.set_value("Sales Order", name, "subscription_status", "Active", update_modified=True)
+
+	frappe.db.commit()
+
+
+def send_renewal_reminders():
+	"""Pre-Renewal (Issue 9 / BR-8): once per day, remind every customer who is
+	Active, inside renewal_window_days of their actual_end_date, and has no upcoming
+	renewal yet. Backend owns the stop condition (stops once a renewal exists or the
+	subscription ends)."""
+	if not frappe.db.get_single_value("App Settings", "enable_pre_renewal"):
+		return
+
+	window = frappe.db.get_single_value("App Settings", "renewal_window_days") or 7
+	today = getdate()
+	window_end = getdate(add_days(today, window))
+
+	orders = frappe.get_all("Sales Order", filters={
+		"docstatus": 1,
+		"subscription_status": "Active",
+		"actual_end_date": ["between", [today, window_end]],
+	}, fields=["name", "owner", "customer_name", "actual_end_date"])
+
+	for order in orders:
+		# Stop condition: a scheduled renewal already exists for this subscription.
+		has_upcoming = frappe.db.exists("Sales Order", {
+			"renewal_of": order.name,
+			"subscription_status": "Pending",
+			"docstatus": 1,
+		})
+		if has_upcoming:
+			continue
+
+		user = order.owner
+
+		# One reminder per day per subscription.
+		already_notified = frappe.db.exists("Notification Log", {
+			"for_user": user,
+			"type": "Alert",
+			"subject": ["like", f"%renew%{order.name}%"],
+			"creation": [">=", today],
+		})
+		if already_notified:
+			continue
+
+		end_date = getdate(order.actual_end_date)
+		title_en = "Renew Your Subscription"
+		body_en = (
+			f"Your subscription ends on {end_date}. Renew now to keep your meals coming "
+			"with no interruption."
+		)
+
+		notification = frappe.new_doc("Notification Log")
+		notification.for_user = user
+		notification.type = "Alert"
+		notification.subject = f"Time to renew - {order.name}"
+		notification.email_content = body_en
+		notification.flags.ignore_permissions = True
+		notification.insert()
+
+		# Deep link payload routes the app to My Plan / Subscription Details (Renew CTA).
+		try:
+			send_notification_to_user(
+				user, title_en, body_en,
+				data_json=frappe.as_json({"route": "subscription_details", "order": order.name, "action": "renew"}),
+			)
 		except Exception:
 			pass
 

@@ -7,11 +7,28 @@ from savvyeats.api.user import send_error_response, send_success_response
 @frappe.whitelist(methods=["GET"])
 def get_dashboard(today=None):
 	today = getdate(today)
-	orders = frappe.get_all("Sales Order", filters={"docstatus": 1, "owner": frappe.session.user, "status": ["not in", ["Completed", "Cancelled", "Closed"]]})
+	orders = frappe.get_all(
+		"Sales Order",
+		filters={"docstatus": 1, "owner": frappe.session.user, "status": ["not in", ["Completed", "Cancelled", "Closed"]]},
+		order_by="creation asc",
+	)
 	if not orders:
 		return send_success_response("", "", {})
 
-	order = frappe.get_doc("Sales Order", orders[0].name, ignore_permissions=True)
+	# Split the current (Active/Paused) subscription from the upcoming (Pending) renewal.
+	order = None
+	upcoming = None
+	for o in orders:
+		doc = frappe.get_doc("Sales Order", o.name, ignore_permissions=True)
+		if doc.subscription_status == "Pending" and upcoming is None:
+			upcoming = doc
+		elif doc.subscription_status in ("Active", "Paused") and order is None:
+			order = doc
+
+	# No current subscription yet (e.g. only a scheduled renewal exists): return the
+	# upcoming renewal alongside an empty current.
+	if not order:
+		return send_success_response("", "", {"order": {}, "upcoming": upcoming or {}, "dates": {}, "today_delivery": {}})
 
 	for i in order.items:
 		i.image = frappe.db.get_value("Item", i.item_code, "image")
@@ -56,6 +73,6 @@ def get_dashboard(today=None):
 	if deliveries:
 		today_delivery = deliveries[0]
 
-	data = {"order": order, "dates": dates, "today_delivery": today_delivery}
+	data = {"order": order, "upcoming": upcoming or {}, "dates": dates, "today_delivery": today_delivery}
 
 	return send_success_response("", "", data)

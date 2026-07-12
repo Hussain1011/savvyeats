@@ -39,6 +39,10 @@
   "next_delivery_reminder_days_before",
   "column_break_next_delivery",
   "next_delivery_reminder_time",
+  "pre_renewal_section",
+  "enable_pre_renewal",
+  "renewal_window_days",
+  "renewal_cutoff_days",
   "subscriptions_section",
   "enable_pause_subscription_feature",
   "enable_pause_notifications",
@@ -305,6 +309,36 @@
    "fieldname": "next_delivery_reminder_time",
    "fieldtype": "Time",
    "label": "Reminder Time"
+  },
+  {
+   "fieldname": "pre_renewal_section",
+   "fieldtype": "Section Break",
+   "label": "Pre-Renewal"
+  },
+  {
+   "default": "0",
+   "description": "Allow customers to renew (buy the next subscription) before the current one ends. Ships OFF.",
+   "fieldname": "enable_pre_renewal",
+   "fieldtype": "Check",
+   "label": "Enable Pre-Renewal"
+  },
+  {
+   "default": "7",
+   "depends_on": "eval:doc.enable_pre_renewal == 1",
+   "description": "How many days before the subscription end the Renew CTA appears (not a hard cutoff — renewal is allowed up to the last day).",
+   "fieldname": "renewal_window_days",
+   "fieldtype": "Int",
+   "label": "Renewal Window Days",
+   "non_negative": 1
+  },
+  {
+   "default": "4",
+   "depends_on": "eval:doc.enable_pre_renewal == 1",
+   "description": "Zero-gap cutoff. Must be greater than or equal to Buffer Days (kitchen-prep buffer).",
+   "fieldname": "renewal_cutoff_days",
+   "fieldtype": "Int",
+   "label": "Renewal Cutoff Days",
+   "non_negative": 1
   },
   {
    "default": "Standard",

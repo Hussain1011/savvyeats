@@ -106,7 +106,8 @@ def verify_payment(order_id):
 	order = process_order(order)
 
 	order.flags.ignore_permissions = True
-	order.subscription_status = "Active"
+	# Do NOT hard-set Active here — before_submit decides Active vs Pending based on
+	# start_date (a future-dated pre-renewal must submit as Pending).
 	order.submit()
 	user = frappe.session.user
 	frappe.set_user("Administrator")
