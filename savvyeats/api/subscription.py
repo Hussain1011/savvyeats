@@ -3,6 +3,7 @@ from frappe import _
 from frappe.utils import getdate, add_days, date_diff, cint
 from savvyeats.api.user import send_error_response, send_success_response
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, delivery_schedule
+from savvyeats.api.utils import split_current_and_upcoming
 import json
 
 @frappe.whitelist(methods=["GET"])
@@ -13,16 +14,7 @@ def get_current_subscription():
 		order_by="creation asc",
 	)
 
-	current = None
-	upcoming = None
-	for o in orders:
-		doc = frappe.get_doc("Sales Order", o.name, ignore_permissions=True)
-		if doc.subscription_status == "Pending":
-			if upcoming is None:
-				upcoming = doc
-		elif doc.subscription_status in ("Active", "Paused"):
-			if current is None:
-				current = doc
+	current, upcoming = split_current_and_upcoming(orders)
 
 	return send_success_response("", "", {
 		"current": current or {},

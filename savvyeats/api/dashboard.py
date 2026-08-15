@@ -3,6 +3,7 @@ from frappe.utils import getdate, add_to_date, date_diff
 from datetime import timedelta
 from frappe import _
 from savvyeats.api.user import send_error_response, send_success_response
+from savvyeats.api.utils import split_current_and_upcoming
 
 @frappe.whitelist(methods=["GET"])
 def get_dashboard(today=None):
@@ -15,20 +16,12 @@ def get_dashboard(today=None):
 	if not orders:
 		return send_success_response("", "", {})
 
-	# Split the current (Active/Paused) subscription from the upcoming (Pending) renewal.
-	order = None
-	upcoming = None
-	for o in orders:
-		doc = frappe.get_doc("Sales Order", o.name, ignore_permissions=True)
-		if doc.subscription_status == "Pending" and upcoming is None:
-			upcoming = doc
-		elif doc.subscription_status in ("Active", "Paused") and order is None:
-			order = doc
-
-	# No current subscription yet (e.g. only a scheduled renewal exists): return the
-	# upcoming renewal alongside an empty current.
+	# Split the current subscription from the upcoming (Pending) renewal. `order` must
+	# never be emitted as {} — every app build reads a non-null `order` as a real
+	# subscription and renders a blank plan card for an empty one.
+	order, upcoming = split_current_and_upcoming(orders)
 	if not order:
-		return send_success_response("", "", {"order": {}, "upcoming": upcoming or {}, "dates": {}, "today_delivery": {}})
+		return send_success_response("", "", {})
 
 	for i in order.items:
 		i.image = frappe.db.get_value("Item", i.item_code, "image")
@@ -73,6 +66,8 @@ def get_dashboard(today=None):
 	if deliveries:
 		today_delivery = deliveries[0]
 
-	data = {"order": order, "upcoming": upcoming or {}, "dates": dates, "today_delivery": today_delivery}
+	data = {"order": order, "dates": dates, "today_delivery": today_delivery}
+	if upcoming:
+		data["upcoming"] = upcoming
 
 	return send_success_response("", "", data)
