@@ -37,3 +37,28 @@ def split_current_and_upcoming(orders):
 def log_error(error):
 	frappe.log_error(title="SavvyEats App Error", message=str(error))
 	frappe.db.commit()
+
+# --- MY WAY -----------------------------------------------------------------
+# MY WAY is the build-your-own-meal plan: the customer assembles a plate from
+# components (Protein / Carbs / ...) instead of picking a finished dish. It is
+# identified by the plan's ui_type and is gated everywhere it diverges from the
+# dish path, so dish plans keep their exact current behaviour.
+
+MY_WAY_UI_TYPE = "My Way"
+
+# One non-food row per (delivery_date, meal) carries the meal's per_day_price, so
+# the price is charged once per plate instead of once per component. Follows the
+# existing "Item Not Selected" placeholder convention in add_items.
+MY_WAY_MEAL_ITEM_CODE = "MY WAY Meal"
+
+
+def is_my_way_plan(dish_plan):
+	"""True when the Dish Plan is a MY WAY (build-your-own) plan.
+
+	Gate every MY WAY divergence on this, never on the presence of a `grams` key:
+	an old app build sending no grams must still take the dish path unchanged.
+	"""
+	if not dish_plan:
+		return False
+
+	return (frappe.db.get_value("Dish Plan", dish_plan, "ui_type") or "") == MY_WAY_UI_TYPE

@@ -351,6 +351,9 @@ def _copy_renewal_items(current, draft):
 			"note": it.note,
 			"extra_portion": it.extra_portion,
 			"is_extra": it.get("is_extra") or 0,
+			# MY WAY portions: without this a renewed plate comes back with no grams,
+			# which is a blank kitchen ticket and a zeroed macro count.
+			"grams": it.get("grams") or 0,
 		})
 
 

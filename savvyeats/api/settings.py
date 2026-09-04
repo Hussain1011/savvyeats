@@ -1,6 +1,7 @@
 import frappe
 from savvyeats.api.user import send_error_response, send_success_response
 from frappe.utils import flt, cint
+from savvyeats.api.utils import MY_WAY_UI_TYPE
 
 @frappe.whitelist(methods=["GET"], allow_guest=True)
 def get_app_settings():
@@ -75,7 +76,10 @@ def get_setup_data_v2():
 
 		for d in dish_plan.meals:
 			d.doc = frappe.get_cached_doc("Meal", d.meal, ignore_permmission=True)
-		if app_settings.ui_type == "Standard" and dish_plan.ui_type == "Standard":
+		# Standard mode lists the plans the app can render by itself: the dish builder
+		# and, once it is configured and enabled, MY WAY. Ramadan stays out — it is
+		# surfaced through Dish Plan Type mode.
+		if app_settings.ui_type == "Standard" and dish_plan.ui_type in ("Standard", MY_WAY_UI_TYPE):
 			data["dish_plans"].append(dish_plan)
 		elif app_settings.ui_type == "Dish Plan Type":
 			if dish_plan.dish_plan_type and dish_plan.dish_plan_type in dish_plan_types_dict:
