@@ -454,7 +454,7 @@
    "columns": 0,
    "creation": "2025-08-06 12:19:37.347423",
    "default": null,
-   "depends_on": "eval:doc.item_category == 'Dish';",
+   "depends_on": null,
    "description": null,
    "docstatus": 0,
    "dt": "Item",
