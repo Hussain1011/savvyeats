@@ -5,8 +5,9 @@
 
 Two halves, and both matter:
 
-* MY WAY does what it should — plates priced once, portions in grams, no filler
-  rows, no component flagged as an extra, a configurable number of categories.
+* MY WAY does what it should — a plate costs the sum of the components on it,
+  portions are grams, no filler rows, no component flagged as an extra, a
+  configurable number of categories.
 * **Nothing else broke.** The dish path shares add_items with MY WAY, so every run
   also puts a Standard-plan order through it and checks the pricing, the is_extra
   flagging and the filler rows are exactly as they were.
@@ -19,16 +20,19 @@ from unittest.mock import patch
 
 import frappe
 from frappe.tests.utils import FrappeTestCase
-from frappe.utils import add_days, getdate, nowdate
+from frappe.utils import add_days, flt, getdate, nowdate
 
 from savvyeats import patches
 from savvyeats.api import items as items_api
 from savvyeats.api import order as order_api
-from savvyeats.api.utils import MY_WAY_MEAL_ITEM_CODE, is_my_way_plan
+from savvyeats.api.utils import is_my_way_plan
 
 PLAN = "MY WAY Test Plan"
-PER_DAY_PRICE = 45.0
 CATEGORIES = ["Test Protein", "Test Carbs", "Test Fats", "Test Fibers"]
+# Serving sizes are 100 g, 200 g, 300 g, 400 g (index i -> 100 * i), so one serving
+# count exercises four different gram figures at once.
+PRICES = {i: 8.0 + 4.0 * i for i in range(1, len(CATEGORIES) + 1)}
+PORTION_UOM = "Test Portion"
 
 
 class TestMyWay(FrappeTestCase):
@@ -44,7 +48,7 @@ class TestMyWay(FrappeTestCase):
 		cls.customer = frappe.get_all("Customer", pluck="name", limit=1)[0]
 
 		cls.plan = cls._make_plan()
-		patches.setup_my_way(cls.plan, PER_DAY_PRICE, meal_count=3, categories=CATEGORIES)
+		patches.setup_my_way(cls.plan, meal_count=3, categories=CATEGORIES)
 		cls.components = cls._make_components()
 
 	@classmethod
@@ -73,9 +77,26 @@ class TestMyWay(FrappeTestCase):
 		return plan.name
 
 	@classmethod
+	def _price_list(cls):
+		return frappe.db.get_value("Selling Settings", None, "selling_price_list") or "Standard Selling"
+
+	@classmethod
+	def _fractional_uom(cls):
+		"""A portion is fractional, and ERPNext refuses a fractional qty on a whole-number UOM."""
+		if not frappe.db.exists("UOM", PORTION_UOM):
+			frappe.get_doc({
+				"doctype": "UOM",
+				"uom_name": PORTION_UOM,
+				"must_be_whole_number": 0,
+			}).insert(ignore_permissions=True)
+		return PORTION_UOM
+
+	@classmethod
 	def _make_components(cls):
-		template = frappe.get_all("Item", filters={"disabled": 0}, fields=["item_group", "stock_uom"], limit=1)[0]
+		template = frappe.get_all("Item", filters={"disabled": 0}, fields=["item_group"], limit=1)[0]
 		nutrient = frappe.get_all("Nutrient", pluck="name", limit=1)[0]
+		uom = cls._fractional_uom()
+		price_list = cls._price_list()
 
 		components = {}
 		for i, category in enumerate(CATEGORIES, start=1):
@@ -85,7 +106,7 @@ class TestMyWay(FrappeTestCase):
 				"item_code": code,
 				"item_name": code,
 				"item_group": template.item_group,
-				"stock_uom": template.stock_uom,
+				"stock_uom": uom,
 				"item_category": "Ingredient",
 				"is_stock_item": 0,
 				"serving_size": 100 * i,
@@ -97,6 +118,17 @@ class TestMyWay(FrappeTestCase):
 			})
 			item.flags.ignore_mandatory = True
 			item.insert(ignore_permissions=True)
+
+			# The price of one serving. Component pricing makes this the only source
+			# of the plate's price — there is no Dish Plan Pricing behind it.
+			frappe.get_doc({
+				"doctype": "Item Price",
+				"item_code": code,
+				"price_list": price_list,
+				"uom": uom,
+				"price_list_rate": PRICES[i],
+			}).insert(ignore_permissions=True)
+
 			components[category] = code
 
 		return components
@@ -119,15 +151,24 @@ class TestMyWay(FrappeTestCase):
 		order.insert()
 		return order
 
-	def _full_plate(self, meal, date, grams=150):
+	def _full_plate(self, meal, date, servings=1):
+		"""What the app sends: a serving count per component, never grams."""
 		return [
-			{"item_code": self.components[c], "meal": meal, "delivery_date": str(date), "grams": grams}
+			{"item_code": self.components[c], "meal": meal, "delivery_date": str(date), "qty": servings}
 			for c in CATEGORIES
 		]
 
+	def _expected_amount(self, index, servings=1):
+		"""What one component should cost: its serving price x the servings on the plate."""
+		return flt(PRICES[index] * servings, 2)
+
+	def _plate_total(self, servings=1, categories=None):
+		count = len(categories or CATEGORIES)
+		return flt(sum(self._expected_amount(i, servings) for i in range(1, count + 1)), 2)
+
 	# -- MY WAY works -----------------------------------------------------
-	def test_plate_is_priced_once_not_once_per_component(self):
-		"""The 4x trap: per_day_price prices a meal, not each of its components."""
+	def test_a_plate_costs_the_sum_of_its_components(self):
+		"""Component pricing: no meal header row, no per-meal price behind it."""
 		order = self._make_order(self.plan, ["Meal 1", "Meal 2"], [self.d1, self.d2])
 
 		payload = []
@@ -138,13 +179,15 @@ class TestMyWay(FrappeTestCase):
 		order_api.add_items(order.name, payload)
 		order.reload()
 
-		# 2 meals x 2 days = 4 plates. Charging per component would give 720.
-		self.assertEqual(order.grand_total, 4 * PER_DAY_PRICE)
-		self.assertEqual(len([r for r in order.items if r.item_code == MY_WAY_MEAL_ITEM_CODE]), 4)
-		self.assertEqual({r.rate for r in order.items if r.item_code != MY_WAY_MEAL_ITEM_CODE}, {0.0})
+		# 2 meals x 2 days = 4 plates, each the sum of its four components.
+		self.assertEqual(flt(order.grand_total, 2), flt(4 * self._plate_total(), 2))
+		self.assertEqual(len(order.items), 16)
+		self.assertFalse(order.dish_plan_pricing)
+		self.assertEqual([r for r in order.items if r.item_code == "MY WAY Meal"], [])
+		self.assertEqual({r.rate for r in order.items}, set(PRICES.values()))
 
-	def test_a_snack_costs_the_same_as_a_full_plate(self):
-		"""Price attaches to the meal slot, not to how many categories were filled."""
+	def test_a_snack_costs_less_than_a_full_plate(self):
+		"""The point of component pricing: the plate is priced by what is on it."""
 		order = self._make_order(self.plan, ["Meal 1", "Meal 2"], [self.d1])
 
 		payload = self._full_plate("Meal 1", self.d1)
@@ -153,19 +196,85 @@ class TestMyWay(FrappeTestCase):
 		order_api.add_items(order.name, payload)
 		order.reload()
 
-		self.assertEqual(order.grand_total, 2 * PER_DAY_PRICE)
-		self.assertEqual(len([r for r in order.items if r.meal == "Meal 2" and r.grams]), 2)
+		snack = self._plate_total(categories=CATEGORIES[:2])
+		self.assertLess(snack, self._plate_total())
+		self.assertEqual(flt(order.grand_total, 2), flt(self._plate_total() + snack, 2))
+		self.assertEqual(len([r for r in order.items if r.meal == "Meal 2"]), 2)
 
-	def test_grams_are_persisted_and_qty_stays_one(self):
+	def test_qty_is_the_serving_count_and_grams_are_derived(self):
+		"""qty prices the plate; grams are computed from it for the kitchen (BR-2)."""
 		order = self._make_order(self.plan, ["Meal 1"], [self.d1])
-		order_api.add_items(order.name, self._full_plate("Meal 1", self.d1, grams=175))
+		order_api.add_items(order.name, self._full_plate("Meal 1", self.d1, servings=2))
 		order.reload()
 
-		components = [r for r in order.items if r.item_code != MY_WAY_MEAL_ITEM_CODE]
-		self.assertEqual(len(components), 4)
-		self.assertEqual({r.grams for r in components}, {175.0})
-		self.assertEqual({r.qty for r in components}, {1.0})
-		self.assertEqual({r.meal for r in components}, {"Meal 1"})
+		self.assertEqual(len(order.items), 4)
+		self.assertEqual({r.meal for r in order.items}, {"Meal 1"})
+
+		by_code = {r.item_code: r for r in order.items}
+		for i in range(1, len(CATEGORIES) + 1):
+			row = by_code["TEST-COMPONENT-{0}".format(i)]
+			self.assertEqual(row.qty, 2)
+			# two servings of a (100 * i) g component
+			self.assertEqual(row.grams, 200.0 * i)
+			self.assertEqual(row.rate, PRICES[i])
+			self.assertEqual(flt(row.amount, 2), self._expected_amount(i, servings=2))
+
+	def test_an_older_build_sending_grams_still_works(self):
+		"""No qty in the payload: the serving count is derived from the grams instead."""
+		order = self._make_order(self.plan, ["Meal 1"], [self.d1])
+		protein = self.components[CATEGORIES[0]]      # a 100 g serving
+
+		order_api.add_items(order.name, [
+			{"item_code": protein, "meal": "Meal 1", "delivery_date": str(self.d1), "grams": 150},
+		])
+		order.reload()
+
+		row = order.items[0]
+		self.assertEqual(row.grams, 150.0)
+		self.assertEqual(flt(row.qty, 3), 1.5)
+		self.assertEqual(flt(row.amount, 2), flt(PRICES[1] * 1.5, 2))
+
+	def test_a_bigger_portion_costs_more(self):
+		"""Portion size is a price lever now, not just a kitchen instruction."""
+		small = self._make_order(self.plan, ["Meal 1"], [self.d1])
+		order_api.add_items(small.name, self._full_plate("Meal 1", self.d1, servings=1))
+		small.reload()
+
+		large = self._make_order(self.plan, ["Meal 1"], [self.d1])
+		order_api.add_items(large.name, self._full_plate("Meal 1", self.d1, servings=2))
+		large.reload()
+
+		# Whole servings, so this is exact: no portion can land between two prices.
+		self.assertEqual(flt(large.grand_total, 2), flt(2 * small.grand_total, 2))
+
+	def test_an_unpriced_component_fails_the_order(self):
+		"""Falling through to a zero rate would hand the customer the plate for free."""
+		code = "TEST-COMPONENT-UNPRICED"
+		if not frappe.db.exists("Item", code):
+			item = frappe.get_doc({
+				"doctype": "Item",
+				"item_code": code,
+				"item_name": code,
+				"item_group": frappe.db.get_value("Item", self.components[CATEGORIES[0]], "item_group"),
+				"stock_uom": PORTION_UOM,
+				"item_category": "Ingredient",
+				"is_stock_item": 0,
+				"serving_size": 100,
+				"component_category": CATEGORIES[0],
+				"dish_plans": [{"dish_plan": self.plan}],
+			})
+			item.flags.ignore_mandatory = True
+			item.insert(ignore_permissions=True)
+
+		order = self._make_order(self.plan, ["Meal 1"], [self.d1])
+		response = order_api.add_items(order.name, [
+			{"item_code": code, "meal": "Meal 1", "delivery_date": str(self.d1), "qty": 1},
+		])
+		order.reload()
+
+		self.assertEqual(response["status"], "error")
+		self.assertIn("component_price_not_configured", response["errors"])
+		self.assertEqual(order.items, [])
 
 	def test_no_component_is_flagged_as_an_extra(self):
 		"""Components 2..N share a meal; flagging them would drop them from the macros."""
@@ -189,13 +298,13 @@ class TestMyWay(FrappeTestCase):
 		protein = self.components[CATEGORIES[0]]
 
 		order_api.add_items(order.name, [
-			{"item_code": protein, "meal": "Meal 1", "delivery_date": str(self.d1), "grams": 70},
-			{"item_code": protein, "meal": "Meal 1", "delivery_date": str(self.d1), "grams": 90},
+			{"item_code": protein, "meal": "Meal 1", "delivery_date": str(self.d1), "qty": 1},
+			{"item_code": protein, "meal": "Meal 1", "delivery_date": str(self.d1), "qty": 3},
 		])
 		order.reload()
 
-		components = [r for r in order.items if r.item_code != MY_WAY_MEAL_ITEM_CODE]
-		self.assertEqual([r.grams for r in components], [90.0])
+		self.assertEqual([r.qty for r in order.items], [3.0])
+		self.assertEqual([r.grams for r in order.items], [300.0])
 
 	def test_get_plan_components_returns_the_catalogue(self):
 		order = self._make_order(self.plan, ["Meal 1"], [self.d1])
@@ -205,8 +314,12 @@ class TestMyWay(FrappeTestCase):
 		self.assertEqual([c["label"] for c in categories], CATEGORIES)
 		self.assertTrue(all(c["required"] for c in categories))
 
-		component = categories[0]["items"][0]
+		component = [
+			c for c in categories[0]["items"] if c["item_code"] == self.components[CATEGORIES[0]]
+		][0]
 		self.assertEqual(component["serving_size"], 100.0)
+		# The builder shows the same per-serving price the order is charged at.
+		self.assertEqual(component["price"], PRICES[1])
 		# 250 over a 100 g serving, derived because the import left per_gram blank.
 		self.assertEqual(component["doc"]["nutrients"][0]["per_gram"], 2.5)
 
