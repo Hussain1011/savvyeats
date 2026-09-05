@@ -1,10 +1,11 @@
 import frappe
 from frappe import _
-from frappe.utils import getdate, today, flt
+from frappe.utils import getdate, today, flt, cint
 from savvyeats.api.user import send_error_response, send_success_response
 import json
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
-from savvyeats.api.utils import MY_WAY_MEAL_ITEM_CODE, is_my_way_plan
+from savvyeats.api.utils import is_my_way_plan
+from erpnext.stock.get_item_details import get_item_price
 
 def validate_sales_order(order_id):
 	try:
@@ -309,6 +310,52 @@ def _apply_coupon_discount(order, coupon):
 
 
 
+def _reprice_my_way_draft(order):
+	"""Re-price a draft MY WAY order after a component swap.
+
+	Component pricing means a swap can change what the plate costs, and update_items
+	writes its rows with db.set_value — the only way to touch a submitted order — so
+	nothing recalculates the totals on its own. On a draft, re-save the order and let
+	ERPNext recompute them from the new components. A **submitted** order is left
+	alone on purpose: that plate is already paid for, and swapping chicken for beef
+	is a kitchen instruction, not a re-billing event.
+	"""
+	doc = frappe.get_doc("Sales Order", order.name)
+	changed = False
+
+	for row in doc.items:
+		meta = frappe.db.get_value(
+			"Item", row.item_code, ["serving_size", "stock_uom", "component_category"], as_dict=True
+		)
+		if not meta or not meta.component_category:
+			continue
+
+		price = _component_price(doc, row.item_code, meta.stock_uom)
+		if price is None:
+			continue
+
+		# The serving count is what the customer chose; a swap keeps it and moves the
+		# grams to the new component's serving size.
+		grams = flt(row.qty * flt(meta.serving_size)) or flt(row.grams)
+		if row.rate == price and row.grams == grams:
+			continue
+
+		row.grams = grams
+		row.rate = price
+		row.price_list_rate = price
+		changed = True
+
+	if not changed:
+		return
+
+	doc.ignore_pricing_rule = 1
+	doc.flags.ignore_permissions = True
+	doc.flags.ignore_mandatory = True
+	doc.flags.ignore_addresses = True
+	doc.flags.rates_set_by_api = True
+	doc.save()
+
+
 @frappe.whitelist(methods=["POST"])
 def update_items(order_id, items):
 	order = validate_sales_order(order_id)
@@ -323,10 +370,24 @@ def update_items(order_id, items):
 
 		# A swapped MY WAY component brings its own portion. Without this the row keeps
 		# the grams of the component it replaced, which the kitchen would then pack.
+		# Portions step by whole servings, so it is the row's serving count that
+		# carries over and the grams move to the new component's serving size.
+		row_qty = flt(frappe.db.get_value("Sales Order Item", d["name"], "qty")) or 1
+
+		# Re-portioning changes what the plate costs, so it is only honoured while the
+		# order is still a draft. On a submitted order a swap is a kitchen instruction,
+		# not a re-billing event — see _reprice_my_way_draft.
+		if d.get("qty") and order.docstatus == 0:
+			row_qty = max(cint(d.get("qty")), 1)
+			frappe.db.set_value("Sales Order Item", d["name"], "qty", row_qty)
+
 		if "grams" in d:
 			frappe.db.set_value("Sales Order Item", d["name"], "grams", flt(d.get("grams")))
 		elif item.serving_size and frappe.db.get_value("Sales Order Item", d["name"], "grams"):
-			frappe.db.set_value("Sales Order Item", d["name"], "grams", flt(item.serving_size))
+			frappe.db.set_value("Sales Order Item", d["name"], "grams", flt(row_qty * item.serving_size))
+
+	if order.docstatus == 0 and is_my_way_plan(order.dish_plan):
+		_reprice_my_way_draft(order)
 
 	frappe.db.commit()
 
@@ -413,17 +474,83 @@ def _add_dish_plan_items(order, items, meals, meals_list, pricing_plan_meals):
 					row.price_list_rate = row.rate
 
 
-def _add_my_way_items(order, items, meals_list, pricing_plan_meals):
+def _component_price(order, item_code, uom):
+	"""Selling price of one serving of a MY WAY component, or None if it has none.
+
+	Resolved exactly the way the builder catalogue resolves it
+	(`api/items.get_plan_components`), so the price the customer is shown while
+	building the plate is the price the plate is charged at (BR-7).
+	"""
+	price_list = order.selling_price_list or frappe.db.get_value(
+		"Selling Settings", None, "selling_price_list"
+	)
+	price_row = get_item_price(
+		{"price_list": price_list, "transaction_date": getdate(), "uom": uom}, item_code
+	)
+	if price_row:
+		return flt(price_row[0][1])
+
+	standard_rate = frappe.db.get_value("Item", item_code, "standard_rate")
+	return flt(standard_rate) if standard_rate else None
+
+
+def _portion_qty(grams, serving_size):
+	"""A gram figure expressed as a multiple of the component's serving size.
+
+	Only for payloads that carry grams and no qty — an app build older than portion
+	stepping. The portion may not land on a whole serving there, hence the fraction.
+	"""
+	grams = flt(grams)
+	serving_size = flt(serving_size)
+	if not grams or not serving_size:
+		return 1
+
+	qty = flt(grams / serving_size, frappe.get_precision("Sales Order Item", "qty"))
+	# A portion that rounds away to nothing would trip ERPNext's zero-qty validation
+	# and take the whole order down with it.
+	return qty or 1
+
+
+def _portion(payload, meta):
+	"""How many servings the customer asked for, and how many grams that is.
+
+	Portions step by whole servings — a 50 g component is offered as 50 / 100 / 150 /
+	200 g — so the app sends `qty` as a count of servings and the grams follow from
+	it. That keeps the rate the plain per-serving price from the price list and the
+	amount ERPNext's own rate x qty.
+
+	`grams` is still the number the kitchen packs and the macros scale by (BR-2), but
+	it is *derived* here rather than taken from the payload, so the two can never
+	disagree about the same portion. An app build older than portion stepping sends
+	grams and no qty; that path still works, fraction and all.
+	"""
+	serving_size = flt(meta.get("serving_size"))
+
+	if payload.get("qty"):
+		qty = max(cint(payload.get("qty")), 1)
+		return qty, (flt(qty * serving_size) or flt(payload.get("grams")))
+
+	grams = flt(payload.get("grams")) or serving_size
+	return _portion_qty(grams, serving_size), grams
+
+
+def _add_my_way_items(order, items, meals_list):
 	"""Build the item rows for a MY WAY (build-your-own) order.
 
-	Three things the dish path does are deliberately not done here:
+	MY WAY is priced at the **component** level: each component carries its own Item
+	Price and a plate costs the sum of what is actually on it, so a two-component
+	snack is genuinely cheaper than a four-component main meal. Four consequences,
+	all deliberate:
 
-	* **The per-row rate assignment.** `per_day_price` prices one *meal*, and a dish
-	  meal is one row, so charging every row is correct there. A MY WAY meal is N
-	  component rows in the same meal, so the same rule would bill a plate N times.
-	  One header row per (delivery_date, meal) carries the price instead and the
-	  components ride at zero, which keeps the total right however many categories
-	  a plate happens to have.
+	* **No meal header row and no Dish Plan Pricing.** `per_day_price` prices a meal
+	  *slot*, which on top of priced components would bill every plate twice. An
+	  order's `grand_total` is already nothing but sum(rate x qty) over its rows, so
+	  the components alone are the whole price — MY WAY needs no pricing document,
+	  and none of the combinatorial "one pricing per meal count" problem with it.
+	* **qty is the serving count.** Portions step by whole servings, so qty is how
+	  many servings are on the plate and the rate stays the per-serving catalogue
+	  price the app shows in the builder. `grams` (qty x serving_size) still carries
+	  the portion the kitchen packs and the macros scale by.
 	* **`is_extra` flagging.** A dish meal holds one item; a MY WAY meal holds one
 	  per category. Flagging components 2..N as extras would bill them separately
 	  and drop them from the calorie count — the number the feature exists to show.
@@ -433,15 +560,18 @@ def _add_my_way_items(order, items, meals_list, pricing_plan_meals):
 
 	Returns an error response dict when the order cannot be priced, else None.
 	"""
-	# Categories come from the Item, never from the payload: BR-1 (one component per
-	# category per meal) is a server-side rule and the client is not trusted with it.
+	# Category, serving size and UOM all come from the Item, never from the payload:
+	# BR-1 (one component per category per meal) is a server-side rule and BR-7 makes
+	# the price ours to compute. The client is trusted with neither.
 	item_codes = {v["item_code"] for v in items if v.get("item_code")}
-	categories = {}
+	item_meta = {}
 	if item_codes:
 		for r in frappe.get_all(
-			"Item", filters={"name": ["in", list(item_codes)]}, fields=["name", "component_category"]
+			"Item",
+			filters={"name": ["in", list(item_codes)]},
+			fields=["name", "component_category", "serving_size", "stock_uom"],
 		):
-			categories[r.name] = r.component_category
+			item_meta[r.name] = r
 
 	plates = {}
 	loose = []
@@ -452,64 +582,101 @@ def _add_my_way_items(order, items, meals_list, pricing_plan_meals):
 			continue
 
 		if not meal:
-			# Add-ons and anything else not tied to a meal: no plate, no meal price,
-			# and the rate is left for ERPNext to resolve from the price list.
+			# Add-ons and anything else not tied to a meal: no plate, and the rate is
+			# left for ERPNext to resolve from the price list.
 			loose.append(v)
 			continue
 
 		delivery_date = getdate(v["delivery_date"])
 		plate = plates.setdefault((delivery_date, meal), {})
+		meta = item_meta.get(v["item_code"]) or frappe._dict()
 		# BR-1, last write wins. Falling back to the item code keeps an uncategorised
 		# component rather than collapsing it into whatever else has no category.
-		plate[categories.get(v["item_code"]) or v["item_code"]] = v
+		plate[meta.get("component_category") or v["item_code"]] = v
 
-	if plates:
-		# A meal with no per-day price would fall through to the price list and bill
-		# the plate at whatever the header item happens to cost — usually nothing.
-		unpriced = sorted({meal for (_date, meal) in plates if pricing_plan_meals.get(meal) is None})
-		if unpriced:
-			message_en = "No per-day price is configured for: {0}.".format(", ".join(unpriced))
-			message_ar = "لا يوجد سعر يومي مهيأ لـ: {0}.".format("، ".join(unpriced))
-			return send_error_response(
-				message_en, message_ar, {"meal_price_not_configured": [message_en]}
-			)
-
-		if not frappe.db.exists("Item", MY_WAY_MEAL_ITEM_CODE):
-			message_en = "Item '{0}' is missing. MY WAY orders cannot be priced without it.".format(
-				MY_WAY_MEAL_ITEM_CODE
-			)
-			message_ar = "الصنف '{0}' غير موجود. لا يمكن تسعير طلبات MY WAY بدونه.".format(
-				MY_WAY_MEAL_ITEM_CODE
-			)
-			return send_error_response(
-				message_en, message_ar, {"my_way_meal_item_missing": [message_en]}
-			)
-
+	rows = []
 	for (delivery_date, meal), components in plates.items():
-		header = order.append("items")
-		header.item_code = MY_WAY_MEAL_ITEM_CODE
-		header.meal = meal
-		header.delivery_date = delivery_date
-		header.qty = 1
-		header.extra_portion = 0
-		header.is_extra = 0
-		header.rate = pricing_plan_meals.get(meal)
-		header.price_list_rate = header.rate
-
 		for v in components.values():
-			row = order.append("items")
-			row.item_code = v["item_code"]
-			row.meal = meal
-			row.delivery_date = delivery_date
-			row.note = v.get("note", "")
-			# BR-2: qty stays a portion count of 1 whatever the portion is; grams
-			# carry the size and are what the kitchen and the macros read.
-			row.qty = 1
-			row.grams = flt(v.get("grams"))
-			row.extra_portion = 0
-			row.is_extra = 0
-			row.rate = 0
-			row.price_list_rate = 0
+			meta = item_meta.get(v["item_code"]) or frappe._dict()
+			qty, grams = _portion(v, meta)
+			rows.append(frappe._dict({
+				"item": v,
+				"meta": meta,
+				"meal": meal,
+				"delivery_date": delivery_date,
+				"grams": grams,
+				"qty": qty,
+			}))
+
+	# Under component pricing an unpriced component is not a cosmetic problem: the
+	# row falls through to zero and the customer is handed that part of the plate for
+	# free. Fail the whole order instead of quietly under-charging it.
+	prices = {}
+	unpriced = set()
+	for code in {r.item.get("item_code") for r in rows}:
+		price = _component_price(order, code, (item_meta.get(code) or frappe._dict()).get("stock_uom"))
+		if price is None:
+			unpriced.add(code)
+		else:
+			prices[code] = price
+
+	if unpriced:
+		codes = ", ".join(sorted(unpriced))
+		message_en = "No price is configured for: {0}.".format(codes)
+		message_ar = "لا يوجد سعر مهيأ لـ: {0}.".format(codes)
+		return send_error_response(
+			message_en, message_ar, {"component_price_not_configured": [message_en]}
+		)
+
+	# Serving counts are whole numbers, so this only bites the grams-only path above.
+	# ERPNext refuses a fractional qty outright on a whole-number UOM; say it here,
+	# naming the setup that has to change, rather than letting save() throw an error
+	# that points at the UOM alone.
+	fractional_uoms = {
+		r.meta.get("stock_uom")
+		for r in rows
+		if r.meta.get("stock_uom") and cint(r.qty) != r.qty
+	}
+	whole_number_uoms = set()
+	if fractional_uoms:
+		whole_number_uoms = set(frappe.get_all(
+			"UOM",
+			filters={"name": ["in", list(fractional_uoms)], "must_be_whole_number": 1},
+			pluck="name",
+		))
+
+	if whole_number_uoms:
+		offenders = ", ".join(sorted({
+			r.item["item_code"] for r in rows if r.meta.get("stock_uom") in whole_number_uoms
+		}))
+		uoms = ", ".join(sorted(whole_number_uoms))
+		message_en = (
+			"A portion needs a fractional quantity, but the UOM of {0} must be a whole "
+			"number. Give these components a UOM such as Gram, or clear 'Must be Whole "
+			"Number' on UOM {1}."
+		).format(offenders, uoms)
+		message_ar = (
+			"الحصة تحتاج كمية كسرية، لكن وحدة القياس للأصناف {0} يجب أن تكون رقماً صحيحاً. "
+			"استخدم وحدة مثل الجرام لهذه المكونات، أو أزل خيار 'يجب أن يكون رقماً صحيحاً' من وحدة القياس {1}."
+		).format(offenders, uoms)
+		return send_error_response(
+			message_en, message_ar, {"component_uom_not_fractional": [message_en]}
+		)
+
+	for r in rows:
+		row = order.append("items")
+		row.item_code = r.item["item_code"]
+		row.meal = r.meal
+		row.delivery_date = r.delivery_date
+		row.note = r.item.get("note", "")
+		# BR-2: grams stay authoritative for the kitchen and the macros; qty carries
+		# the same portion in a shape ERPNext can price.
+		row.grams = r.grams
+		row.qty = r.qty
+		row.extra_portion = 0
+		row.is_extra = 0
+		row.rate = prices[r.item["item_code"]]
+		row.price_list_rate = row.rate
 
 	for v in loose:
 		row = order.append("items")
@@ -575,24 +742,28 @@ def add_items(order_id, items):
 
 	
 	selected_meals = {m.meal for m in order.meals if m.meal}
+	my_way = is_my_way_plan(order.dish_plan)
 
-	pricing_name = None
-	if selected_meals and not is_my_way_plan(order.dish_plan):
-		# MY WAY has no maximum meals per day, so matching a Dish Plan Pricing by its
-		# exact meal set would need one pricing document per possible meal count —
-		# unbounded, and a missing one falls through to default_pricing_plan at a
-		# silently wrong price. MY WAY is priced per meal at a flat rate, so it goes
-		# straight to the plan's default pricing.
-		pricing_name = get_pricing_for_required_meals(order.dish_plan, selected_meals)
+	pricing_plan_meals = {}
 
-	if not pricing_name:
-		pricing_name = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
+	if my_way:
+		# MY WAY is priced per component, so it has no Dish Plan Pricing to look up —
+		# and matching one by exact meal set could not work anyway: with no maximum
+		# meals per day that needs one pricing document per possible meal count.
+		order.dish_plan_pricing = None
+	else:
+		pricing_name = None
+		if selected_meals:
+			pricing_name = get_pricing_for_required_meals(order.dish_plan, selected_meals)
 
-	order.dish_plan_pricing = pricing_name
+		if not pricing_name:
+			pricing_name = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
 
-	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
+		order.dish_plan_pricing = pricing_name
 
-	pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
+		pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
+
+		pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
 
 	order.items = []
 
@@ -604,8 +775,8 @@ def add_items(order_id, items):
 
 	meals_list = [d.meal for d in order.meals]
 
-	if is_my_way_plan(order.dish_plan):
-		error = _add_my_way_items(order, items, meals_list, pricing_plan_meals)
+	if my_way:
+		error = _add_my_way_items(order, items, meals_list)
 		if error:
 			return error
 	else:

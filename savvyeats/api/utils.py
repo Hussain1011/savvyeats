@@ -46,11 +46,6 @@ def log_error(error):
 
 MY_WAY_UI_TYPE = "My Way"
 
-# One non-food row per (delivery_date, meal) carries the meal's per_day_price, so
-# the price is charged once per plate instead of once per component. Follows the
-# existing "Item Not Selected" placeholder convention in add_items.
-MY_WAY_MEAL_ITEM_CODE = "MY WAY Meal"
-
 
 def is_my_way_plan(dish_plan):
 	"""True when the Dish Plan is a MY WAY (build-your-own) plan.

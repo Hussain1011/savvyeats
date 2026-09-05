@@ -139,7 +139,8 @@ class SubscriptionDelivery(Document):
 				"meal": i.meal,
 				"note": i.note,
 				"qty": i.qty,
-				# MY WAY components are all qty 1 — grams is what the kitchen packs.
+				# A MY WAY component's qty is its portion multiple (grams / serving size);
+				# grams is the number the kitchen actually packs.
 				"grams": i.get("grams") or 0,
 				"delivery_note": dn.name,
 				"delivery_note_item": i.name,

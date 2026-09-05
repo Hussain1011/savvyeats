@@ -33,22 +33,27 @@ def update_item_kitchen_name():
 
 
 # --- MY WAY setup -----------------------------------------------------------
-# MY WAY is configuration, not code: the categories, the meal slots and the meal
-# header item are all records. These helpers create them idempotently so a site
-# can be brought up (or a category added) without hand-building a dozen documents.
+# MY WAY is configuration, not code: the categories and the meal slots are records.
+# These helpers create them idempotently so a site can be brought up (or a category
+# added) without hand-building a dozen documents. Pricing is not among them — MY WAY
+# is priced per component, straight off each component's Item Price.
 # Run with: bench --site <site> execute savvyeats.patches.setup_my_way --kwargs "{...}"
 
 MY_WAY_DEFAULT_CATEGORIES = ["Protein", "Carbs", "Fats", "Fibers"]
 
 
-def setup_my_way(dish_plan, per_day_price, meal_count=12, categories=None):
-	"""Configure a Dish Plan for MY WAY: categories, meal slots, pricing, header item.
+def setup_my_way(dish_plan, meal_count=12, categories=None):
+	"""Configure a Dish Plan for MY WAY: component categories and meal slots.
 
 	`meal_count` is a seeding decision, not a limit — the client set no maximum meals
 	per day, so running out is a config task (raise it and re-run), never a code
 	change. The app renders whatever Dish Plan.meals contains.
+
+	No pricing is created. MY WAY costs the sum of the components on the plate, so
+	the price lives on each component's Item Price and a Dish Plan Pricing would only
+	double-charge; any per-meal pricing left over from an earlier run is retired here.
 	"""
-	from savvyeats.api.utils import MY_WAY_MEAL_ITEM_CODE, MY_WAY_UI_TYPE
+	from savvyeats.api.utils import MY_WAY_UI_TYPE
 
 	plan = frappe.get_doc("Dish Plan", dish_plan)
 	if plan.ui_type != MY_WAY_UI_TYPE:
@@ -64,8 +69,6 @@ def setup_my_way(dish_plan, per_day_price, meal_count=12, categories=None):
 				"required": 1,
 				"enabled": 1,
 			}).insert(ignore_permissions=True)
-
-	create_my_way_meal_item()
 
 	# max_qty has to clear the category count: the dish path flags every selection
 	# past it as an extra, which for a plate would mean components 2..N.
@@ -91,88 +94,49 @@ def setup_my_way(dish_plan, per_day_price, meal_count=12, categories=None):
 				"mandatory": 0,
 				"min_qty": 0,
 				"max_qty": max_qty,
-				"per_day_price": per_day_price,
+				"per_day_price": 0,
 			})
+
+	# A per-meal price on a MY WAY slot is a number nothing charges any more, and the
+	# app would still show it next to a plate whose real price is its components.
+	for m in plan.meals:
+		m.per_day_price = 0
 
 	plan.save(ignore_permissions=True)
 
-	pricing_name = create_my_way_pricing(plan, per_day_price, meal_count)
-	if plan.default_pricing_plan != pricing_name:
-		frappe.db.set_value("Dish Plan", plan.name, "default_pricing_plan", pricing_name)
+	retired = retire_my_way_pricing(plan.name)
 
 	frappe.db.commit()
 
-	return {"dish_plan": plan.name, "pricing": pricing_name, "meals": int(meal_count), "max_qty": max_qty}
+	return {
+		"dish_plan": plan.name,
+		"meals": int(meal_count),
+		"max_qty": max_qty,
+		"retired_pricing": retired,
+	}
 
 
-def create_my_way_pricing(plan, per_day_price, meal_count):
-	"""One pricing document for the whole plan, every meal at the same per-day price.
+def retire_my_way_pricing(dish_plan):
+	"""Take a MY WAY plan off per-meal pricing, without deleting anything.
 
-	MY WAY has no maximum meals per day, so pricing cannot be matched by exact meal
-	set the way dish plans are — that needs one document per possible meal count.
-	add_items skips the set match for MY WAY and reads this as default_pricing_plan.
+	Sites configured before component pricing carry a "MY WAY-<plan>" Dish Plan
+	Pricing and a default_pricing_plan pointing at it. add_items ignores both for MY
+	WAY now, but get_setup_data_v2 would keep serving them to the app as if a plate
+	had a flat per-meal price. Disable rather than delete: the rows are still the
+	record of what the plan used to charge.
 	"""
-	pricing_name = "MY WAY-{0}".format(plan.name)
+	retired = []
 
-	if frappe.db.exists("Dish Plan Pricing", pricing_name):
-		pricing = frappe.get_doc("Dish Plan Pricing", pricing_name)
-		pricing.meals = []
-	else:
-		pricing = frappe.new_doc("Dish Plan Pricing")
-		pricing.pricing_name = "MY WAY"
-		pricing.dish_plan = plan.name
+	for name in frappe.get_all(
+		"Dish Plan Pricing", filters={"dish_plan": dish_plan, "enabled": 1}, pluck="name"
+	):
+		frappe.db.set_value("Dish Plan Pricing", name, "enabled", 0)
+		retired.append(name)
 
-	pricing.enabled = 1
-	for i in range(1, int(meal_count) + 1):
-		pricing.append("meals", {
-			"meal": "Meal {0}".format(i),
-			"mandatory": 0,
-			"min_qty": 0,
-			"max_qty": 1,
-			"per_day_price": per_day_price,
-		})
+	if frappe.db.get_value("Dish Plan", dish_plan, "default_pricing_plan"):
+		frappe.db.set_value("Dish Plan", dish_plan, "default_pricing_plan", None)
 
-	pricing.save(ignore_permissions=True)
-
-	return pricing.name
-
-
-def create_my_way_meal_item():
-	"""The non-food row that carries a plate's price, one per (delivery date, meal).
-
-	Modelled on the existing "Item Not Selected" placeholder: not stocked, not sold
-	on its own. Show it on the kitchen ticket as the meal heading; suppress it on the
-	customer-facing delivery label and menu.
-	"""
-	from savvyeats.api.utils import MY_WAY_MEAL_ITEM_CODE
-
-	if frappe.db.exists("Item", MY_WAY_MEAL_ITEM_CODE):
-		return MY_WAY_MEAL_ITEM_CODE
-
-	# Follow whatever the placeholder item already uses on this site, so the new row
-	# lands in the same item group and UOM as the one add_items already inserts.
-	template = frappe.db.get_value(
-		"Item", "Item Not Selected", ["item_group", "stock_uom"], as_dict=True
-	) or frappe._dict()
-
-	item = frappe.new_doc("Item")
-	item.item_code = MY_WAY_MEAL_ITEM_CODE
-	item.item_name = MY_WAY_MEAL_ITEM_CODE
-	item.item_group = template.get("item_group") or frappe.db.get_single_value(
-		"Stock Settings", "item_group"
-	) or "All Item Groups"
-	item.stock_uom = template.get("stock_uom") or frappe.db.get_single_value(
-		"Stock Settings", "stock_uom"
-	) or "Nos"
-	item.item_category = "Dish"
-	item.is_stock_item = 0
-	item.is_sales_item = 1
-	item.is_purchase_item = 0
-	item.include_item_in_manufacturing = 0
-	item.description = "MY WAY meal. Carries the per-meal price; the components under it are priced at zero."
-	item.insert(ignore_permissions=True)
-
-	return item.name
+	return retired
 
 
 def backfill_component_per_gram():
