@@ -270,6 +270,25 @@
    "modified_by": "Administrator",
    "docstatus": 0,
    "translatable": 0
+  },
+  {
+   "dt": "Sales Order Item",
+   "fieldname": "grams",
+   "fieldtype": "Float",
+   "label": "Grams",
+   "insert_after": "note",
+   "module": "SavvyEats",
+   "name": "Sales Order Item-grams",
+   "in_list_view": 0,
+   "creation": "2026-09-04 10:00:00.000000",
+   "modified": "2026-09-04 10:00:00.000000",
+   "owner": "Administrator",
+   "modified_by": "Administrator",
+   "docstatus": 0,
+   "translatable": 0,
+   "allow_on_submit": 1,
+   "description": "MY WAY portion in grams. Authoritative for nutrition and the kitchen; qty stays 1.",
+   "print_hide": 0
   }
  ],
  "custom_perms": [],

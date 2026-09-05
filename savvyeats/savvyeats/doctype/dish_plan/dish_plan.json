@@ -195,7 +195,7 @@
    "fieldname": "ui_type",
    "fieldtype": "Select",
    "label": "UI Type",
-   "options": "Standard\nRamadan"
+   "options": "Standard\nRamadan\nMy Way"
   },
   {
    "fieldname": "description",
@@ -226,7 +226,7 @@
    "link_fieldname": "dish_plan"
   }
  ],
- "modified": "2026-01-22 15:59:33.508312",
+ "modified": "2026-09-04 10:00:00.000000",
  "modified_by": "Administrator",
  "module": "SavvyEats",
  "name": "Dish Plan",

@@ -4,6 +4,7 @@ from frappe.utils import getdate, today, flt
 from savvyeats.api.user import send_error_response, send_success_response
 import json
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery, validate_addresses
+from savvyeats.api.utils import MY_WAY_MEAL_ITEM_CODE, is_my_way_plan
 
 def validate_sales_order(order_id):
 	try:
@@ -320,6 +321,13 @@ def update_items(order_id, items):
 		frappe.db.set_value("Sales Order Item", d["name"], "item_name", item.item_name)
 		frappe.db.set_value("Sales Order Item", d["name"], "description", item.description)
 
+		# A swapped MY WAY component brings its own portion. Without this the row keeps
+		# the grams of the component it replaced, which the kitchen would then pack.
+		if "grams" in d:
+			frappe.db.set_value("Sales Order Item", d["name"], "grams", flt(d.get("grams")))
+		elif item.serving_size and frappe.db.get_value("Sales Order Item", d["name"], "grams"):
+			frappe.db.set_value("Sales Order Item", d["name"], "grams", flt(item.serving_size))
+
 	frappe.db.commit()
 
 	message_en = "Order updated successfully."
@@ -328,83 +336,12 @@ def update_items(order_id, items):
 	return send_success_response(message_en, message_ar, order)
 
 
-@frappe.whitelist(methods=["POST"])
-def add_items(order_id, items):
-	order = validate_sales_order(order_id)
-	if isinstance(order, dict):
-		return order
+def _add_dish_plan_items(order, items, meals, meals_list, pricing_plan_meals):
+	"""Build the item rows for a dish-plan order.
 
-	def get_pricing_for_required_meals(dish_plan, selected_meals):
-		"""Return name of Dish Plan Pricing whose mandatory meals set matches selected_meals."""
-		if not dish_plan or not selected_meals:
-			return None
-
-		# get all enabled pricing for this dish plan
-		pricing_names = frappe.get_all(
-			"Dish Plan Pricing",
-			filters={
-				"dish_plan": dish_plan,
-				"enabled": 1,
-				"docstatus": ["<", 2],
-			},
-			pluck="name",
-		)
-
-		matches = []
-
-		for name in pricing_names:
-			pricing = frappe.get_cached_doc("Dish Plan Pricing", name)
-
-			# required meals for this pricing = those with mandatory == 1
-			required_meals = {row.meal for row in pricing.meals}
-
-			if required_meals == selected_meals:
-				matches.append(name)
-
-		if not matches:
-			return None
-
-		if len(matches) > 1:
-			# Ideally this never happens if you enforce uniqueness in Dish Plan Pricing
-			frappe.throw(
-				_(
-					"Multiple Dish Plan Pricings found for Dish Plan {dish_plan} "
-					"with required meals: {meals}. Please fix duplicates."
-				).format(
-					dish_plan=dish_plan,
-					meals=", ".join(sorted(selected_meals)),
-				)
-			)
-
-		return matches[0]
-
-
-	
-	selected_meals = {m.meal for m in order.meals if m.meal}
-
-	pricing_name = None
-	if selected_meals:
-		pricing_name = get_pricing_for_required_meals(order.dish_plan, selected_meals)
-
-	if not pricing_name:
-		pricing_name = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
-
-	order.dish_plan_pricing = pricing_name
-
-	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
-
-	pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
-
-	order.items = []
-
-	dish_plan = frappe.get_cached_doc("Dish Plan", order.dish_plan)
-	meals = {}
-
-	for m in dish_plan.meals:
-		meals[m.meal] = m
-
-	meals_list = [d.meal for d in order.meals]
-
+	Lifted verbatim out of add_items so the MY WAY build can sit beside it rather
+	than be threaded through it. Behaviour is unchanged.
+	"""
 	dates = []
 	dates_data = {}
 	for v in items:
@@ -474,6 +411,205 @@ def add_items(order_id, items):
 					row.qty = 1
 					row.rate = pricing_plan_meals.get(i)
 					row.price_list_rate = row.rate
+
+
+def _add_my_way_items(order, items, meals_list, pricing_plan_meals):
+	"""Build the item rows for a MY WAY (build-your-own) order.
+
+	Three things the dish path does are deliberately not done here:
+
+	* **The per-row rate assignment.** `per_day_price` prices one *meal*, and a dish
+	  meal is one row, so charging every row is correct there. A MY WAY meal is N
+	  component rows in the same meal, so the same rule would bill a plate N times.
+	  One header row per (delivery_date, meal) carries the price instead and the
+	  components ride at zero, which keeps the total right however many categories
+	  a plate happens to have.
+	* **`is_extra` flagging.** A dish meal holds one item; a MY WAY meal holds one
+	  per category. Flagging components 2..N as extras would bill them separately
+	  and drop them from the calorie count — the number the feature exists to show.
+	* **Filler "Item Not Selected" rows.** A snack legitimately carries fewer
+	  categories than a main meal, so padding every meal out to max_qty would invent
+	  phantom lines. The app blocks checkout until each day is complete.
+
+	Returns an error response dict when the order cannot be priced, else None.
+	"""
+	# Categories come from the Item, never from the payload: BR-1 (one component per
+	# category per meal) is a server-side rule and the client is not trusted with it.
+	item_codes = {v["item_code"] for v in items if v.get("item_code")}
+	categories = {}
+	if item_codes:
+		for r in frappe.get_all(
+			"Item", filters={"name": ["in", list(item_codes)]}, fields=["name", "component_category"]
+		):
+			categories[r.name] = r.component_category
+
+	plates = {}
+	loose = []
+
+	for v in items:
+		meal = v.get("meal", "")
+		if meal and meal not in meals_list:
+			continue
+
+		if not meal:
+			# Add-ons and anything else not tied to a meal: no plate, no meal price,
+			# and the rate is left for ERPNext to resolve from the price list.
+			loose.append(v)
+			continue
+
+		delivery_date = getdate(v["delivery_date"])
+		plate = plates.setdefault((delivery_date, meal), {})
+		# BR-1, last write wins. Falling back to the item code keeps an uncategorised
+		# component rather than collapsing it into whatever else has no category.
+		plate[categories.get(v["item_code"]) or v["item_code"]] = v
+
+	if plates:
+		# A meal with no per-day price would fall through to the price list and bill
+		# the plate at whatever the header item happens to cost — usually nothing.
+		unpriced = sorted({meal for (_date, meal) in plates if pricing_plan_meals.get(meal) is None})
+		if unpriced:
+			message_en = "No per-day price is configured for: {0}.".format(", ".join(unpriced))
+			message_ar = "لا يوجد سعر يومي مهيأ لـ: {0}.".format("، ".join(unpriced))
+			return send_error_response(
+				message_en, message_ar, {"meal_price_not_configured": [message_en]}
+			)
+
+		if not frappe.db.exists("Item", MY_WAY_MEAL_ITEM_CODE):
+			message_en = "Item '{0}' is missing. MY WAY orders cannot be priced without it.".format(
+				MY_WAY_MEAL_ITEM_CODE
+			)
+			message_ar = "الصنف '{0}' غير موجود. لا يمكن تسعير طلبات MY WAY بدونه.".format(
+				MY_WAY_MEAL_ITEM_CODE
+			)
+			return send_error_response(
+				message_en, message_ar, {"my_way_meal_item_missing": [message_en]}
+			)
+
+	for (delivery_date, meal), components in plates.items():
+		header = order.append("items")
+		header.item_code = MY_WAY_MEAL_ITEM_CODE
+		header.meal = meal
+		header.delivery_date = delivery_date
+		header.qty = 1
+		header.extra_portion = 0
+		header.is_extra = 0
+		header.rate = pricing_plan_meals.get(meal)
+		header.price_list_rate = header.rate
+
+		for v in components.values():
+			row = order.append("items")
+			row.item_code = v["item_code"]
+			row.meal = meal
+			row.delivery_date = delivery_date
+			row.note = v.get("note", "")
+			# BR-2: qty stays a portion count of 1 whatever the portion is; grams
+			# carry the size and are what the kitchen and the macros read.
+			row.qty = 1
+			row.grams = flt(v.get("grams"))
+			row.extra_portion = 0
+			row.is_extra = 0
+			row.rate = 0
+			row.price_list_rate = 0
+
+	for v in loose:
+		row = order.append("items")
+		row.item_code = v["item_code"]
+		row.meal = ""
+		row.delivery_date = getdate(v["delivery_date"])
+		row.note = v.get("note", "")
+		row.qty = int(v["qty"]) if v.get("qty") and int(v["qty"]) > 1 else 1
+		row.extra_portion = 1 if v.get("extra_portion") and row.qty > 1 else 0
+		row.is_extra = 0
+
+
+@frappe.whitelist(methods=["POST"])
+def add_items(order_id, items):
+	order = validate_sales_order(order_id)
+	if isinstance(order, dict):
+		return order
+
+	def get_pricing_for_required_meals(dish_plan, selected_meals):
+		"""Return name of Dish Plan Pricing whose mandatory meals set matches selected_meals."""
+		if not dish_plan or not selected_meals:
+			return None
+
+		# get all enabled pricing for this dish plan
+		pricing_names = frappe.get_all(
+			"Dish Plan Pricing",
+			filters={
+				"dish_plan": dish_plan,
+				"enabled": 1,
+				"docstatus": ["<", 2],
+			},
+			pluck="name",
+		)
+
+		matches = []
+
+		for name in pricing_names:
+			pricing = frappe.get_cached_doc("Dish Plan Pricing", name)
+
+			# required meals for this pricing = those with mandatory == 1
+			required_meals = {row.meal for row in pricing.meals}
+
+			if required_meals == selected_meals:
+				matches.append(name)
+
+		if not matches:
+			return None
+
+		if len(matches) > 1:
+			# Ideally this never happens if you enforce uniqueness in Dish Plan Pricing
+			frappe.throw(
+				_(
+					"Multiple Dish Plan Pricings found for Dish Plan {dish_plan} "
+					"with required meals: {meals}. Please fix duplicates."
+				).format(
+					dish_plan=dish_plan,
+					meals=", ".join(sorted(selected_meals)),
+				)
+			)
+
+		return matches[0]
+
+
+	
+	selected_meals = {m.meal for m in order.meals if m.meal}
+
+	pricing_name = None
+	if selected_meals and not is_my_way_plan(order.dish_plan):
+		# MY WAY has no maximum meals per day, so matching a Dish Plan Pricing by its
+		# exact meal set would need one pricing document per possible meal count —
+		# unbounded, and a missing one falls through to default_pricing_plan at a
+		# silently wrong price. MY WAY is priced per meal at a flat rate, so it goes
+		# straight to the plan's default pricing.
+		pricing_name = get_pricing_for_required_meals(order.dish_plan, selected_meals)
+
+	if not pricing_name:
+		pricing_name = frappe.db.get_value("Dish Plan", order.dish_plan, "default_pricing_plan")
+
+	order.dish_plan_pricing = pricing_name
+
+	pricing_plan = frappe.get_cached_doc("Dish Plan Pricing", order.dish_plan_pricing)
+
+	pricing_plan_meals = {p.meal: p.per_day_price for p in pricing_plan.meals}
+
+	order.items = []
+
+	dish_plan = frappe.get_cached_doc("Dish Plan", order.dish_plan)
+	meals = {}
+
+	for m in dish_plan.meals:
+		meals[m.meal] = m
+
+	meals_list = [d.meal for d in order.meals]
+
+	if is_my_way_plan(order.dish_plan):
+		error = _add_my_way_items(order, items, meals_list, pricing_plan_meals)
+		if error:
+			return error
+	else:
+		_add_dish_plan_items(order, items, meals, meals_list, pricing_plan_meals)
 
 	order.ignore_pricing_rule = 1
 	order.flags.ignore_permissions = True

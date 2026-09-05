@@ -333,6 +333,25 @@
    "modified_by": "Administrator",
    "docstatus": 0,
    "translatable": 0
+  },
+  {
+   "dt": "Delivery Note Item",
+   "fieldname": "grams",
+   "fieldtype": "Float",
+   "label": "Grams",
+   "insert_after": "note",
+   "module": "SavvyEats",
+   "name": "Delivery Note Item-grams",
+   "in_list_view": 0,
+   "creation": "2026-09-04 10:00:00.000000",
+   "modified": "2026-09-04 10:00:00.000000",
+   "owner": "Administrator",
+   "modified_by": "Administrator",
+   "docstatus": 0,
+   "translatable": 0,
+   "allow_on_submit": 1,
+   "description": "MY WAY portion in grams, carried from the Sales Order Item.",
+   "print_hide": 0
   }
  ],
  "custom_perms": [],
