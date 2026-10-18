@@ -160,7 +160,14 @@ override_doctype_class = {
 # ---------------
 # Hook on document methods and events
 
+# Subscription Dashboard: attach a staff-created Customer to the app user who signs
+# up / logs in with the same mobile number. Kept out of savvyeats.api on purpose.
+on_login = ["savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.link_customer_on_login"]
+
 doc_events = {
+	"User": {
+		"after_insert": "savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.link_customer_on_signup"
+	},
 	"Address": {
 		"validate": "savvyeats.custom.address_savvyeats.validate"
 	},
