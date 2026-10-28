@@ -10,6 +10,30 @@
 const SWB_API = "savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.";
 const SWB_FULL_FLOW = false;
 
+// Qatar only for now: an 8-digit mobile starting with 3, 5, 6 or 7, sent to the
+// server as +974XXXXXXXX.
+const SWB_COUNTRY_CODE = "974";
+
+// Mirror of normalize_mobile on the server: the local 8-digit part.
+function swb_local_mobile(value) {
+	let digits = String(value || "").replace(/\D/g, "");
+	if (digits.startsWith("00")) digits = digits.slice(2);
+	if (digits.startsWith(SWB_COUNTRY_CODE) && digits.length > 8) digits = digits.slice(SWB_COUNTRY_CODE.length);
+	return digits;
+}
+
+function swb_mobile_error(local) {
+	if (!local) return __("Enter the customer's mobile no.");
+	if (local.length !== 8) return __("Mobile no must be 8 digits.");
+	if (!/^[3567]/.test(local)) return __("Qatar mobile numbers start with 3, 5, 6 or 7.");
+	return null;
+}
+
+function swb_format_mobile(value) {
+	const local = swb_local_mobile(value);
+	return swb_mobile_error(local) ? value : `+${SWB_COUNTRY_CODE} ${local.slice(0, 4)} ${local.slice(4)}`;
+}
+
 frappe.pages["subscription-dashboard"].on_page_load = function (wrapper) {
 	const page = frappe.ui.make_app_page({
 		parent: wrapper,
@@ -123,11 +147,24 @@ class SubscriptionDashboard {
 		const changed = () => this.refresh();
 		this.new_customer = this.field_group("customer-new", [
 			{ fieldtype: "Data", fieldname: "customer_name", label: __("Full Name"), reqd: 1, onchange: changed },
-			{ fieldtype: "Data", fieldname: "mobile_no", label: __("Mobile No"), options: "Phone", reqd: 1, onchange: changed },
+			{ fieldtype: "Data", fieldname: "mobile_no", label: __("Mobile No"), reqd: 1, description: __("Qatar mobile, 8 digits") },
 			{ fieldtype: "Column Break" },
 			{ fieldtype: "Data", fieldname: "email_id", label: __("Email"), options: "Email" },
 			{ fieldtype: "Link", fieldname: "gender", label: __("Gender"), options: "Gender" },
 		]);
+		const mobile = this.new_customer.get_field("mobile_no");
+		mobile.$input
+			.attr({ inputmode: "numeric", autocomplete: "tel-national", placeholder: "5555 1234" })
+			.wrap('<div class="swb-phone"></div>')
+			.before(`<span>+${SWB_COUNTRY_CODE}</span>`)
+			.on("input", () => {
+				// Digits only, and a pasted "+974 5555 1234" keeps just the local part.
+				const local = swb_local_mobile(mobile.$input.val()).slice(0, 8);
+				if (mobile.$input.val() !== local) mobile.$input.val(local);
+				mobile.$wrapper.toggleClass("has-error", local.length === 8 && !!swb_mobile_error(local));
+				this.refresh();
+			})
+			.on("blur", () => mobile.$wrapper.toggleClass("has-error", !!mobile.$input.val() && !!swb_mobile_error(this.new_mobile())));
 		this.existing_customer = this.field_group("customer-existing", [
 			{
 				fieldtype: "Link",
@@ -140,6 +177,16 @@ class SubscriptionDashboard {
 			},
 		]);
 		this.$("mode").on("click", "button", (e) => this.set_mode($(e.currentTarget).data("mode")));
+	}
+
+	new_mobile() {
+		return swb_local_mobile(this.new_customer.get_field("mobile_no").$input.val());
+	}
+
+	// Read from the input, not the control value, which only updates on change.
+	new_customer_values() {
+		const local = this.new_mobile();
+		return { ...(this.new_customer.get_values(true) || {}), mobile_no: local ? `+${SWB_COUNTRY_CODE}${local}` : "" };
 	}
 
 	set_mode(mode) {
@@ -179,13 +226,15 @@ class SubscriptionDashboard {
 					<div class="swb-avatar">${frappe.get_abbr(c.customer_name)}</div>
 					<div>
 						<div class="swb-strong">${frappe.utils.escape_html(c.customer_name)}</div>
-						<div class="swb-muted">${[c.mobile_no, c.email_id].filter(Boolean).map(frappe.utils.escape_html).join(" · ") || __("No contact details")}</div>
+						<div class="swb-muted">${[c.mobile_no && swb_format_mobile(c.mobile_no), c.email_id].filter(Boolean).map(frappe.utils.escape_html).join(" · ") || __("No contact details")}</div>
 						<div class="swb-small">${
 							c.user
 								? `<span class="indicator-pill green">${__("App account linked")}</span>`
-								: c.mobile_no
-									? `<span class="indicator-pill orange">${__("No app account yet — links on signup with {0}", [frappe.utils.escape_html(c.mobile_no)])}</span>`
-									: `<span class="indicator-pill red">${__("No mobile no — cannot link to the app")}</span>`
+								: !c.mobile_no
+									? `<span class="indicator-pill red">${__("No mobile no — cannot link to the app")}</span>`
+									: swb_mobile_error(swb_local_mobile(c.mobile_no))
+										? `<span class="indicator-pill red">${__("Not a valid Qatar mobile no — cannot link to the app")}</span>`
+										: `<span class="indicator-pill orange">${__("No app account yet — links on signup with {0}", [frappe.utils.escape_html(swb_format_mobile(c.mobile_no))])}</span>`
 						}</div>
 					</div>
 					<a class="swb-muted" href="/app/customer/${encodeURIComponent(c.name)}" target="_blank">${__("Open")}</a>
@@ -487,7 +536,7 @@ class SubscriptionDashboard {
 		const contact = this.contact.get_values(true) || {};
 		return {
 			customer: this.mode === "existing" ? this.existing_customer.get_value("customer") || null : null,
-			new_customer: this.mode === "new" ? this.new_customer.get_values(true) : null,
+			new_customer: this.mode === "new" ? this.new_customer_values() : null,
 			dish_plan: plan.dish_plan,
 			meals: [...this.meals],
 			week_plan: plan.week_plan,
@@ -508,15 +557,23 @@ class SubscriptionDashboard {
 	customer_errors() {
 		if (this.mode === "existing") {
 			if (!this.customer) return [__("Select a customer.")];
-			if (!SWB_FULL_FLOW && !this.customer.user && !this.customer.mobile_no) {
-				return [__("Add a mobile no to this customer first, so the draft can reach their app.")];
+			if (!SWB_FULL_FLOW && !this.customer.user) {
+				if (!this.customer.mobile_no) return [__("Add a mobile no to this customer first, so the draft can reach their app.")];
+				if (swb_mobile_error(swb_local_mobile(this.customer.mobile_no))) {
+					return [
+						__("Mobile no {0} on this customer is not a valid Qatar mobile. Fix it on the customer first, so the draft can reach their app.", [
+							frappe.utils.escape_html(this.customer.mobile_no),
+						]),
+					];
+				}
 			}
 			return [];
 		}
 		const c = this.new_customer.get_values(true) || {};
 		const errors = [];
 		if (!c.customer_name) errors.push(__("Enter the customer's full name."));
-		if (!c.mobile_no) errors.push(__("Enter the customer's mobile no."));
+		const mobile_error = swb_mobile_error(this.new_mobile());
+		if (mobile_error) errors.push(mobile_error);
 		return errors;
 	}
 
@@ -631,7 +688,7 @@ class SubscriptionDashboard {
 
 	render_draft_summary() {
 		const esc = frappe.utils.escape_html;
-		const c = this.mode === "existing" ? this.customer : this.new_customer.get_values(true) || {};
+		const c = this.mode === "existing" ? this.customer : this.new_customer_values();
 		const errors = [...this.customer_errors(), ...this.address_errors()];
 		const draft = this.mode === "existing" && this.customer && this.customer.draft_order;
 		const address_count = this.addresses.size + this.new_addresses.length;
@@ -641,7 +698,7 @@ class SubscriptionDashboard {
 			<div class="swb-card-head">${__("Draft Subscription")}</div>
 			<div class="swb-card-body">
 				${row(__("Customer"), c && c.customer_name && esc(c.customer_name))}
-				${row(__("Mobile No"), c && c.mobile_no && esc(c.mobile_no))}
+				${row(__("Mobile No"), c && c.mobile_no && esc(swb_format_mobile(c.mobile_no)))}
 				${row(__("Addresses"), address_count)}
 				${draft ? row(__("Open draft"), `<a href="/app/sales-order/${encodeURIComponent(draft)}">${esc(draft)}</a>`) : ""}
 				<div class="swb-muted swb-small">${
@@ -666,7 +723,7 @@ class SubscriptionDashboard {
 			args: {
 				data: {
 					customer: this.payload_customer(),
-					new_customer: this.mode === "new" ? this.new_customer.get_values(true) : null,
+					new_customer: this.mode === "new" ? this.new_customer_values() : null,
 					addresses: [...this.addresses],
 					new_addresses: this.new_addresses,
 				},
@@ -693,7 +750,7 @@ class SubscriptionDashboard {
 				<p class="swb-muted">${
 					o.user
 						? __("The customer already has an app account — the draft is in their app now.")
-						: __("It appears in the app once the customer signs up or logs in with mobile no {0}.", [`<b>${esc(o.mobile_no || "")}</b>`])
+						: __("It appears in the app once the customer signs up or logs in with mobile no {0}.", [`<b>${esc(swb_format_mobile(o.mobile_no || ""))}</b>`])
 				}</p>
 				${this.order_link_box(o.name)}
 				<div class="swb-success-actions">
@@ -787,6 +844,9 @@ const SWB_CSS = `
 .swb-success-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0; text-align:left; }
 .swb-success-grid div { padding:10px 12px; border-radius:8px; background:var(--control-bg); display:flex; flex-direction:column; }
 .swb-success-grid small { color:var(--text-muted); }
+.swb-phone { display:flex; align-items:stretch; }
+.swb-phone > span { display:flex; align-items:center; padding:0 10px; border-radius:var(--border-radius, 6px) 0 0 var(--border-radius, 6px); background:var(--control-bg); border-right:1px solid var(--border-color); color:var(--text-muted); font-size:var(--text-sm, 13px); }
+.swb-phone > input { border-top-left-radius:0; border-bottom-left-radius:0; }
 .swb-link { display:flex; gap:8px; align-items:center; margin:0 0 16px; padding:6px 6px 6px 12px; border-radius:8px; background:var(--control-bg); }
 .swb-link input { flex:1; min-width:0; border:0; background:transparent; color:var(--text-color); font-size:var(--text-sm, 13px); outline:none; }
 .swb-success-actions { display:flex; gap:8px; justify-content:center; }

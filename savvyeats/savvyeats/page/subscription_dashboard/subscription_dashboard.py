@@ -29,6 +29,8 @@ from savvyeats.api.order import _add_dish_plan_items
 from savvyeats.api.utils import MY_WAY_UI_TYPE
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery
 
+# Qatar only for now; customers are stored as +974XXXXXXXX.
+COUNTRY_CODE = "974"
 WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
@@ -133,8 +135,10 @@ def create_draft_subscription(data):
 
 	customer = _get_or_create_customer(data)
 	cust = frappe.db.get_value("Customer", customer, ["customer_name", "mobile_no", "user"], as_dict=True)
-	if not cust.user and not cust.mobile_no:
-		frappe.throw(_("Customer {0} has no mobile no, so the draft could never reach their app.").format(customer))
+	if not cust.user and mobile_error(normalize_mobile(cust.mobile_no)):
+		frappe.throw(
+			_("Customer {0} needs a valid Qatar mobile no, so the draft can reach their app.").format(customer)
+		)
 
 	addresses = _resolve_addresses(data, customer, cust.customer_name, cust.mobile_no) if has_addresses else []
 
@@ -391,18 +395,16 @@ def _get_or_create_customer(data):
 
 	details = frappe._dict(data.get("new_customer") or {})
 	customer_name = (details.customer_name or "").strip()
-	# Stored the way the app stores User.mobile_no, so signup can match on it.
 	mobile_no = normalize_mobile(details.mobile_no)
 	email_id = (details.email_id or "").strip()
 
 	if not customer_name:
 		frappe.throw(_("Customer Name is required."))
-	if not mobile_no:
-		frappe.throw(_("Mobile No is required."))
+	error = mobile_error(mobile_no)
+	if error:
+		frappe.throw(error)
 
-	existing = frappe.db.get_value(
-		"Customer", {"mobile_no": ["in", [mobile_no, "974" + mobile_no, "+974" + mobile_no]]}, "name"
-	)
+	existing = frappe.db.get_value("Customer", {"mobile_no": ["in", mobile_variants(mobile_no)]}, "name")
 	if existing:
 		frappe.throw(
 			_("Customer {0} already has mobile no {1}. Select the existing customer instead.").format(
@@ -415,7 +417,9 @@ def _get_or_create_customer(data):
 	customer.customer_type = "Individual"
 	customer.gender = details.gender or None
 	# Customer.on_update turns these into the primary Contact.
-	customer.mobile_no = mobile_no
+	# With the country code; link_customer_by_mobile matches it against the app's
+	# 8-digit User.mobile_no through mobile_variants.
+	customer.mobile_no = "+" + COUNTRY_CODE + mobile_no
 	customer.email_id = email_id or None
 	customer.insert()
 	return customer.name
@@ -547,9 +551,25 @@ def normalize_mobile(mobile_no):
 	digits = "".join(c for c in (mobile_no or "") if c.isdigit())
 	if digits.startswith("00"):
 		digits = digits[2:]
-	if digits.startswith("974") and len(digits) > 8:
-		digits = digits[3:]
+	if digits.startswith(COUNTRY_CODE) and len(digits) > 8:
+		digits = digits[len(COUNTRY_CODE):]
 	return digits
+
+
+def mobile_error(local):
+	"""Why a local number is not a Qatar mobile (8 digits, starting 3, 5, 6 or 7), else None."""
+	if not local:
+		return _("Mobile No is required.")
+	if len(local) != 8:
+		return _("Mobile No must be 8 digits.")
+	if local[0] not in "3567":
+		return _("Qatar mobile numbers start with 3, 5, 6 or 7.")
+	return None
+
+
+def mobile_variants(local):
+	"""The ways a Customer's mobile_no may hold the same number."""
+	return [local, COUNTRY_CODE + local, "+" + COUNTRY_CODE + local, "+" + COUNTRY_CODE + "-" + local]
 
 
 def link_customer_on_signup(doc, method=None):
@@ -595,7 +615,7 @@ def link_customer_by_mobile(user):
 			for name in frappe.get_all(
 				"Customer",
 				filters={
-					"mobile_no": ["in", [mobile, "974" + mobile, "+974" + mobile]],
+					"mobile_no": ["in", mobile_variants(mobile)],
 					"user": ["is", "not set"],
 					"disabled": 0,
 				},
