@@ -1,9 +1,10 @@
 // Page: Subscription Dashboard
 // Staff create a subscription on a customer's behalf.
-// Phase 1 (live): create or pick a customer -> empty draft subscription, which the
-// customer finishes in the app once they sign up with the same mobile number.
-// Full flow (plan, addresses, preferences -> priced draft) is built but hidden until
-// a later phase; set SWB_FULL_FLOW to true to show it.
+// Phase 1 (live): create or pick a customer, optionally with delivery addresses ->
+// draft subscription with no plan, which the customer finishes in the app once they
+// sign up with the same mobile number.
+// Full flow (plan, preferences -> priced draft) is built but hidden until a later
+// phase; set SWB_FULL_FLOW to true to show it.
 // Server API: savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.*
 
 const SWB_API = "savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.";
@@ -58,7 +59,9 @@ class SubscriptionDashboard {
 						<div data-role="customer-new"></div>
 						<div data-role="customer-existing"></div>
 						<div data-role="customer-profile"></div>`)}
-					${SWB_FULL_FLOW ? this.full_flow_cards() : ""}
+					${SWB_FULL_FLOW ? this.plan_card() : ""}
+					${this.address_card(SWB_FULL_FLOW ? 3 : 2)}
+					${SWB_FULL_FLOW ? this.preference_card() : ""}
 				</div>
 				<div class="swb-side"><div class="swb-card swb-summary" data-role="summary"></div></div>
 			</div>
@@ -69,31 +72,36 @@ class SubscriptionDashboard {
 		if (SWB_FULL_FLOW) {
 			this.make_plan_section();
 			this.make_preference_section();
-			this.$("add-address").on("click", () => this.edit_new_address());
 		}
+		this.$("add-address").on("click", () => this.edit_new_address());
 		this.set_mode("new");
 		this.refresh();
 	}
 
-	full_flow_cards() {
-		return `
-					${this.card(2, __("Plan"), `
-						<div data-role="plan"></div>
-						<div class="swb-label">${__("Meals")}</div>
-						<div class="swb-chips" data-role="meals"></div>
-						<div class="swb-hint" data-role="plan-hint"></div>`)}
-					${this.card(3, __("Delivery Addresses"), `
-						<div class="swb-days" data-role="coverage"></div>
-						<div class="swb-addresses" data-role="addresses"></div>
-						<button class="btn btn-default btn-sm" data-role="add-address">
-							${frappe.utils.icon("add", "sm")} ${__("Add address")}
-						</button>`)}
-					${this.card(4, __("Preferences"), `
-						<div class="swb-label">${__("Allergens")}</div>
-						<div class="swb-chips" data-role="allergens"></div>
-						<div class="swb-label">${__("Health Goals")}</div>
-						<div class="swb-chips" data-role="health_goals"></div>
-						<div data-role="contact"></div>`)}`;
+	plan_card() {
+		return this.card(2, __("Plan"), `
+			<div data-role="plan"></div>
+			<div class="swb-label">${__("Meals")}</div>
+			<div class="swb-chips" data-role="meals"></div>
+			<div class="swb-hint" data-role="plan-hint"></div>`);
+	}
+
+	address_card(step) {
+		return this.card(step, SWB_FULL_FLOW ? __("Delivery Addresses") : __("Delivery Addresses (optional)"), `
+			<div class="swb-days" data-role="coverage"></div>
+			<div class="swb-addresses" data-role="addresses"></div>
+			<button class="btn btn-default btn-sm" data-role="add-address">
+				${frappe.utils.icon("add", "sm")} ${__("Add address")}
+			</button>`);
+	}
+
+	preference_card() {
+		return this.card(4, __("Preferences"), `
+			<div class="swb-label">${__("Allergens")}</div>
+			<div class="swb-chips" data-role="allergens"></div>
+			<div class="swb-label">${__("Health Goals")}</div>
+			<div class="swb-chips" data-role="health_goals"></div>
+			<div data-role="contact"></div>`);
 	}
 
 	card(step, title, body) {
@@ -345,6 +353,10 @@ class SubscriptionDashboard {
 	}
 
 	uncovered_days() {
+		if (!SWB_FULL_FLOW) {
+			const p = this.local_coverage();
+			return this.setup.week_days.filter((day) => !p || !p.coverage[day].length);
+		}
 		const p = this.preview;
 		if (!p || !p.needed_days) return [];
 		return p.needed_days.filter((day) => !p.coverage[day].length);
@@ -395,8 +407,32 @@ class SubscriptionDashboard {
 		});
 	}
 
+	// Phase 1 has no plan to preview, so coverage is worked out here from the picked
+	// addresses; with no needed_days, every day an address covers counts as needed.
+	local_coverage() {
+		const existing = ((this.mode === "existing" && this.customer && this.customer.addresses) || []).filter((a) =>
+			this.addresses.has(a.name)
+		);
+		const sources = existing
+			.map((a) => [a.address_title || a.name, a.delivery_days])
+			.concat(this.new_addresses.map((a) => [a.address_title || __("New address"), a.delivery_days || []]));
+		if (!sources.length) return null;
+
+		const coverage = Object.fromEntries(this.setup.week_days.map((day) => [day, []]));
+		sources.forEach(([label, days]) => days.forEach((day) => coverage[day] && coverage[day].push(label)));
+		return { coverage, needed_days: null };
+	}
+
+	address_errors() {
+		const p = this.local_coverage();
+		if (!p) return [];
+		return this.setup.week_days
+			.filter((day) => p.coverage[day].length > 1)
+			.map((day) => frappe.utils.escape_html(__("{0} is set on more than one address: {1}.", [__(day), p.coverage[day].join(", ")])));
+	}
+
 	render_coverage() {
-		const p = this.preview;
+		const p = SWB_FULL_FLOW ? this.preview : this.local_coverage();
 		if (!p || !p.coverage) {
 			this.$("coverage").html("");
 			return;
@@ -405,7 +441,7 @@ class SubscriptionDashboard {
 			this.setup.week_days
 				.map((day) => {
 					const owners = p.coverage[day];
-					const needed = p.needed_days.includes(day);
+					const needed = p.needed_days ? p.needed_days.includes(day) : owners.length > 0;
 					const state = owners.length > 1 ? "clash" : needed ? (owners.length ? "ok" : "missing") : "off";
 					const tip = owners.length ? owners.join(", ") : needed ? __("No address") : __("No delivery");
 					return `<div class="swb-day ${state}" title="${frappe.utils.escape_html(tip)}">
@@ -487,11 +523,11 @@ class SubscriptionDashboard {
 	// Re-render what depends on local state now, then re-price on the server.
 	refresh() {
 		this.render_customer_profile();
+		this.render_addresses();
+		this.render_coverage();
 		if (!SWB_FULL_FLOW) return this.render_draft_summary();
 
 		this.render_meals();
-		this.render_addresses();
-		this.render_coverage();
 		this.render_summary();
 
 		clearTimeout(this._preview_timer);
@@ -573,13 +609,14 @@ class SubscriptionDashboard {
 			<div class="swb-card swb-success">
 				<div class="swb-success-icon">${frappe.utils.icon("check", "lg")}</div>
 				<h3>${__("Subscription created")}</h3>
-				<p class="swb-muted">${__("{0} was saved as a draft for {1}.", [`<b>${esc(o.name)}</b>`, `<b>${esc(o.customer_name)}</b>`])}</p>
+				<p class="swb-muted">${__("{0} was saved as a draft for {1}.", [this.order_anchor(o.name), `<b>${esc(o.customer_name)}</b>`])}</p>
 				<div class="swb-success-grid">
 					<div><small>${__("Pricing")}</small><b>${esc(o.dish_plan_pricing)}</b></div>
 					<div><small>${__("Dates")}</small><b>${frappe.datetime.str_to_user(o.start_date)} → ${frappe.datetime.str_to_user(o.end_date)}</b></div>
 					<div><small>${__("Deliveries")}</small><b>${o.delivery_count}</b></div>
 					<div><small>${__("Grand Total")}</small><b>${fmt(o.grand_total)}</b></div>
 				</div>
+				${this.order_link_box(o.name)}
 				<div class="swb-success-actions">
 					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Sales Order")}</a>
 					<button class="btn btn-default" data-role="again">${__("Create another")}</button>
@@ -587,6 +624,7 @@ class SubscriptionDashboard {
 			</div>
 		`);
 		this.$body.find('[data-role="again"]').on("click", () => this.reset());
+		this.bind_order_link(o.name);
 	}
 
 	// ---------- phase 1: draft only ----------
@@ -594,8 +632,9 @@ class SubscriptionDashboard {
 	render_draft_summary() {
 		const esc = frappe.utils.escape_html;
 		const c = this.mode === "existing" ? this.customer : this.new_customer.get_values(true) || {};
-		const errors = this.customer_errors();
+		const errors = [...this.customer_errors(), ...this.address_errors()];
 		const draft = this.mode === "existing" && this.customer && this.customer.draft_order;
+		const address_count = this.addresses.size + this.new_addresses.length;
 		const row = (label, value) => `<div class="swb-row"><span>${label}</span><span>${value || "—"}</span></div>`;
 
 		this.$("summary").html(`
@@ -603,15 +642,18 @@ class SubscriptionDashboard {
 			<div class="swb-card-body">
 				${row(__("Customer"), c && c.customer_name && esc(c.customer_name))}
 				${row(__("Mobile No"), c && c.mobile_no && esc(c.mobile_no))}
+				${row(__("Addresses"), address_count)}
 				${draft ? row(__("Open draft"), `<a href="/app/sales-order/${encodeURIComponent(draft)}">${esc(draft)}</a>`) : ""}
 				<div class="swb-muted swb-small">${
 					draft
-						? __("This customer already has an open draft; it will be reused.")
-						: __("An empty draft is created. The customer finishes the plan and payment in the app after signing up with this mobile number.")
+						? address_count
+							? __("This customer already has an open draft; it will be reused and its addresses replaced.")
+							: __("This customer already has an open draft; it will be reused.")
+						: __("A draft without a plan is created. The customer finishes the plan and payment in the app after signing up with this mobile number.")
 				}</div>
 				${errors.length ? `<ul class="swb-blockers">${errors.map((e) => `<li>${e}</li>`).join("")}</ul>` : ""}
 				<button class="btn btn-primary btn-block" data-role="create" ${errors.length ? "disabled" : ""}>
-					${draft ? __("Use Existing Draft") : __("Create Draft Subscription")}
+					${draft ? (address_count ? __("Update Existing Draft") : __("Use Existing Draft")) : __("Create Draft Subscription")}
 				</button>
 			</div>
 		`);
@@ -621,7 +663,14 @@ class SubscriptionDashboard {
 	create_draft() {
 		frappe.call({
 			method: SWB_API + "create_draft_subscription",
-			args: { data: { customer: this.payload_customer(), new_customer: this.mode === "new" ? this.new_customer.get_values(true) : null } },
+			args: {
+				data: {
+					customer: this.payload_customer(),
+					new_customer: this.mode === "new" ? this.new_customer.get_values(true) : null,
+					addresses: [...this.addresses],
+					new_addresses: this.new_addresses,
+				},
+			},
 			freeze: true,
 			freeze_message: __("Creating draft subscription…"),
 		}).then((r) => r.message && this.render_draft_success(r.message));
@@ -638,12 +687,15 @@ class SubscriptionDashboard {
 			<div class="swb-card swb-success">
 				<div class="swb-success-icon">${frappe.utils.icon("check", "lg")}</div>
 				<h3>${o.reused ? __("Draft already exists") : __("Draft subscription created")}</h3>
-				<p class="swb-muted">${__("{0} is a draft for {1}.", [`<b>${esc(o.name)}</b>`, `<b>${esc(o.customer_name)}</b>`])}</p>
+				<p class="swb-muted">${__("{0} is a draft for {1}.", [this.order_anchor(o.name), `<b>${esc(o.customer_name)}</b>`])}${
+					o.address_count ? " " + __("{0} delivery address(es) attached.", [o.address_count]) : ""
+				}</p>
 				<p class="swb-muted">${
 					o.user
 						? __("The customer already has an app account — the draft is in their app now.")
 						: __("It appears in the app once the customer signs up or logs in with mobile no {0}.", [`<b>${esc(o.mobile_no || "")}</b>`])
 				}</p>
+				${this.order_link_box(o.name)}
 				<div class="swb-success-actions">
 					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Sales Order")}</a>
 					<button class="btn btn-default" data-role="again">${__("Create another")}</button>
@@ -651,6 +703,29 @@ class SubscriptionDashboard {
 			</div>
 		`);
 		this.$body.find('[data-role="again"]').on("click", () => this.reset());
+		this.bind_order_link(o.name);
+	}
+
+	// ---------- order link (success screens) ----------
+
+	order_url(name) {
+		return `${window.location.origin}/app/sales-order/${encodeURIComponent(name)}`;
+	}
+
+	order_anchor(name) {
+		return `<a class="swb-strong" href="/app/sales-order/${encodeURIComponent(name)}">${frappe.utils.escape_html(name)}</a>`;
+	}
+
+	order_link_box(name) {
+		return `<div class="swb-link">
+			<input type="text" readonly value="${frappe.utils.escape_html(this.order_url(name))}" data-role="order-url">
+			<button class="btn btn-default btn-sm" data-role="copy-link">${frappe.utils.icon("link-url", "sm")} ${__("Copy link")}</button>
+		</div>`;
+	}
+
+	bind_order_link(name) {
+		this.$body.find('[data-role="order-url"]').on("focus", (e) => e.currentTarget.select());
+		this.$body.find('[data-role="copy-link"]').on("click", () => frappe.utils.copy_to_clipboard(this.order_url(name)));
 	}
 
 	toggle(set, value) {
@@ -712,6 +787,8 @@ const SWB_CSS = `
 .swb-success-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:20px 0; text-align:left; }
 .swb-success-grid div { padding:10px 12px; border-radius:8px; background:var(--control-bg); display:flex; flex-direction:column; }
 .swb-success-grid small { color:var(--text-muted); }
+.swb-link { display:flex; gap:8px; align-items:center; margin:0 0 16px; padding:6px 6px 6px 12px; border-radius:8px; background:var(--control-bg); }
+.swb-link input { flex:1; min-width:0; border:0; background:transparent; color:var(--text-color); font-size:var(--text-sm, 13px); outline:none; }
 .swb-success-actions { display:flex; gap:8px; justify-content:center; }
 @media (max-width: 991px) {
 	.swb { grid-template-columns:1fr; }

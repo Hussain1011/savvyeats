@@ -116,18 +116,33 @@ def create_draft_subscription(data):
 	no plan), so the app resumes it as the customer's checkout. A customer keeps a
 	single open draft — get_draft_order only ever reads one — so an existing one is
 	returned instead of creating another.
+
+	Delivery addresses are optional. Picked or added ones go on the draft (replacing
+	those of a reused draft); the app can still change them. With no plan yet only a
+	weekday set on two addresses can be caught here — day coverage is checked by the
+	app once a week plan is chosen.
 	"""
 	_check_access()
 	data = frappe._dict(frappe.parse_json(data))
+
+	has_addresses = bool(data.get("addresses") or data.get("new_addresses"))
+	if has_addresses:
+		issues = _address_coverage(data, set())["address_issues"]
+		if issues:
+			frappe.throw("<br>".join(map(frappe.utils.escape_html, issues)), title=_("Cannot create draft"))
 
 	customer = _get_or_create_customer(data)
 	cust = frappe.db.get_value("Customer", customer, ["customer_name", "mobile_no", "user"], as_dict=True)
 	if not cust.user and not cust.mobile_no:
 		frappe.throw(_("Customer {0} has no mobile no, so the draft could never reach their app.").format(customer))
 
+	addresses = _resolve_addresses(data, customer, cust.customer_name, cust.mobile_no) if has_addresses else []
+
 	name = _open_draft(customer)
 	reused = bool(name)
-	if not reused:
+	if reused:
+		order = frappe.get_doc("Sales Order", name) if addresses else None
+	else:
 		order = frappe.get_doc({
 			"doctype": "Sales Order",
 			"customer": customer,
@@ -137,18 +152,24 @@ def create_draft_subscription(data):
 			"expired": 0,
 			"transaction_date": today(),
 		})
+	if order:
+		if addresses:
+			order.set("addresses", [{"address": address} for address in addresses])
+			order.customer_address = addresses[0]
 		order.flags.ignore_validate = True
 		order.flags.ignore_mandatory = True
-		order.insert()
+		order.save()
 		name = order.name
 
 	# Already an app user: hand the order over now, as link_customer_by_mobile would.
 	if cust.user:
 		frappe.db.set_value("Sales Order", name, "owner", cust.user, update_modified=False)
+		_link_addresses_to_user(addresses, cust.user)
 
 	return {
 		"name": name,
 		"reused": reused,
+		"address_count": len(addresses),
 		"customer": customer,
 		"customer_name": cust.customer_name,
 		"mobile_no": cust.mobile_no,
@@ -417,6 +438,10 @@ def _resolve_addresses(data, customer, customer_name, mobile_no):
 		address.street_no = row.street_no
 		address.building_no = row.building_no
 		address.unit_no = row.unit_no
+		# Same format as the app's add_address.
+		address.address_line1 = "Zone {0}, Street No {1}, Building No {2}, Unit No {3}".format(
+			row.zone, row.street_no, row.building_no, row.unit_no
+		)
 		address.city = row.city or "Doha"
 		address.country = frappe.db.get_default("country") or "Qatar"
 		address.phone = mobile_no
@@ -452,6 +477,18 @@ def _customer_address_names(customer):
 			if name not in names:
 				names.append(name)
 	return names
+
+
+def _link_addresses_to_user(names, user):
+	"""The app lists only addresses linked to the User (api.order.get_addresses)."""
+	for name in names:
+		address = frappe.get_doc("Address", name)
+		if any(link.link_doctype == "User" and link.link_name == user for link in address.links):
+			continue
+		address.append("links", {"link_doctype": "User", "link_name": user})
+		address.flags.ignore_permissions = True
+		address.flags.ignore_mandatory = True
+		address.save()
 
 
 def _address_summary(name):
@@ -537,7 +574,8 @@ def link_customer_by_mobile(user):
 	* only Customers with no User whose mobile matches *and* that hold an open
 	  dashboard draft — an ordinary desk Customer with the same number is left alone;
 	* exactly one match, never a guess;
-	* only draft orders change owner; submitted history is untouched.
+	* only draft orders change owner; submitted history is untouched;
+	* the Customer's addresses also get a User link so the app lists them.
 
 	Runs inside the app's signup and login, so it must never break them.
 	"""
@@ -579,6 +617,14 @@ def link_customer_by_mobile(user):
 		frappe.db.set_value("Customer", customer, "user", user, update_modified=False)
 		for order in frappe.get_all("Sales Order", filters={"customer": customer, "docstatus": 0}, pluck="name"):
 			frappe.db.set_value("Sales Order", order, "owner", user, update_modified=False)
+
+		# A bad Address must not undo the customer link above.
+		frappe.db.savepoint("dashboard_link_addresses")
+		try:
+			_link_addresses_to_user(_customer_address_names(frappe._dict(name=customer)), user)
+		except Exception:
+			frappe.db.rollback(save_point="dashboard_link_addresses")
+			frappe.log_error(title="Subscription Dashboard: address link failed")
 	except Exception:
 		frappe.db.rollback(save_point="dashboard_link_customer")
 		frappe.log_error(title="Subscription Dashboard: customer link failed")
