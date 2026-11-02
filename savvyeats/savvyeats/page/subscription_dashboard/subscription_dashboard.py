@@ -29,6 +29,8 @@ from savvyeats.api.order import _add_dish_plan_items
 from savvyeats.api.utils import MY_WAY_UI_TYPE
 from savvyeats.custom.sales_order_savvyeats import sales_order_delivery
 
+# Qatar only for now; customers are stored as +974XXXXXXXX.
+COUNTRY_CODE = "974"
 WEEK_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
@@ -116,18 +118,35 @@ def create_draft_subscription(data):
 	no plan), so the app resumes it as the customer's checkout. A customer keeps a
 	single open draft — get_draft_order only ever reads one — so an existing one is
 	returned instead of creating another.
+
+	Delivery addresses are optional. Picked or added ones go on the draft (replacing
+	those of a reused draft); the app can still change them. With no plan yet only a
+	weekday set on two addresses can be caught here — day coverage is checked by the
+	app once a week plan is chosen.
 	"""
 	_check_access()
 	data = frappe._dict(frappe.parse_json(data))
 
+	has_addresses = bool(data.get("addresses") or data.get("new_addresses"))
+	if has_addresses:
+		issues = _address_coverage(data, set())["address_issues"]
+		if issues:
+			frappe.throw("<br>".join(map(frappe.utils.escape_html, issues)), title=_("Cannot create draft"))
+
 	customer = _get_or_create_customer(data)
 	cust = frappe.db.get_value("Customer", customer, ["customer_name", "mobile_no", "user"], as_dict=True)
-	if not cust.user and not cust.mobile_no:
-		frappe.throw(_("Customer {0} has no mobile no, so the draft could never reach their app.").format(customer))
+	if not cust.user and mobile_error(normalize_mobile(cust.mobile_no)):
+		frappe.throw(
+			_("Customer {0} needs a valid Qatar mobile no, so the draft can reach their app.").format(customer)
+		)
+
+	addresses = _resolve_addresses(data, customer, cust.customer_name, cust.mobile_no) if has_addresses else []
 
 	name = _open_draft(customer)
 	reused = bool(name)
-	if not reused:
+	if reused:
+		order = frappe.get_doc("Sales Order", name) if addresses else None
+	else:
 		order = frappe.get_doc({
 			"doctype": "Sales Order",
 			"customer": customer,
@@ -137,18 +156,24 @@ def create_draft_subscription(data):
 			"expired": 0,
 			"transaction_date": today(),
 		})
+	if order:
+		if addresses:
+			order.set("addresses", [{"address": address} for address in addresses])
+			order.customer_address = addresses[0]
 		order.flags.ignore_validate = True
 		order.flags.ignore_mandatory = True
-		order.insert()
+		order.save()
 		name = order.name
 
 	# Already an app user: hand the order over now, as link_customer_by_mobile would.
 	if cust.user:
 		frappe.db.set_value("Sales Order", name, "owner", cust.user, update_modified=False)
+		_link_addresses_to_user(addresses, cust.user)
 
 	return {
 		"name": name,
 		"reused": reused,
+		"address_count": len(addresses),
 		"customer": customer,
 		"customer_name": cust.customer_name,
 		"mobile_no": cust.mobile_no,
@@ -370,18 +395,16 @@ def _get_or_create_customer(data):
 
 	details = frappe._dict(data.get("new_customer") or {})
 	customer_name = (details.customer_name or "").strip()
-	# Stored the way the app stores User.mobile_no, so signup can match on it.
 	mobile_no = normalize_mobile(details.mobile_no)
 	email_id = (details.email_id or "").strip()
 
 	if not customer_name:
 		frappe.throw(_("Customer Name is required."))
-	if not mobile_no:
-		frappe.throw(_("Mobile No is required."))
+	error = mobile_error(mobile_no)
+	if error:
+		frappe.throw(error)
 
-	existing = frappe.db.get_value(
-		"Customer", {"mobile_no": ["in", [mobile_no, "974" + mobile_no, "+974" + mobile_no]]}, "name"
-	)
+	existing = frappe.db.get_value("Customer", {"mobile_no": ["in", mobile_variants(mobile_no)]}, "name")
 	if existing:
 		frappe.throw(
 			_("Customer {0} already has mobile no {1}. Select the existing customer instead.").format(
@@ -394,7 +417,9 @@ def _get_or_create_customer(data):
 	customer.customer_type = "Individual"
 	customer.gender = details.gender or None
 	# Customer.on_update turns these into the primary Contact.
-	customer.mobile_no = mobile_no
+	# With the country code; link_customer_by_mobile matches it against the app's
+	# 8-digit User.mobile_no through mobile_variants.
+	customer.mobile_no = "+" + COUNTRY_CODE + mobile_no
 	customer.email_id = email_id or None
 	customer.insert()
 	return customer.name
@@ -417,6 +442,10 @@ def _resolve_addresses(data, customer, customer_name, mobile_no):
 		address.street_no = row.street_no
 		address.building_no = row.building_no
 		address.unit_no = row.unit_no
+		# Same format as the app's add_address.
+		address.address_line1 = "Zone {0}, Street No {1}, Building No {2}, Unit No {3}".format(
+			row.zone, row.street_no, row.building_no, row.unit_no
+		)
 		address.city = row.city or "Doha"
 		address.country = frappe.db.get_default("country") or "Qatar"
 		address.phone = mobile_no
@@ -452,6 +481,18 @@ def _customer_address_names(customer):
 			if name not in names:
 				names.append(name)
 	return names
+
+
+def _link_addresses_to_user(names, user):
+	"""The app lists only addresses linked to the User (api.order.get_addresses)."""
+	for name in names:
+		address = frappe.get_doc("Address", name)
+		if any(link.link_doctype == "User" and link.link_name == user for link in address.links):
+			continue
+		address.append("links", {"link_doctype": "User", "link_name": user})
+		address.flags.ignore_permissions = True
+		address.flags.ignore_mandatory = True
+		address.save()
 
 
 def _address_summary(name):
@@ -510,9 +551,25 @@ def normalize_mobile(mobile_no):
 	digits = "".join(c for c in (mobile_no or "") if c.isdigit())
 	if digits.startswith("00"):
 		digits = digits[2:]
-	if digits.startswith("974") and len(digits) > 8:
-		digits = digits[3:]
+	if digits.startswith(COUNTRY_CODE) and len(digits) > 8:
+		digits = digits[len(COUNTRY_CODE):]
 	return digits
+
+
+def mobile_error(local):
+	"""Why a local number is not a Qatar mobile (8 digits, starting 3, 5, 6 or 7), else None."""
+	if not local:
+		return _("Mobile No is required.")
+	if len(local) != 8:
+		return _("Mobile No must be 8 digits.")
+	if local[0] not in "3567":
+		return _("Qatar mobile numbers start with 3, 5, 6 or 7.")
+	return None
+
+
+def mobile_variants(local):
+	"""The ways a Customer's mobile_no may hold the same number."""
+	return [local, COUNTRY_CODE + local, "+" + COUNTRY_CODE + local, "+" + COUNTRY_CODE + "-" + local]
 
 
 def link_customer_on_signup(doc, method=None):
@@ -537,7 +594,8 @@ def link_customer_by_mobile(user):
 	* only Customers with no User whose mobile matches *and* that hold an open
 	  dashboard draft — an ordinary desk Customer with the same number is left alone;
 	* exactly one match, never a guess;
-	* only draft orders change owner; submitted history is untouched.
+	* only draft orders change owner; submitted history is untouched;
+	* the Customer's addresses also get a User link so the app lists them.
 
 	Runs inside the app's signup and login, so it must never break them.
 	"""
@@ -557,7 +615,7 @@ def link_customer_by_mobile(user):
 			for name in frappe.get_all(
 				"Customer",
 				filters={
-					"mobile_no": ["in", [mobile, "974" + mobile, "+974" + mobile]],
+					"mobile_no": ["in", mobile_variants(mobile)],
 					"user": ["is", "not set"],
 					"disabled": 0,
 				},
@@ -579,6 +637,14 @@ def link_customer_by_mobile(user):
 		frappe.db.set_value("Customer", customer, "user", user, update_modified=False)
 		for order in frappe.get_all("Sales Order", filters={"customer": customer, "docstatus": 0}, pluck="name"):
 			frappe.db.set_value("Sales Order", order, "owner", user, update_modified=False)
+
+		# A bad Address must not undo the customer link above.
+		frappe.db.savepoint("dashboard_link_addresses")
+		try:
+			_link_addresses_to_user(_customer_address_names(frappe._dict(name=customer)), user)
+		except Exception:
+			frappe.db.rollback(save_point="dashboard_link_addresses")
+			frappe.log_error(title="Subscription Dashboard: address link failed")
 	except Exception:
 		frappe.db.rollback(save_point="dashboard_link_customer")
 		frappe.log_error(title="Subscription Dashboard: customer link failed")

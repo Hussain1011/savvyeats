@@ -154,6 +154,9 @@ def forget_send_otp(mobile_no: str):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
+	# Only the latest code stays valid, so re-sending doesn't widen the guessing window
+	delete_otps(mobile_no)
+
 	otp = get_otp()
 	otp_verification = frappe.get_doc(
 		{
@@ -187,8 +190,12 @@ def forget_verify_otp(otp: int, mobile_no: str):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
+	if otp_attempts_exceeded(mobile_no):
+		return otp_attempts_error()
+
 	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
 	if not otp_verification:
+		record_failed_otp_attempt(mobile_no)
 		message_en = "The OTP is invalid or has expired. Please request a new one."
 		message_ar = "رمز التحقق غير صالح أو منتهي الصلاحية. يرجى طلب رمز جديد."
 		errors = {
@@ -214,8 +221,12 @@ def update_password(otp: int, mobile_no: str, password):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
+	if otp_attempts_exceeded(mobile_no):
+		return otp_attempts_error()
+
 	otp_verification = frappe.get_all("OTP Verification", filters={"mobile_no": mobile_no, "otp": otp, "expiry": [">=", now_datetime()]})
 	if not otp_verification:
+		record_failed_otp_attempt(mobile_no)
 		message_en = "The password update link has expired. Please request a new one."
 		message_ar = "رابط تحديث كلمة المرور منتهي الصلاحية. يرجى طلب رابط جديد."
 
@@ -224,12 +235,12 @@ def update_password(otp: int, mobile_no: str, password):
 		}
 		return send_error_response(message_en, message_ar, errors)
 
-	doc = frappe.get_doc("User", frappe.session.user)
+	doc = frappe.get_doc("User", user.name)
 	doc.new_password = password
 	doc.flags.ignore_permissions = True
 	try:
 		doc.save()
-	except Exception as e:
+	except frappe.ValidationError:
 		message_en = "This password is too common. Please choose a more secure one."
 		message_ar = "هذه كلمة مرور شائعة جدًا. يرجى اختيار كلمة مرور أكثر أمانًا."
 
@@ -237,6 +248,10 @@ def update_password(otp: int, mobile_no: str, password):
 			"common": ["This password is too common. Please choose a more secure one."]
 		}
 		return send_error_response(message_en, message_ar, errors)
+
+	# OTP is single-use: remove it so it can't reset the password again
+	delete_otps(mobile_no)
+	frappe.cache.delete(otp_attempts_key(mobile_no))
 
 	message_en = "Password updated successfully."
 	message_ar = "تم تحديث كلمة المرور بنجاح."
@@ -295,6 +310,32 @@ def get_otp():
 	otp = random.randint(100000, 999999)
 	#otp = 123456
 	return otp
+
+MAX_OTP_ATTEMPTS = 5
+OTP_ATTEMPTS_WINDOW = 15 * 60
+
+def otp_attempts_key(mobile_no):
+	return frappe.cache.make_key(f"savvyeats:otp_attempts:{mobile_no}")
+
+def otp_attempts_exceeded(mobile_no):
+	return cint(frappe.cache.get(otp_attempts_key(mobile_no))) >= MAX_OTP_ATTEMPTS
+
+def record_failed_otp_attempt(mobile_no):
+	key = otp_attempts_key(mobile_no)
+	# incrby is atomic, so parallel guesses can't slip past the limit
+	if frappe.cache.incrby(key, 1) == 1:
+		frappe.cache.expire(key, OTP_ATTEMPTS_WINDOW)
+
+def otp_attempts_error():
+	message_en = "Too many incorrect OTP attempts. Please try again in 15 minutes."
+	message_ar = "محاولات كثيرة غير صحيحة لرمز التحقق. يرجى المحاولة مرة أخرى بعد 15 دقيقة."
+	errors = {
+		"otp_attempts": ["Too many incorrect OTP attempts. Please try again in 15 minutes."]
+	}
+	return send_error_response(message_en, message_ar, errors)
+
+def delete_otps(mobile_no):
+	frappe.db.delete("OTP Verification", {"mobile_no": mobile_no})
 
 @frappe.whitelist(methods=["POST"], allow_guest=True)
 def update_details(data):
