@@ -675,7 +675,7 @@ class SubscriptionDashboard {
 				</div>
 				${this.order_link_box(o.name)}
 				<div class="swb-success-actions">
-					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Sales Order")}</a>
+					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Subscription")}</a>
 					<button class="btn btn-default" data-role="again">${__("Create another")}</button>
 				</div>
 			</div>
@@ -754,7 +754,7 @@ class SubscriptionDashboard {
 				}</p>
 				${this.order_link_box(o.name)}
 				<div class="swb-success-actions">
-					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Sales Order")}</a>
+					<a class="btn btn-primary" href="/app/sales-order/${encodeURIComponent(o.name)}">${__("Open Subscription")}</a>
 					<button class="btn btn-default" data-role="again">${__("Create another")}</button>
 				</div>
 			</div>
