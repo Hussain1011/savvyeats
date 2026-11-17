@@ -49,14 +49,13 @@ class SkipCash(Document):
 					frappe.local.response["location"] = "/payment-response/error/{0}".format(doc.name)
 					raise frappe.Redirect
 
-				# Lock the amount on the first payment initiation so the charged amount
-				# cannot drift afterwards; reuse the locked amount on later attempts.
-				locked = doc.get("locked_amount")
-				if locked and float(locked) > 0:
-					charge_amount = locked
-				else:
-					frappe.db.set_value("Sales Order", doc.name, "locked_amount", doc.rounded_total, update_modified=False)
-					doc.locked_amount = doc.rounded_total
+				# Record what this payment link charges, for the webhook's mismatch check.
+				# Every initiation creates a new SkipCash payment, so it is always the
+				# order's current total. Reusing the first lock charged customers the old
+				# amount after they changed the order, or started a new one on the same
+				# reused draft.
+				frappe.db.set_value("Sales Order", doc.name, "locked_amount", charge_amount, update_modified=False)
+				doc.locked_amount = charge_amount
 
 			amount = format(float(charge_amount), '.2f')
 

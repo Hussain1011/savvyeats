@@ -136,11 +136,24 @@ def _reset_sales_order_in_place(order):
 	order.coupon_code = ""
 	order.additional_discount_percentage = 0
 	order.discount_amount = 0
+	# The draft is reused for the customer's next order, so the amount locked for the
+	# previous order's payment link must not carry over to it.
+	order.locked_amount = 0
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True
 	order.flags.ignore_mandatory = True
 	order.save()
 	frappe.db.commit()
+
+
+# Keys the app's payload never writes. "docstatus" is dropped silently: written
+# through these saves it would submit a draft without any payment.
+_PROTECTED_ORDER_KEYS = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule", "docstatus"}
+
+# Money/number fields (totals, discounts, advance_paid, locked_amount...). The app may
+# echo the whole order back with stale values; they are ignored, not rejected, and the
+# server recomputes them, so the app keeps working unchanged.
+_COMPUTED_FIELDTYPES = {"Currency", "Float", "Percent"}
 
 
 @frappe.whitelist(methods=["POST"])
@@ -149,8 +162,22 @@ def update_draft_order(order_id, data):
 	if isinstance(order, dict):
 		return order
 
-	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
-	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
+	meta = frappe.get_meta("Sales Order")
+	clean_data = {}
+	for key, value in data.items():
+		if key in _PROTECTED_ORDER_KEYS:
+			continue
+		df = meta.get_field(key)
+		if df and df.fieldtype in _COMPUTED_FIELDTYPES:
+			continue
+		clean_data[key] = value
+
+	# Discount fields are no longer taken from the payload, so a coupon cleared by the
+	# app has to take its discount with it here. Only when a coupon was actually set:
+	# a discount given from the desk without one must survive the app echoing "".
+	if order.coupon_code and "coupon_code" in clean_data and not clean_data["coupon_code"]:
+		order.additional_discount_percentage = 0
+		order.discount_amount = 0
 
 	if "meals" in clean_data:
 		order.meals = []
@@ -164,6 +191,12 @@ def update_draft_order(order_id, data):
 	order.update(clean_data)
 
 	sales_order_delivery(order)
+
+	# This save skips validate, so ERPNext would not recompute the totals. Do it here,
+	# or the stored total (which the payment page charges) goes stale. Drafts only:
+	# a submitted order's totals are what the customer already paid.
+	if order.docstatus == 0 and order.items:
+		order.calculate_taxes_and_totals()
 
 	order.flags.ignore_validate = True
 	order.flags.ignore_permissions = True
@@ -183,8 +216,7 @@ def validate_draft_order(order_id, data):
 	if isinstance(order, dict):
 		return order
 
-	protected_keys = {"name", "doctype", "owner", "customer", "items", "ignore_pricing_rule"}
-	clean_data = {k: v for k, v in data.items() if k not in protected_keys}
+	clean_data = {k: v for k, v in data.items() if k not in _PROTECTED_ORDER_KEYS}
 
 	if "meals" in clean_data:
 		order.meals = []
