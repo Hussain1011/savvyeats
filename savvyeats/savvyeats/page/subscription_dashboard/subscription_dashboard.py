@@ -1,11 +1,12 @@
 """Subscription Dashboard: staff create a subscription on a customer's behalf.
 
-Phase 1 (live): staff create or pick a Customer and open an empty draft
-subscription for them — the same draft the app's get_draft_order starts from.
-When that person signs up or logs in to the app with the same mobile number,
-link_customer_by_mobile (wired through hooks, not the app's API) attaches the
-Customer to their User and the draft shows up in the app, where they finish the
-plan and pay. See create_draft_subscription.
+Phase 1 (live): staff create or pick a Customer and open a draft subscription
+for them — the same draft the app's get_draft_order starts from — optionally with
+the plan already chosen and priced. When that person signs up or logs in to the
+app with the same mobile number, link_customer_by_mobile (wired through hooks, not
+the app's API) attaches the Customer to their User and the draft shows up in the
+app, where they finish the plan (or pick dishes) and pay. See
+create_draft_subscription.
 
 Everything the dashboard needs lives in this module; the mobile app's API
 (savvyeats.api.*) is only imported from, never changed.
@@ -23,7 +24,7 @@ components selected would come out at zero.
 
 import frappe
 from frappe import _
-from frappe.utils import cint, flt, getdate, today
+from frappe.utils import add_days, cint, flt, getdate, today
 
 from savvyeats.api.order import _add_dish_plan_items
 from savvyeats.api.utils import MY_WAY_UI_TYPE
@@ -120,12 +121,21 @@ def create_draft_subscription(data):
 	returned instead of creating another.
 
 	Delivery addresses are optional. Picked or added ones go on the draft (replacing
-	those of a reused draft); the app can still change them. With no plan yet only a
-	weekday set on two addresses can be caught here — day coverage is checked by the
-	app once a week plan is chosen.
+	those of a reused draft); the app can still change them. Only a weekday set on
+	two addresses is caught here — day coverage is checked by the app at checkout.
+
+	The plan is optional too. When one is given the draft is planned and priced the
+	way the app's add_items would leave it (every meal "Item Not Selected"), replacing
+	the plan of a reused draft; the customer picks dishes and pays in the app.
 	"""
 	_check_access()
 	data = frappe._dict(frappe.parse_json(data))
+
+	has_plan = bool(data.get("dish_plan"))
+	if has_plan:
+		errors = _plan_errors(data) + _draft_start_errors(data)
+		if errors:
+			frappe.throw("<br>".join(errors), title=_("Cannot create draft"))
 
 	has_addresses = bool(data.get("addresses") or data.get("new_addresses"))
 	if has_addresses:
@@ -145,7 +155,7 @@ def create_draft_subscription(data):
 	name = _open_draft(customer)
 	reused = bool(name)
 	if reused:
-		order = frappe.get_doc("Sales Order", name) if addresses else None
+		order = frappe.get_doc("Sales Order", name) if addresses or has_plan else None
 	else:
 		order = frappe.get_doc({
 			"doctype": "Sales Order",
@@ -160,7 +170,16 @@ def create_draft_subscription(data):
 		if addresses:
 			order.set("addresses", [{"address": address} for address in addresses])
 			order.customer_address = addresses[0]
-		order.flags.ignore_validate = True
+		if has_plan:
+			_apply_plan(order, data)
+			# Same flags as the app's add_items. Validate runs so ERPNext fills the item
+			# details and totals; day coverage is left to the app's checkout, which
+			# validates the addresses before payment.
+			order.ignore_pricing_rule = 1
+			order.flags.rates_set_by_api = True
+			order.flags.ignore_addresses = True
+		else:
+			order.flags.ignore_validate = True
 		order.flags.ignore_mandatory = True
 		order.save()
 		name = order.name
@@ -178,7 +197,32 @@ def create_draft_subscription(data):
 		"customer_name": cust.customer_name,
 		"mobile_no": cust.mobile_no,
 		"user": cust.user,
+		"planned": has_plan,
+		"dish_plan_pricing": order.dish_plan_pricing if has_plan else None,
+		"start_date": order.actual_start_date if has_plan else None,
+		"end_date": order.actual_end_date if has_plan else None,
+		"delivery_count": len(order.delivery_dates) if has_plan else 0,
+		"grand_total": (order.rounded_total or order.grand_total) if has_plan else 0,
+		"currency": order.currency if has_plan else None,
 	}
+
+
+def _draft_start_errors(data):
+	"""A draft whose first delivery falls inside the kitchen buffer is expired by
+	background_jobs.update_expired_orders and drops out of the app. Leave the
+	customer at least a day to pay: the same earliest start the page defaults to.
+	"""
+	if not data.get("start_date"):
+		return []
+	buffer_days = cint(frappe.db.get_single_value("App Settings", "buffer_days"))
+	earliest = add_days(getdate(today()), 1 + buffer_days)
+	if getdate(data.start_date) < earliest:
+		return [
+			_("Start Date must be on or after {0}, so the customer has time to pay in the app.").format(
+				frappe.format(earliest, "Date")
+			)
+		]
+	return []
 
 
 def _open_draft(customer):
@@ -193,6 +237,8 @@ def preview_subscription(data):
 	_check_access()
 	data = frappe._dict(frappe.parse_json(data))
 	errors = _plan_errors(data)
+	if cint(data.get("draft")):
+		errors += _draft_start_errors(data)
 	if errors:
 		return {"errors": errors}
 
@@ -349,15 +395,29 @@ def _resolve_pricing(dish_plan, meals):
 
 def _make_order(data, customer):
 	"""Build the unsaved Sales Order: plan fields, delivery schedule and priced rows."""
-	plan = frappe.get_cached_doc("Dish Plan", data.dish_plan)
-	plan_meals = {m.meal: m for m in plan.meals}
-	selected = [m.meal for m in plan.meals if m.meal in (data.get("meals") or [])]
-
 	order = frappe.new_doc("Sales Order")
 	order.customer = customer
 	order.transaction_date = today()
 	order.order_type = "Sales"
 	order.is_online = 0
+	for allergen in data.get("allergens") or []:
+		order.append("allergens", {"allergen": allergen})
+	for goal in data.get("health_goals") or []:
+		order.append("health_goals", {"health_goal": goal})
+
+	_apply_plan(order, data)
+	return order
+
+
+def _apply_plan(order, data):
+	"""Put the plan on an order: plan fields, delivery schedule and priced rows.
+
+	Replaces the order's meals and items, so it also re-plans a reused draft.
+	"""
+	plan = frappe.get_cached_doc("Dish Plan", data.dish_plan)
+	plan_meals = {m.meal: m for m in plan.meals}
+	selected = [m.meal for m in plan.meals if m.meal in (data.get("meals") or [])]
+
 	order.dish_plan = plan.name
 	order.week_plan = data.week_plan
 	order.period_type = data.period_type
@@ -365,13 +425,7 @@ def _make_order(data, customer):
 	order.start_date = getdate(data.start_date)
 	order.delivery_time_slot = data.delivery_time_slot
 	order.meal_choice = data.get("meal_choice") or "User Select Meal"
-
-	for meal in selected:
-		order.append("meals", {"meal": meal})
-	for allergen in data.get("allergens") or []:
-		order.append("allergens", {"allergen": allergen})
-	for goal in data.get("health_goals") or []:
-		order.append("health_goals", {"health_goal": goal})
+	order.set("meals", [{"meal": meal} for meal in selected])
 
 	sales_order_delivery(order)
 
@@ -380,8 +434,8 @@ def _make_order(data, customer):
 	pricing_meals = {p.meal: p.per_day_price for p in pricing.meals}
 
 	# No items selected: every delivery date gets the meal's min_qty placeholder rows.
+	order.set("items", [])
 	_add_dish_plan_items(order, [], plan_meals, selected, pricing_meals)
-	return order
 
 
 def _get_or_create_customer(data):

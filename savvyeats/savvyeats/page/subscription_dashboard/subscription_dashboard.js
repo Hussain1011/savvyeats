@@ -1,9 +1,9 @@
 // Page: Subscription Dashboard
 // Staff create a subscription on a customer's behalf.
-// Phase 1 (live): create or pick a customer, optionally with delivery addresses ->
-// draft subscription with no plan, which the customer finishes in the app once they
-// sign up with the same mobile number.
-// Full flow (plan, preferences -> priced draft) is built but hidden until a later
+// Phase 1 (live): create or pick a customer, optionally pick the plan and delivery
+// addresses -> draft subscription (priced when a plan is picked), which the customer
+// finishes and pays in the app once they sign up with the same mobile number.
+// Full flow (preferences -> priced desk order) is built but hidden until a later
 // phase; set SWB_FULL_FLOW to true to show it.
 // Server API: savvyeats.savvyeats.page.subscription_dashboard.subscription_dashboard.*
 
@@ -83,8 +83,8 @@ class SubscriptionDashboard {
 						<div data-role="customer-new"></div>
 						<div data-role="customer-existing"></div>
 						<div data-role="customer-profile"></div>`)}
-					${SWB_FULL_FLOW ? this.plan_card() : ""}
-					${this.address_card(SWB_FULL_FLOW ? 3 : 2)}
+					${this.plan_card()}
+					${this.address_card(3)}
 					${SWB_FULL_FLOW ? this.preference_card() : ""}
 				</div>
 				<div class="swb-side"><div class="swb-card swb-summary" data-role="summary"></div></div>
@@ -93,17 +93,15 @@ class SubscriptionDashboard {
 		this.$ = (role) => this.$body.find(`[data-role="${role}"]`);
 
 		this.make_customer_section();
-		if (SWB_FULL_FLOW) {
-			this.make_plan_section();
-			this.make_preference_section();
-		}
+		this.make_plan_section();
+		if (SWB_FULL_FLOW) this.make_preference_section();
 		this.$("add-address").on("click", () => this.edit_new_address());
 		this.set_mode("new");
 		this.refresh();
 	}
 
 	plan_card() {
-		return this.card(2, __("Plan"), `
+		return this.card(2, SWB_FULL_FLOW ? __("Plan") : __("Plan (optional)"), `
 			<div data-role="plan"></div>
 			<div class="swb-label">${__("Meals")}</div>
 			<div class="swb-chips" data-role="meals"></div>
@@ -404,7 +402,7 @@ class SubscriptionDashboard {
 	uncovered_days() {
 		if (!SWB_FULL_FLOW) {
 			const p = this.local_coverage();
-			return this.setup.week_days.filter((day) => !p || !p.coverage[day].length);
+			return (this.plan_needed_days() || this.setup.week_days).filter((day) => !p || !p.coverage[day].length);
 		}
 		const p = this.preview;
 		if (!p || !p.needed_days) return [];
@@ -456,8 +454,9 @@ class SubscriptionDashboard {
 		});
 	}
 
-	// Phase 1 has no plan to preview, so coverage is worked out here from the picked
-	// addresses; with no needed_days, every day an address covers counts as needed.
+	// Phase 1 works coverage out here from the picked addresses, without waiting on the
+	// server. The needed days are the chosen week plan's; with no plan, every day an
+	// address covers counts as needed.
 	local_coverage() {
 		const existing = ((this.mode === "existing" && this.customer && this.customer.addresses) || []).filter((a) =>
 			this.addresses.has(a.name)
@@ -465,11 +464,28 @@ class SubscriptionDashboard {
 		const sources = existing
 			.map((a) => [a.address_title || a.name, a.delivery_days])
 			.concat(this.new_addresses.map((a) => [a.address_title || __("New address"), a.delivery_days || []]));
-		if (!sources.length) return null;
+		const needed_days = this.plan_needed_days();
+		if (!sources.length && !needed_days) return null;
 
 		const coverage = Object.fromEntries(this.setup.week_days.map((day) => [day, []]));
 		sources.forEach(([label, days]) => days.forEach((day) => coverage[day] && coverage[day].push(label)));
-		return { coverage, needed_days: null };
+		return { coverage, needed_days };
+	}
+
+	// Delivery weekdays of the picked week plan, or null while no plan is picked.
+	plan_needed_days() {
+		const plan = this.current_plan();
+		const week = plan && plan.week_plans.find((w) => w.name === this.plan.get_value("week_plan"));
+		return week ? week.days : null;
+	}
+
+	// Needed days no picked address delivers on. Not a blocker in phase 1: the app
+	// checks coverage at checkout and the customer can add addresses there.
+	missing_days() {
+		const needed = this.plan_needed_days();
+		if (!needed) return [];
+		const p = this.local_coverage();
+		return needed.filter((day) => !p.coverage[day].length);
 	}
 
 	address_errors() {
@@ -531,12 +547,9 @@ class SubscriptionDashboard {
 
 	// ---------- payload / preview ----------
 
-	payload() {
+	plan_payload() {
 		const plan = this.plan.get_values(true) || {};
-		const contact = this.contact.get_values(true) || {};
 		return {
-			customer: this.mode === "existing" ? this.existing_customer.get_value("customer") || null : null,
-			new_customer: this.mode === "new" ? this.new_customer_values() : null,
 			dish_plan: plan.dish_plan,
 			meals: [...this.meals],
 			week_plan: plan.week_plan,
@@ -545,6 +558,19 @@ class SubscriptionDashboard {
 			start_date: plan.start_date,
 			delivery_time_slot: plan.delivery_time_slot,
 			meal_choice: plan.meal_choice,
+		};
+	}
+
+	payload() {
+		// Preferences only exist in the full flow.
+		const contact = (this.contact && this.contact.get_values(true)) || {};
+		return {
+			customer: this.mode === "existing" ? this.existing_customer.get_value("customer") || null : null,
+			new_customer: this.mode === "new" ? this.new_customer_values() : null,
+			...this.plan_payload(),
+			// Phase 1 saves a draft for the app, which preview checks for a start date
+			// the draft would not expire on.
+			draft: SWB_FULL_FLOW ? 0 : 1,
 			allergens: [...this.allergens],
 			health_goals: [...this.health_goals],
 			addresses: [...this.addresses],
@@ -582,27 +608,35 @@ class SubscriptionDashboard {
 		this.render_customer_profile();
 		this.render_addresses();
 		this.render_coverage();
-		if (!SWB_FULL_FLOW) return this.render_draft_summary();
-
 		this.render_meals();
-		this.render_summary();
+
+		// Until the new preview lands, the shown price is for the previous inputs.
+		this.preview_pending = !!this.plan.get_value("dish_plan");
+		this.render_side();
 
 		clearTimeout(this._preview_timer);
 		this._preview_timer = setTimeout(() => this.fetch_preview(), 350);
 	}
 
+	render_side() {
+		SWB_FULL_FLOW ? this.render_summary() : this.render_draft_summary();
+	}
+
 	fetch_preview() {
 		const payload = this.payload();
 		if (!payload.dish_plan) {
+			this._preview_seq = (this._preview_seq || 0) + 1; // drop any in-flight preview
 			this.preview = null;
-			return this.render_summary();
+			this.preview_pending = false;
+			return this.render_side();
 		}
 		const seq = (this._preview_seq = (this._preview_seq || 0) + 1);
 		frappe.call({ method: SWB_API + "preview_subscription", args: { data: payload } }).then((r) => {
 			if (seq !== this._preview_seq) return; // a newer request is in flight
 			this.preview = r.message;
+			this.preview_pending = false;
 			this.render_coverage();
-			this.render_summary();
+			this.render_side();
 		});
 	}
 
@@ -689,9 +723,16 @@ class SubscriptionDashboard {
 	render_draft_summary() {
 		const esc = frappe.utils.escape_html;
 		const c = this.mode === "existing" ? this.customer : this.new_customer_values();
-		const errors = [...this.customer_errors(), ...this.address_errors()];
+		const fmt = (v) => format_currency(v, this.currency);
+		const plan = this.current_plan();
+		const p = plan && !this.preview_pending ? this.preview : null;
+		const priced = p && !(p.errors || []).length;
+		// Server messages can carry staff-typed text: escape them.
+		const errors = [...this.customer_errors(), ...this.address_errors(), ...((p && p.errors) || []).map(esc)];
+		const missing = this.missing_days();
 		const draft = this.mode === "existing" && this.customer && this.customer.draft_order;
 		const address_count = this.addresses.size + this.new_addresses.length;
+		const updates = address_count || plan;
 		const row = (label, value) => `<div class="swb-row"><span>${label}</span><span>${value || "—"}</span></div>`;
 
 		this.$("summary").html(`
@@ -699,18 +740,45 @@ class SubscriptionDashboard {
 			<div class="swb-card-body">
 				${row(__("Customer"), c && c.customer_name && esc(c.customer_name))}
 				${row(__("Mobile No"), c && c.mobile_no && esc(swb_format_mobile(c.mobile_no)))}
+				${row(__("Plan"), plan && esc(plan.label))}
+				${plan ? row(__("Pricing"), priced && esc(p.dish_plan_pricing)) : ""}
+				${plan ? row(__("Dates"), priced && `${frappe.datetime.str_to_user(p.start_date)} → ${frappe.datetime.str_to_user(p.end_date)}`) : ""}
+				${plan ? row(__("Deliveries"), priced && p.delivery_count) : ""}
 				${row(__("Addresses"), address_count)}
 				${draft ? row(__("Open draft"), `<a href="/app/sales-order/${encodeURIComponent(draft)}">${esc(draft)}</a>`) : ""}
+				${
+					priced
+						? `<table class="swb-lines">
+							<thead><tr><th>${__("Meal")}</th><th>${__("Qty")}</th><th>${__("Rate")}</th><th>${__("Amount")}</th></tr></thead>
+							<tbody>${p.lines.map((l) => `<tr><td>${esc(l.meal)}</td><td>${l.qty}</td><td>${fmt(l.rate)}</td><td>${fmt(l.amount)}</td></tr>`).join("")}</tbody>
+						</table>
+						<div class="swb-total"><span>${__("Subtotal")}</span><span>${fmt(p.subtotal)}</span></div>
+						<div class="swb-muted swb-small">${__("Taxes and discounts are applied when the draft is saved. Every meal starts as \"Item Not Selected\"; the customer picks dishes in the app.")}</div>`
+						: plan && this.preview_pending
+							? `<div class="swb-muted swb-small">${__("Pricing…")}</div>`
+							: ""
+				}
 				<div class="swb-muted swb-small">${
 					draft
-						? address_count
-							? __("This customer already has an open draft; it will be reused and its addresses replaced.")
-							: __("This customer already has an open draft; it will be reused.")
-						: __("A draft without a plan is created. The customer finishes the plan and payment in the app after signing up with this mobile number.")
+						? plan && address_count
+							? __("This customer already has an open draft; it will be reused and its plan and addresses replaced.")
+							: plan
+								? __("This customer already has an open draft; it will be reused and its plan replaced.")
+								: address_count
+									? __("This customer already has an open draft; it will be reused and its addresses replaced.")
+									: __("This customer already has an open draft; it will be reused.")
+						: plan
+							? __("A priced draft is created. The customer picks dishes and pays in the app after signing up with this mobile number.")
+							: __("A draft without a plan is created. The customer finishes the plan and payment in the app after signing up with this mobile number.")
 				}</div>
+				${
+					missing.length
+						? `<div class="swb-muted swb-small">${esc(__("No address delivers on {0} yet — the customer adds one in the app before paying.", [missing.map((d) => __(d)).join(", ")]))}</div>`
+						: ""
+				}
 				${errors.length ? `<ul class="swb-blockers">${errors.map((e) => `<li>${e}</li>`).join("")}</ul>` : ""}
-				<button class="btn btn-primary btn-block" data-role="create" ${errors.length ? "disabled" : ""}>
-					${draft ? (address_count ? __("Update Existing Draft") : __("Use Existing Draft")) : __("Create Draft Subscription")}
+				<button class="btn btn-primary btn-block" data-role="create" ${errors.length || (plan && !priced) ? "disabled" : ""}>
+					${draft ? (updates ? __("Update Existing Draft") : __("Use Existing Draft")) : __("Create Draft Subscription")}
 				</button>
 			</div>
 		`);
@@ -726,6 +794,8 @@ class SubscriptionDashboard {
 					new_customer: this.mode === "new" ? this.new_customer_values() : null,
 					addresses: [...this.addresses],
 					new_addresses: this.new_addresses,
+					// No dish_plan = no plan: the server opens the draft without one.
+					...(this.current_plan() ? this.plan_payload() : {}),
 				},
 			},
 			freeze: true,
@@ -739,14 +809,25 @@ class SubscriptionDashboard {
 
 	render_draft_success(o) {
 		const esc = frappe.utils.escape_html;
+		const fmt = (v) => format_currency(v, o.currency);
 		this.$body.html(`
 			<style>${SWB_CSS}</style>
 			<div class="swb-card swb-success">
 				<div class="swb-success-icon">${frappe.utils.icon("check", "lg")}</div>
-				<h3>${o.reused ? __("Draft already exists") : __("Draft subscription created")}</h3>
+				<h3>${o.reused ? (o.planned ? __("Existing draft updated") : __("Draft already exists")) : __("Draft subscription created")}</h3>
 				<p class="swb-muted">${__("{0} is a draft for {1}.", [this.order_anchor(o.name), `<b>${esc(o.customer_name)}</b>`])}${
 					o.address_count ? " " + __("{0} delivery address(es) attached.", [o.address_count]) : ""
 				}</p>
+				${
+					o.planned
+						? `<div class="swb-success-grid">
+							<div><small>${__("Pricing")}</small><b>${esc(o.dish_plan_pricing)}</b></div>
+							<div><small>${__("Dates")}</small><b>${frappe.datetime.str_to_user(o.start_date)} → ${frappe.datetime.str_to_user(o.end_date)}</b></div>
+							<div><small>${__("Deliveries")}</small><b>${o.delivery_count}</b></div>
+							<div><small>${__("Grand Total")}</small><b>${fmt(o.grand_total)}</b></div>
+						</div>`
+						: ""
+				}
 				<p class="swb-muted">${
 					o.user
 						? __("The customer already has an app account — the draft is in their app now.")
